@@ -7,6 +7,10 @@ import com.cashly.cashly_api.finance.treasury.payments.collection.domain.reposit
 import com.cashly.cashly_api.finance.treasury.payments.collection.domain.valueobjects.PaymentId;
 import com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure.persistence.entities.PaymentEntity;
 import com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure.persistence.mappers.PaymentJpaMapper;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -43,6 +47,34 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
         return jpaRepository
                 .findAllWithFilters(dateFrom, dateTo, customerId, status)
                 .stream().map(PaymentJpaMapper::toDomain).toList();
+    }
+
+    @Override
+    public PageResponse<Payment> findPageWithFilters(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, String status, int page,
+            int size, String orderBy, String orderDir) {
+        Page<PaymentEntity> result = jpaRepository.findPageWithFilters(dateFrom,
+                dateTo, customerId, status, PageRequest.of(page, size,
+                        sort(orderBy, orderDir)));
+        List<Payment> content = result.getContent().stream()
+                .map(PaymentJpaMapper::toDomain).toList();
+        return new PageResponse<>(content, result.getTotalElements(),
+                result.getTotalPages(), result.getSize(), result.getNumber(),
+                result.isFirst(), result.isLast(), content.isEmpty());
+    }
+
+    private static Sort sort(String orderBy, String orderDir) {
+        String property = switch (orderBy == null ? "" : orderBy) {
+            case "paymentNumber" -> "paymentNumber";
+            case "amount" -> "amount";
+            case "status" -> "status";
+            case "paymentDate" -> "paymentDate";
+            default -> "createdAt";
+        };
+        Sort.Direction direction = "desc".equalsIgnoreCase(orderDir)
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+        return Sort.by(direction, property).and(Sort.by(direction, "id"));
     }
 
     @Override

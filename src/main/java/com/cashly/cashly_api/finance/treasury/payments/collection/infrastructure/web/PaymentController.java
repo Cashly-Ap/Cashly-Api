@@ -20,6 +20,7 @@ import com.cashly.cashly_api.finance.treasury.payments.collection.application.pa
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.pay_partial_debt.use_case.PayPartialDebtUseCase;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.reject.use_case.RejectPaymentUseCase;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.update.use_case.UpdatePaymentUseCase;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -82,24 +83,31 @@ public class PaymentController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('FINANCE_TREASURY_RECEIVABLES_VIEW_LIST')")
-    public ResponseEntity<List<PaymentListResponse>> getAll(
+    public ResponseEntity<PageResponse<PaymentListResponse>> getAll(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) GetAllPaymentsUseCase.ListAction action) {
-        List<PaymentListResponse> payments = action == null
-                ? getAllPaymentsUseCase.execute(dateFrom, dateTo, customerId,
-                        type, status)
-                : getAllPaymentsUseCase.execute(dateFrom, dateTo, customerId,
-                        type, status, action);
-        return ResponseEntity.ok(payments);
+            @RequestParam(required = false) GetAllPaymentsUseCase.ListAction action,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String orderBy,
+            @RequestParam(defaultValue = "desc") String orderDir) {
+        return ResponseEntity.ok(getAllPaymentsUseCase.executePage(dateFrom,
+                dateTo, customerId, type, status, action, page,
+                normalizeSize(size), orderBy, orderDir));
     }
 
-    public ResponseEntity<List<PaymentListResponse>> getAll(LocalDate dateFrom,
-            LocalDate dateTo, UUID customerId, String type, String status) {
-        return getAll(dateFrom, dateTo, customerId, type, status, null);
+    public ResponseEntity<PageResponse<PaymentListResponse>> getAll(
+            LocalDate dateFrom, LocalDate dateTo, UUID customerId, String type,
+            String status) {
+        return getAll(dateFrom, dateTo, customerId, type, status, null, 0,
+                100, "createdAt", "desc");
+    }
+
+    private static int normalizeSize(int size) {
+        return Math.min(Math.max(size, 1), 100);
     }
 
     @GetMapping("/{id}")

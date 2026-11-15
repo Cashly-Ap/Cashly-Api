@@ -16,6 +16,8 @@ import com.cashly.cashly_api.finance.treasury.payments.collection.application.pa
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.pay_invoice.use_case.PayInvoiceUseCase;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.pay_partial_debt.use_case.PayPartialDebtUseCase;
 import com.cashly.cashly_api.finance.treasury.payments.collection.application.update.use_case.UpdatePaymentUseCase;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -115,30 +117,34 @@ class PaymentControllerTest {
                 UUID.randomUUID(), "REF-001", LocalDate.now(), "APPLIED",
                 BigDecimal.ZERO, LocalDateTime.now());
 
-        when(getAllPaymentsUseCase.execute(null, null, null, null, null))
-                .thenReturn(List.of(payment));
+        when(getAllPaymentsUseCase.executePage(null, null, null, null, null,
+                null, 0, 100, "createdAt", "desc"))
+                .thenReturn(PageResponses.page(List.of(payment), 0, 100));
 
-        ResponseEntity<List<PaymentListResponse>> result = paymentController
+        ResponseEntity<PageResponse<PaymentListResponse>> result = paymentController
                 .getAll(null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(1, result.getBody().size());
-        assertEquals("PAY-2026-00001", result.getBody().get(0).paymentNumber());
-        verify(getAllPaymentsUseCase).execute(null, null, null, null, null);
+        assertEquals(1, result.getBody().content().size());
+        assertEquals("PAY-2026-00001",
+                result.getBody().content().get(0).paymentNumber());
+        verify(getAllPaymentsUseCase).executePage(null, null, null, null, null,
+                null, 0, 100, "createdAt", "desc");
     }
 
     @Test
     @DisplayName("should list payments with filters and return 200")
     void shouldListPaymentsWithFilters() {
-        when(getAllPaymentsUseCase.execute(any(), any(), any(), any(), any()))
-                .thenReturn(List.of());
+        when(getAllPaymentsUseCase.executePage(any(), any(), any(), any(),
+                any(), any(), eq(0), eq(100), eq("createdAt"), eq("desc")))
+                .thenReturn(PageResponses.page(List.of(), 0, 100));
 
-        ResponseEntity<List<PaymentListResponse>> result = paymentController
+        ResponseEntity<PageResponse<PaymentListResponse>> result = paymentController
                 .getAll(LocalDate.of(2026, 1, 1), LocalDate.of(2026, 12, 31),
                         UUID.randomUUID(), "APPLIED", null);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertTrue(result.getBody().isEmpty());
+        assertTrue(result.getBody().empty());
     }
 
     @Test

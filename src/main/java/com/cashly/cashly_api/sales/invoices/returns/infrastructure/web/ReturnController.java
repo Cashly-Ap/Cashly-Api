@@ -6,6 +6,7 @@ import com.cashly.cashly_api.sales.invoices.returns.application.dto.response.Ret
 import com.cashly.cashly_api.sales.invoices.returns.application.create.use_case.CreateReturnUseCase;
 import com.cashly.cashly_api.sales.invoices.returns.application.delete.use_case.DeleteReturnUseCase;
 import com.cashly.cashly_api.sales.invoices.returns.application.list.use_case.GetAllReturnsUseCase;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 import com.cashly.cashly_api.sales.invoices.returns.application.get.use_case.GetReturnByIdUseCase;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -51,14 +52,22 @@ public class ReturnController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('SALES_INVOICES_RETURNS_VIEW_LIST')")
-    public ResponseEntity<List<ReturnListResponse>> getAll(
+    public ResponseEntity<PageResponse<ReturnListResponse>> getAll(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) UUID customerId,
-            @RequestParam(required = false) UUID invoiceId) {
-        List<ReturnListResponse> returns = getAllReturnsUseCase
-                .execute(dateFrom, dateTo, customerId, invoiceId);
-        return ResponseEntity.ok(returns);
+            @RequestParam(required = false) UUID invoiceId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String orderBy,
+            @RequestParam(defaultValue = "desc") String orderDir) {
+        return ResponseEntity.ok(getAllReturnsUseCase.executePage(dateFrom,
+                dateTo, customerId, invoiceId, page, normalizeSize(size),
+                orderBy, orderDir));
+    }
+
+    private static int normalizeSize(int size) {
+        return Math.min(Math.max(size, 1), 100);
     }
 
     @GetMapping("/{id}")

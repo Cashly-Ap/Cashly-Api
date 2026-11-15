@@ -6,6 +6,8 @@ import com.cashly.cashly_api.sales.invoices.credit_notes.application.create.use_
 import com.cashly.cashly_api.sales.invoices.credit_notes.application.delete.use_case.DeleteCreditNoteUseCase;
 import com.cashly.cashly_api.sales.invoices.credit_notes.application.get.use_case.GetCreditNoteByIdUseCase;
 import com.cashly.cashly_api.sales.invoices.credit_notes.application.list.use_case.GetCreditNotesUseCase;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -86,29 +88,33 @@ class CreditNoteControllerTest {
                 UUID.randomUUID(), "User", LocalDateTime.now(),
                 LocalDateTime.now());
 
-        when(getCreditNotesUseCase.execute(any(), any(), any()))
-                .thenReturn(List.of(response));
+        when(getCreditNotesUseCase.executePage(null, null, null, 0, 100,
+                "createdAt", "desc"))
+                .thenReturn(PageResponses.page(List.of(response), 0, 100));
 
-        ResponseEntity<List<CreditNoteResponse>> result = creditNoteController
-                .list(null, null, null);
+        ResponseEntity<PageResponse<CreditNoteResponse>> result = creditNoteController
+                .list(null, null, null, 0, 100, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(1, result.getBody().size());
-        verify(getCreditNotesUseCase).execute(null, null, null);
+        assertEquals(1, result.getBody().content().size());
+        verify(getCreditNotesUseCase).executePage(null, null, null, 0, 100,
+                "createdAt", "desc");
     }
 
     @Test
     @DisplayName("should return empty list when no credit notes")
     void should_return_empty_list_when_no_credit_notes() {
-        when(getCreditNotesUseCase.execute(any(), any(), any()))
-                .thenReturn(List.of());
+        when(getCreditNotesUseCase.executePage(null, null, null, 0, 100,
+                "createdAt", "desc"))
+                .thenReturn(PageResponses.page(List.of(), 0, 100));
 
-        ResponseEntity<List<CreditNoteResponse>> result = creditNoteController
-                .list(null, null, null);
+        ResponseEntity<PageResponse<CreditNoteResponse>> result = creditNoteController
+                .list(null, null, null, 0, 100, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertTrue(result.getBody().isEmpty());
-        verify(getCreditNotesUseCase).execute(null, null, null);
+        assertTrue(result.getBody().empty());
+        verify(getCreditNotesUseCase).executePage(null, null, null, 0, 100,
+                "createdAt", "desc");
     }
 
     @Test

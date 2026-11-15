@@ -1,6 +1,8 @@
 package com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure.persistence.repositories;
 
 import com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure.persistence.entities.PaymentEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,6 +28,25 @@ public interface PaymentJpaRepository
             @Param("dateTo") LocalDate dateTo,
             @Param("customerId") UUID customerId,
             @Param("status") String status);
+
+    @Query(value = """
+            SELECT p FROM PaymentEntity p
+            WHERE (:dateFrom IS NULL OR p.paymentDate >= :dateFrom)
+            AND (:dateTo IS NULL OR p.paymentDate <= :dateTo)
+            AND (:customerId IS NULL OR p.customerId = :customerId)
+            AND (:status IS NULL OR p.status = :status)
+            """, countQuery = """
+            SELECT COUNT(p) FROM PaymentEntity p
+            WHERE (:dateFrom IS NULL OR p.paymentDate >= :dateFrom)
+            AND (:dateTo IS NULL OR p.paymentDate <= :dateTo)
+            AND (:customerId IS NULL OR p.customerId = :customerId)
+            AND (:status IS NULL OR p.status = :status)
+            """)
+    Page<PaymentEntity> findPageWithFilters(
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo,
+            @Param("customerId") UUID customerId,
+            @Param("status") String status, Pageable pageable);
 
     @Query("""
             SELECT COALESCE(SUM(p.amount), 0)

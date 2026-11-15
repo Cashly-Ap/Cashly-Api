@@ -12,6 +12,7 @@ import com.cashly.cashly_api.finance.treasury.payments.payable.application.list.
 import com.cashly.cashly_api.finance.treasury.payments.payable.application.pay_purchase.use_case.PayPurchaseUseCase;
 import com.cashly.cashly_api.finance.treasury.payments.payable.application.pay_supplier_debt.use_case.PaySupplierDebtUseCase;
 import com.cashly.cashly_api.finance.treasury.payments.payable.application.reject.use_case.RejectSupplierPaymentUseCase;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -110,13 +111,21 @@ public class SupplierPaymentController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('FINANCE_TREASURY_PAYABLES_VIEW_DEBT')")
-    public ResponseEntity<List<SupplierPaymentResponse>> getAll(
+    public ResponseEntity<PageResponse<SupplierPaymentResponse>> getAll(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(required = false) UUID supplierId,
-            @RequestParam(required = false) String status) {
-        return ResponseEntity
-                .ok(list.execute(dateFrom, dateTo, supplierId, status));
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String orderBy,
+            @RequestParam(defaultValue = "desc") String orderDir) {
+        return ResponseEntity.ok(list.executePage(dateFrom, dateTo, supplierId,
+                status, page, normalizeSize(size), orderBy, orderDir));
+    }
+
+    private static int normalizeSize(int size) {
+        return Math.min(Math.max(size, 1), 100);
     }
 
     @DeleteMapping("/{id}")

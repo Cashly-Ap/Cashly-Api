@@ -2,6 +2,7 @@ package com.cashly.cashly_api.sales.invoices.returns.domain.repository;
 
 import com.cashly.cashly_api.sales.invoices.returns.domain.entity.Return;
 import com.cashly.cashly_api.sales.invoices.returns.domain.valueobjects.ReturnId;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +17,10 @@ public interface ReturnRepository {
 
     List<Return> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
             UUID customerId, UUID invoiceId);
+
+    PageResponse<Return> findPageWithFilters(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, UUID invoiceId, int page,
+            int size, String orderBy, String orderDir);
 
     void delete(ReturnId id);
 

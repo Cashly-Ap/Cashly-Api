@@ -14,6 +14,7 @@ import com.cashly.cashly_api.sales.invoices.returns.infrastructure.persistence.e
 import com.cashly.cashly_api.sales.invoices.returns.infrastructure.persistence.entities.ReturnLineAllocationEntity;
 import com.cashly.cashly_api.sales.invoices.returns.infrastructure.persistence.entities.ReturnLineEntity;
 import com.cashly.cashly_api.sales.invoices.returns.infrastructure.persistence.entities.ReturnNumberSequenceEntity;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.TypedQuery;
@@ -23,8 +24,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Repository
 public class JpaReturnRepository implements ReturnRepository {
@@ -92,6 +97,87 @@ public class JpaReturnRepository implements ReturnRepository {
         }
 
         return query.getResultList().stream().map(this::toDomain).toList();
+    }
+
+    @Override
+    public PageResponse<Return> findPageWithFilters(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, UUID invoiceId, int page,
+            int size, String orderBy, String orderDir) {
+        StringBuilder where = new StringBuilder(" WHERE 1=1");
+        if (dateFrom != null) {
+            where.append(" AND r.createdAt >= :dateFrom");
+        }
+        if (dateTo != null) {
+            where.append(" AND r.createdAt <= :dateTo");
+        }
+        if (customerId != null) {
+            where.append(" AND r.customerId = :customerId");
+        }
+        if (invoiceId != null) {
+            where.append(" AND r.invoiceId = :invoiceId");
+        }
+
+        TypedQuery<Long> countQuery = entityManager.createQuery(
+                "SELECT COUNT(r) FROM ReturnEntity r" + where, Long.class);
+        bindFilters(countQuery, dateFrom, dateTo, customerId, invoiceId);
+        long totalElements = countQuery.getSingleResult();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        if (totalElements == 0 || page * (long) size >= totalElements) {
+            return new PageResponse<>(List.of(), totalElements, totalPages,
+                    size, page, page == 0, page >= totalPages - 1, true);
+        }
+
+        boolean desc = "desc".equalsIgnoreCase(orderDir);
+        String order = " ORDER BY " + orderProperty(orderBy)
+                + (desc ? " DESC" : " ASC") + ", r.id "
+                + (desc ? "DESC" : "ASC");
+        TypedQuery<ReturnEntity> query = entityManager.createQuery(
+                "SELECT r FROM ReturnEntity r" + where + order,
+                ReturnEntity.class);
+        bindFilters(query, dateFrom, dateTo, customerId, invoiceId);
+        query.setFirstResult(page * size);
+        query.setMaxResults(size);
+
+        List<UUID> orderedIds = query.getResultList().stream()
+                .map(ReturnEntity::getId).toList();
+        Map<UUID, ReturnEntity> entities = entityManager.createQuery("""
+                SELECT DISTINCT r FROM ReturnEntity r
+                LEFT JOIN FETCH r.lines
+                WHERE r.id IN :ids
+                """, ReturnEntity.class).setParameter("ids", orderedIds)
+                .getResultList().stream()
+                .collect(Collectors.toMap(ReturnEntity::getId,
+                        Function.identity()));
+        List<Return> content = orderedIds.stream().map(entities::get)
+                .filter(Objects::nonNull).map(this::toDomain).toList();
+        return new PageResponse<>(content, totalElements, totalPages, size,
+                page, page == 0, page >= totalPages - 1, content.isEmpty());
+    }
+
+    private static String orderProperty(String orderBy) {
+        return switch (orderBy == null ? "" : orderBy) {
+            case "returnNumber" -> "r.returnNumber";
+            case "returnType" -> "r.returnType";
+            case "total" -> "r.total";
+            default -> "r.createdAt";
+        };
+    }
+
+    private static void bindFilters(TypedQuery<?> query, LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, UUID invoiceId) {
+        if (dateFrom != null) {
+            query.setParameter("dateFrom", dateFrom.atStartOfDay());
+        }
+        if (dateTo != null) {
+            query.setParameter("dateTo", dateTo.atTime(23, 59, 59));
+        }
+        if (customerId != null) {
+            query.setParameter("customerId", customerId);
+        }
+        if (invoiceId != null) {
+            query.setParameter("invoiceId", invoiceId);
+        }
     }
 
     @Override

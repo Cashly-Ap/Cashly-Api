@@ -1,6 +1,8 @@
 package com.cashly.cashly_api.sales.invoices.debit_notes.infrastructure.persistence.repositories;
 
 import com.cashly.cashly_api.sales.invoices.debit_notes.infrastructure.persistence.entities.DebitNoteEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,6 +27,22 @@ public interface DebitNoteJpaRepository
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo") LocalDateTime dateTo,
             @Param("customerId") UUID customerId);
+
+    @Query(value = """
+            SELECT d FROM DebitNoteEntity d
+            WHERE (:dateFrom IS NULL OR d.createdAt >= :dateFrom)
+            AND (:dateTo IS NULL OR d.createdAt <= :dateTo)
+            AND (:customerId IS NULL OR d.customerId = :customerId)
+            """, countQuery = """
+            SELECT COUNT(d) FROM DebitNoteEntity d
+            WHERE (:dateFrom IS NULL OR d.createdAt >= :dateFrom)
+            AND (:dateTo IS NULL OR d.createdAt <= :dateTo)
+            AND (:customerId IS NULL OR d.customerId = :customerId)
+            """)
+    Page<DebitNoteEntity> findPageWithFilters(
+            @Param("dateFrom") LocalDateTime dateFrom,
+            @Param("dateTo") LocalDateTime dateTo,
+            @Param("customerId") UUID customerId, Pageable pageable);
 
     List<DebitNoteEntity> findByInvoiceId(UUID invoiceId);
 

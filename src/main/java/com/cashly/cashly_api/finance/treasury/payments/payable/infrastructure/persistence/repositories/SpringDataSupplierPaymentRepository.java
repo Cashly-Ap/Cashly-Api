@@ -1,6 +1,8 @@
 package com.cashly.cashly_api.finance.treasury.payments.payable.infrastructure.persistence.repositories;
 
 import com.cashly.cashly_api.finance.treasury.payments.payable.infrastructure.persistence.entities.SupplierPaymentEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,4 +26,23 @@ public interface SpringDataSupplierPaymentRepository
             @Param("dateTo") LocalDate dateTo,
             @Param("supplierId") UUID supplierId,
             @Param("status") String status);
+
+    @Query(value = """
+            SELECT p FROM SupplierPaymentEntity p
+            WHERE (:dateFrom IS NULL OR p.paymentDate >= :dateFrom)
+            AND (:dateTo IS NULL OR p.paymentDate <= :dateTo)
+            AND (:supplierId IS NULL OR p.supplierId = :supplierId)
+            AND (:status IS NULL OR p.status = :status)
+            """, countQuery = """
+            SELECT COUNT(p) FROM SupplierPaymentEntity p
+            WHERE (:dateFrom IS NULL OR p.paymentDate >= :dateFrom)
+            AND (:dateTo IS NULL OR p.paymentDate <= :dateTo)
+            AND (:supplierId IS NULL OR p.supplierId = :supplierId)
+            AND (:status IS NULL OR p.status = :status)
+            """)
+    Page<SupplierPaymentEntity> findPageWithFilters(
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo,
+            @Param("supplierId") UUID supplierId,
+            @Param("status") String status, Pageable pageable);
 }

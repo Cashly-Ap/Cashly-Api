@@ -6,6 +6,8 @@ import com.cashly.cashly_api.sales.invoices.debit_notes.application.create.use_c
 import com.cashly.cashly_api.sales.invoices.debit_notes.application.delete.use_case.DeleteDebitNoteUseCase;
 import com.cashly.cashly_api.sales.invoices.debit_notes.application.get.use_case.GetDebitNoteByIdUseCase;
 import com.cashly.cashly_api.sales.invoices.debit_notes.application.list.use_case.GetDebitNotesUseCase;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -85,29 +87,33 @@ class DebitNoteControllerTest {
                 UUID.randomUUID(), "User", LocalDateTime.now(),
                 LocalDateTime.now());
 
-        when(getDebitNotesUseCase.execute(any(), any(), any()))
-                .thenReturn(List.of(response));
+        when(getDebitNotesUseCase.executePage(null, null, null, 0, 100,
+                "createdAt", "desc"))
+                .thenReturn(PageResponses.page(List.of(response), 0, 100));
 
-        ResponseEntity<List<DebitNoteResponse>> result = debitNoteController
-                .list(null, null, null);
+        ResponseEntity<PageResponse<DebitNoteResponse>> result = debitNoteController
+                .list(null, null, null, 0, 100, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(1, result.getBody().size());
-        verify(getDebitNotesUseCase).execute(null, null, null);
+        assertEquals(1, result.getBody().content().size());
+        verify(getDebitNotesUseCase).executePage(null, null, null, 0, 100,
+                "createdAt", "desc");
     }
 
     @Test
     @DisplayName("should return empty list when no debit notes")
     void should_return_empty_list_when_no_debit_notes() {
-        when(getDebitNotesUseCase.execute(any(), any(), any()))
-                .thenReturn(List.of());
+        when(getDebitNotesUseCase.executePage(null, null, null, 0, 100,
+                "createdAt", "desc"))
+                .thenReturn(PageResponses.page(List.of(), 0, 100));
 
-        ResponseEntity<List<DebitNoteResponse>> result = debitNoteController
-                .list(null, null, null);
+        ResponseEntity<PageResponse<DebitNoteResponse>> result = debitNoteController
+                .list(null, null, null, 0, 100, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertTrue(result.getBody().isEmpty());
-        verify(getDebitNotesUseCase).execute(null, null, null);
+        assertTrue(result.getBody().empty());
+        verify(getDebitNotesUseCase).executePage(null, null, null, 0, 100,
+                "createdAt", "desc");
     }
 
     @Test

@@ -6,6 +6,7 @@ import com.cashly.cashly_api.sales.invoices.credit_notes.application.create.use_
 import com.cashly.cashly_api.sales.invoices.credit_notes.application.delete.use_case.DeleteCreditNoteUseCase;
 import com.cashly.cashly_api.sales.invoices.credit_notes.application.get.use_case.GetCreditNoteByIdUseCase;
 import com.cashly.cashly_api.sales.invoices.credit_notes.application.list.use_case.GetCreditNotesUseCase;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -50,13 +51,21 @@ public class CreditNoteController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('SALES_INVOICES_CREDIT_NOTES_VIEW_LIST')")
-    public ResponseEntity<List<CreditNoteResponse>> list(
+    public ResponseEntity<PageResponse<CreditNoteResponse>> list(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
-            @RequestParam(required = false) UUID customerId) {
-        List<CreditNoteResponse> creditNotes = getCreditNotesUseCase
-                .execute(dateFrom, dateTo, customerId);
-        return ResponseEntity.ok(creditNotes);
+            @RequestParam(required = false) UUID customerId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String orderBy,
+            @RequestParam(defaultValue = "desc") String orderDir) {
+        return ResponseEntity.ok(getCreditNotesUseCase.executePage(dateFrom,
+                dateTo, customerId, page, normalizeSize(size), orderBy,
+                orderDir));
+    }
+
+    private static int normalizeSize(int size) {
+        return Math.min(Math.max(size, 1), 100);
     }
 
     @GetMapping("/{id}")

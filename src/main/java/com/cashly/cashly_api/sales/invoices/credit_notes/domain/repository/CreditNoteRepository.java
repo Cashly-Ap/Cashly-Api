@@ -2,6 +2,7 @@ package com.cashly.cashly_api.sales.invoices.credit_notes.domain.repository;
 
 import com.cashly.cashly_api.sales.invoices.credit_notes.domain.entity.CreditNote;
 import com.cashly.cashly_api.sales.invoices.credit_notes.domain.valueobjects.CreditNoteId;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,6 +16,9 @@ public interface CreditNoteRepository {
     Optional<CreditNote> findById(CreditNoteId id);
     List<CreditNote> findAllWithFilters(LocalDate dateFrom, LocalDate dateTo,
             UUID customerId);
+    PageResponse<CreditNote> findPageWithFilters(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, int page, int size,
+            String orderBy, String orderDir);
     List<CreditNote> findByInvoiceId(UUID invoiceId);
     Map<UUID, BigDecimal> sumByInvoiceIds(List<UUID> invoiceIds);
     int getNextSequenceForYear(int year);

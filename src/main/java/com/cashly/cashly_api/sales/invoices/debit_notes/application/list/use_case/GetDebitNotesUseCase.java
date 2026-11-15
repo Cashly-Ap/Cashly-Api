@@ -5,6 +5,7 @@ import com.cashly.cashly_api.sales.invoices.debit_notes.application.ports.out.De
 import com.cashly.cashly_api.sales.invoices.debit_notes.application.mappers.DebitNoteMapper;
 import com.cashly.cashly_api.sales.invoices.debit_notes.domain.entity.DebitNote;
 import com.cashly.cashly_api.sales.invoices.debit_notes.domain.repository.DebitNoteRepository;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -45,5 +46,33 @@ public class GetDebitNotesUseCase {
             return DebitNoteMapper.toDebitNoteResponse(dn, customerName,
                     customerRif, invoiceNumber);
         }).toList();
+    }
+
+    public PageResponse<DebitNoteResponse> executePage(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, int page, int size,
+            String orderBy, String orderDir) {
+        PageResponse<DebitNote> debitNotes = debitNoteRepository
+                .findPageWithFilters(dateFrom, dateTo, customerId, page, size,
+                        orderBy, orderDir);
+        Set<UUID> invoiceIds = debitNotes.content().stream()
+                .map(DebitNote::getInvoiceId).distinct()
+                .collect(Collectors.toSet());
+        var invoiceContexts = invoices.findAll(invoiceIds);
+        List<DebitNoteResponse> content = debitNotes.content().stream()
+                .map(dn -> toResponse(dn, invoiceContexts))
+                .toList();
+        return new PageResponse<>(content, debitNotes.totalElements(),
+                debitNotes.totalPages(), debitNotes.size(),
+                debitNotes.number(), debitNotes.first(), debitNotes.last(),
+                content.isEmpty());
+    }
+
+    private static DebitNoteResponse toResponse(DebitNote debitNote,
+            java.util.Map<UUID, com.cashly.cashly_api.sales.invoices.debit_notes.application.ports.out.DebitNoteInvoiceGateway.InvoiceContext> invoiceContexts) {
+        var invoice = invoiceContexts.get(debitNote.getInvoiceId());
+        return DebitNoteMapper.toDebitNoteResponse(debitNote,
+                invoice != null ? invoice.customerName() : null,
+                invoice != null ? invoice.customerRif() : null,
+                invoice != null ? invoice.number() : null);
     }
 }

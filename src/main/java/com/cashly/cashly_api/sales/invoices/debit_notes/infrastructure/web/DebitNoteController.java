@@ -6,6 +6,7 @@ import com.cashly.cashly_api.sales.invoices.debit_notes.application.create.use_c
 import com.cashly.cashly_api.sales.invoices.debit_notes.application.delete.use_case.DeleteDebitNoteUseCase;
 import com.cashly.cashly_api.sales.invoices.debit_notes.application.get.use_case.GetDebitNoteByIdUseCase;
 import com.cashly.cashly_api.sales.invoices.debit_notes.application.list.use_case.GetDebitNotesUseCase;
+import com.cashly.cashly_api.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -50,13 +51,21 @@ public class DebitNoteController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('SALES_INVOICES_DEBIT_NOTES_VIEW_LIST')")
-    public ResponseEntity<List<DebitNoteResponse>> list(
+    public ResponseEntity<PageResponse<DebitNoteResponse>> list(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
-            @RequestParam(required = false) UUID customerId) {
-        List<DebitNoteResponse> debitNotes = getDebitNotesUseCase
-                .execute(dateFrom, dateTo, customerId);
-        return ResponseEntity.ok(debitNotes);
+            @RequestParam(required = false) UUID customerId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String orderBy,
+            @RequestParam(defaultValue = "desc") String orderDir) {
+        return ResponseEntity.ok(getDebitNotesUseCase.executePage(dateFrom,
+                dateTo, customerId, page, normalizeSize(size), orderBy,
+                orderDir));
+    }
+
+    private static int normalizeSize(int size) {
+        return Math.min(Math.max(size, 1), 100);
     }
 
     @GetMapping("/{id}")

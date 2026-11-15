@@ -1,6 +1,8 @@
 package com.cashly.cashly_api.sales.invoices.credit_notes.infrastructure.persistence.repositories;
 
 import com.cashly.cashly_api.sales.invoices.credit_notes.infrastructure.persistence.entities.CreditNoteEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,6 +27,22 @@ public interface CreditNoteJpaRepository
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo") LocalDateTime dateTo,
             @Param("customerId") UUID customerId);
+
+    @Query(value = """
+            SELECT c FROM CreditNoteEntity c
+            WHERE (:dateFrom IS NULL OR c.createdAt >= :dateFrom)
+            AND (:dateTo IS NULL OR c.createdAt <= :dateTo)
+            AND (:customerId IS NULL OR c.customerId = :customerId)
+            """, countQuery = """
+            SELECT COUNT(c) FROM CreditNoteEntity c
+            WHERE (:dateFrom IS NULL OR c.createdAt >= :dateFrom)
+            AND (:dateTo IS NULL OR c.createdAt <= :dateTo)
+            AND (:customerId IS NULL OR c.customerId = :customerId)
+            """)
+    Page<CreditNoteEntity> findPageWithFilters(
+            @Param("dateFrom") LocalDateTime dateFrom,
+            @Param("dateTo") LocalDateTime dateTo,
+            @Param("customerId") UUID customerId, Pageable pageable);
 
     List<CreditNoteEntity> findByInvoiceId(UUID invoiceId);
 

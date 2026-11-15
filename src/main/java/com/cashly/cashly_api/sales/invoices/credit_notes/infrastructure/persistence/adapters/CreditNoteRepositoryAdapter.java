@@ -9,6 +9,10 @@ import com.cashly.cashly_api.sales.invoices.credit_notes.domain.valueobjects.Cre
 import com.cashly.cashly_api.sales.invoices.credit_notes.infrastructure.persistence.entities.CreditNoteEntity;
 import com.cashly.cashly_api.sales.invoices.credit_notes.infrastructure.persistence.entities.CreditNoteNumberSequenceEntity;
 import com.cashly.cashly_api.sales.invoices.credit_notes.infrastructure.persistence.mappers.CreditNoteJpaMapper;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -55,6 +59,36 @@ public class CreditNoteRepositoryAdapter implements CreditNoteRepository {
                 to, customerId);
 
         return entities.stream().map(CreditNoteJpaMapper::toDomain).toList();
+    }
+
+    @Override
+    public PageResponse<CreditNote> findPageWithFilters(LocalDate dateFrom,
+            LocalDate dateTo, UUID customerId, int page, int size,
+            String orderBy, String orderDir) {
+        LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
+        LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
+        Page<CreditNoteEntity> result = jpaRepository.findPageWithFilters(from,
+                to, customerId, PageRequest.of(page, size,
+                        sort(orderBy, orderDir)));
+        List<CreditNote> content = result.getContent().stream()
+                .map(CreditNoteJpaMapper::toDomain).toList();
+        return new PageResponse<>(content, result.getTotalElements(),
+                result.getTotalPages(), result.getSize(), result.getNumber(),
+                result.isFirst(), result.isLast(), content.isEmpty());
+    }
+
+    private static Sort sort(String orderBy, String orderDir) {
+        String property = switch (orderBy == null ? "" : orderBy) {
+            case "noteNumber" -> "noteNumber";
+            case "creditNoteNumber" -> "noteNumber";
+            case "amount" -> "amount";
+            case "createdAt" -> "createdAt";
+            default -> "createdAt";
+        };
+        Sort.Direction direction = "desc".equalsIgnoreCase(orderDir)
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+        return Sort.by(direction, property).and(Sort.by(direction, "id"));
     }
 
     @Override

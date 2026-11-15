@@ -7,6 +7,8 @@ import com.cashly.cashly_api.sales.invoices.returns.application.create.use_case.
 import com.cashly.cashly_api.sales.invoices.returns.application.delete.use_case.DeleteReturnUseCase;
 import com.cashly.cashly_api.sales.invoices.returns.application.list.use_case.GetAllReturnsUseCase;
 import com.cashly.cashly_api.sales.invoices.returns.application.get.use_case.GetReturnByIdUseCase;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import com.cashly.cashly_api.shared.dto.PageResponses;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -98,16 +100,19 @@ class ReturnControllerTest {
                 "AUTOMATIC", "Producto defectuoso", BigDecimal.TEN, 1,
                 LocalDateTime.now());
 
-        when(getAllReturnsUseCase.execute(null, null, null, null))
-                .thenReturn(List.of(returnItem));
+        when(getAllReturnsUseCase.executePage(null, null, null, null, 0, 100,
+                "createdAt", "desc"))
+                .thenReturn(PageResponses.page(List.of(returnItem), 0, 100));
 
-        ResponseEntity<List<ReturnListResponse>> result = returnController
-                .getAll(null, null, null, null);
+        ResponseEntity<PageResponse<ReturnListResponse>> result = returnController
+                .getAll(null, null, null, null, 0, 100, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(1, result.getBody().size());
-        assertEquals("RET-2026-0001", result.getBody().get(0).returnNumber());
-        verify(getAllReturnsUseCase).execute(null, null, null, null);
+        assertEquals(1, result.getBody().content().size());
+        assertEquals("RET-2026-0001",
+                result.getBody().content().get(0).returnNumber());
+        verify(getAllReturnsUseCase).executePage(null, null, null, null, 0, 100,
+                "createdAt", "desc");
     }
 
     @Test
@@ -118,16 +123,18 @@ class ReturnControllerTest {
         UUID customerId = UUID.randomUUID();
         UUID invoiceId = UUID.randomUUID();
 
-        when(getAllReturnsUseCase.execute(dateFrom, dateTo, customerId,
-                invoiceId)).thenReturn(List.of());
+        when(getAllReturnsUseCase.executePage(dateFrom, dateTo, customerId,
+                invoiceId, 0, 100, "createdAt", "desc"))
+                .thenReturn(PageResponses.page(List.of(), 0, 100));
 
-        ResponseEntity<List<ReturnListResponse>> result = returnController
-                .getAll(dateFrom, dateTo, customerId, invoiceId);
+        ResponseEntity<PageResponse<ReturnListResponse>> result = returnController
+                .getAll(dateFrom, dateTo, customerId, invoiceId, 0, 100,
+                        "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertTrue(result.getBody().isEmpty());
-        verify(getAllReturnsUseCase).execute(dateFrom, dateTo, customerId,
-                invoiceId);
+        assertTrue(result.getBody().empty());
+        verify(getAllReturnsUseCase).executePage(dateFrom, dateTo, customerId,
+                invoiceId, 0, 100, "createdAt", "desc");
     }
 
     @Test
@@ -201,13 +208,14 @@ class ReturnControllerTest {
     @Test
     @DisplayName("should return empty list when no returns exist")
     void shouldReturnEmptyListWhenNoReturns() {
-        when(getAllReturnsUseCase.execute(null, null, null, null))
-                .thenReturn(List.of());
+        when(getAllReturnsUseCase.executePage(null, null, null, null, 0, 100,
+                "createdAt", "desc"))
+                .thenReturn(PageResponses.page(List.of(), 0, 100));
 
-        ResponseEntity<List<ReturnListResponse>> result = returnController
-                .getAll(null, null, null, null);
+        ResponseEntity<PageResponse<ReturnListResponse>> result = returnController
+                .getAll(null, null, null, null, 0, 100, "createdAt", "desc");
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertTrue(result.getBody().isEmpty());
+        assertTrue(result.getBody().empty());
     }
 }
