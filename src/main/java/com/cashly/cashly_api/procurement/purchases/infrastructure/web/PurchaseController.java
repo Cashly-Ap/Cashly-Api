@@ -91,15 +91,6 @@ public class PurchaseController {
                 normalizeSize(size), orderBy, orderDir, action));
     }
 
-    private boolean matchesSearch(String search, String... values) {
-        if (search == null || search.isBlank())
-            return true;
-        String term = search.trim().toLowerCase();
-        return java.util.Arrays.stream(values)
-                .filter(java.util.Objects::nonNull)
-                .anyMatch(value -> value.toLowerCase().contains(term));
-    }
-
     public ResponseEntity<PageResponse<PurchaseListResponse>> getAll(
             LocalDate fromDate, LocalDate toDate, UUID supplierId,
             String status, UUID productId, UUID categoryId, String orderBy,

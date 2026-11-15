@@ -136,7 +136,7 @@ public class PurchaseRepositoryAdapter implements PurchaseRepository {
         Sort.Direction direction = "desc".equalsIgnoreCase(orderDir)
                 ? Sort.Direction.DESC
                 : Sort.Direction.ASC;
-        return Sort.by(direction, property);
+        return Sort.by(direction, property).and(Sort.by(direction, "id"));
     }
 
     @Override
