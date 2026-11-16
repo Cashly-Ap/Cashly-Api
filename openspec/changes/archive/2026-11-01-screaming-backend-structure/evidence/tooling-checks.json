@@ -1,0 +1,11 @@
+{
+  "relocation_unit_tests": 7,
+  "failures": 0,
+  "idempotent_dry_run": {
+    "types_relocated": 0,
+    "java_files_rewritten": 0
+  },
+  "compose_config": "PASS",
+  "shell_syntax": "PASS",
+  "git_diff_check": "PASS"
+}

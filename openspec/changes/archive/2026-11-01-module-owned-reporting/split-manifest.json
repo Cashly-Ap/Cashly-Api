@@ -1,0 +1,29 @@
+[
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/web/FinancesReportController.java",
+    "new": [
+      "src/main/java/com/cashly/cashly_api/payments/reporting/infrastructure/web/PaymentReportsController.java",
+      "src/main/java/com/cashly/cashly_api/receivables/reporting/infrastructure/web/ReceivablesReportsController.java"
+    ],
+    "disposition": "split",
+    "preserved": "Every original method body and bean name; constructors divided by dependency ownership"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/finance/infrastructure/config/FinancesReportConfig.java",
+    "new": [
+      "src/main/java/com/cashly/cashly_api/payments/reporting/infrastructure/config/PaymentReportingConfig.java",
+      "src/main/java/com/cashly/cashly_api/receivables/reporting/infrastructure/config/ReceivablesReportingConfig.java"
+    ],
+    "disposition": "split",
+    "preserved": "Every original method body and bean name; constructors divided by dependency ownership"
+  },
+  {
+    "old": "src/main/java/com/cashly/cashly_api/reports/inventory/infrastructure/config/InventoryReportConfig.java",
+    "new": [
+      "src/main/java/com/cashly/cashly_api/warehouses/reporting/infrastructure/config/WarehouseCatalogReportingConfig.java",
+      "src/main/java/com/cashly/cashly_api/products/reporting/infrastructure/config/CommercialCatalogReportingConfig.java"
+    ],
+    "disposition": "split",
+    "preserved": "Every original method body and bean name; constructors divided by dependency ownership"
+  }
+]

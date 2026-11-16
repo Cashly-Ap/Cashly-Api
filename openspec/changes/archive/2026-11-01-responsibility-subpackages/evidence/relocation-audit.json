@@ -1,0 +1,12 @@
+{
+  "before_main": 1249,
+  "before_test": 584,
+  "production_moves": 411,
+  "test_moves": 251,
+  "all_original_java_files_retained": true,
+  "missing": [],
+  "new_java_files": [
+    "src/test/java/com/cashly/cashly_api/shared/application/architecture/ResponsibilityStructureTest.java"
+  ],
+  "manifest_sha256": "ffdffe46841da251f3be899e5fe9500643f8e13599c587be52f7eefec3e67718"
+}

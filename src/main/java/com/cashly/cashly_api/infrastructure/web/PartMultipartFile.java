@@ -77,12 +77,14 @@ public class PartMultipartFile implements MultipartFile {
     }
 
     @Override
-    public void transferTo(File dest) throws IOException, IllegalStateException {
+    public void transferTo(File dest)
+            throws IOException, IllegalStateException {
         part.write(dest.getAbsolutePath());
     }
 
     @Override
-    public void transferTo(Path dest) throws IOException, IllegalStateException {
+    public void transferTo(Path dest)
+            throws IOException, IllegalStateException {
         try (InputStream is = part.getInputStream()) {
             Files.copy(is, dest, StandardCopyOption.REPLACE_EXISTING);
         }

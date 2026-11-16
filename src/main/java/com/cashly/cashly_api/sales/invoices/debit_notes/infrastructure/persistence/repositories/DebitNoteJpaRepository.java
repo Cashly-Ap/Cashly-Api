@@ -1,0 +1,64 @@
+package com.cashly.cashly_api.sales.invoices.debit_notes.infrastructure.persistence.repositories;
+
+import com.cashly.cashly_api.sales.invoices.debit_notes.infrastructure.persistence.entities.DebitNoteEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+public interface DebitNoteJpaRepository
+        extends
+            JpaRepository<DebitNoteEntity, UUID> {
+
+    @Query("""
+            SELECT d FROM DebitNoteEntity d
+            WHERE (:dateFrom IS NULL OR d.createdAt >= :dateFrom)
+            AND (:dateTo IS NULL OR d.createdAt <= :dateTo)
+            AND (:customerId IS NULL OR d.customerId = :customerId)
+            ORDER BY d.createdAt DESC
+            """)
+    List<DebitNoteEntity> findAllWithFilters(
+            @Param("dateFrom") LocalDateTime dateFrom,
+            @Param("dateTo") LocalDateTime dateTo,
+            @Param("customerId") UUID customerId);
+
+    @Query(value = """
+            SELECT d FROM DebitNoteEntity d
+            WHERE (:dateFrom IS NULL OR d.createdAt >= :dateFrom)
+            AND (:dateTo IS NULL OR d.createdAt <= :dateTo)
+            AND (:customerId IS NULL OR d.customerId = :customerId)
+            AND (:search IS NULL OR :search = '' OR LOWER(d.noteNumber) LIKE :search
+                OR LOWER(d.reason) LIKE :search
+                OR EXISTS (SELECT 1 FROM InvoiceEntity i WHERE i.id = d.invoiceId
+                    AND (LOWER(i.invoiceNumber) LIKE :search
+                        OR LOWER(i.customerName) LIKE :search
+                        OR LOWER(i.customerRif) LIKE :search)))
+            """, countQuery = """
+            SELECT COUNT(d) FROM DebitNoteEntity d
+            WHERE (:dateFrom IS NULL OR d.createdAt >= :dateFrom)
+            AND (:dateTo IS NULL OR d.createdAt <= :dateTo)
+            AND (:customerId IS NULL OR d.customerId = :customerId)
+            AND (:search IS NULL OR :search = '' OR LOWER(d.noteNumber) LIKE :search
+                OR LOWER(d.reason) LIKE :search
+                OR EXISTS (SELECT 1 FROM InvoiceEntity i WHERE i.id = d.invoiceId
+                    AND (LOWER(i.invoiceNumber) LIKE :search
+                        OR LOWER(i.customerName) LIKE :search
+                        OR LOWER(i.customerRif) LIKE :search)))
+            """)
+    Page<DebitNoteEntity> findPageWithFilters(
+            @Param("dateFrom") LocalDateTime dateFrom,
+            @Param("dateTo") LocalDateTime dateTo,
+            @Param("customerId") UUID customerId,
+            @Param("search") String search, Pageable pageable);
+
+    List<DebitNoteEntity> findByInvoiceId(UUID invoiceId);
+
+    @Query("SELECT d.invoiceId, SUM(d.amount) FROM DebitNoteEntity d WHERE d.invoiceId IN :invoiceIds GROUP BY d.invoiceId")
+    List<Object[]> sumByInvoiceIds(@Param("invoiceIds") List<UUID> invoiceIds);
+}

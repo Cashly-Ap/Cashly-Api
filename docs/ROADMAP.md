@@ -113,7 +113,7 @@
 ### Multi-Currency Support
 - `CurrencyCode` enum: `USD`, `EUR`, `VES`
 - `currency` field added to invoices (optional, defaults to `USD`)
-- Included in `V9__create_invoices_tables.sql`
+- Included in `V13__create_invoices.sql`
 
 ### Audit Log Module
 - Append-only `audit_logs` table (Flyway migration `V14`)

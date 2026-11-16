@@ -1,0 +1,427 @@
+{
+  "scope": "Isolated source copy architecture/boundary tests, no development database",
+  "suites": [
+    {
+      "suite": "com.cashly.cashly_api.analytics.dashboard.application.summary.architecture.DashboardArchitectureTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "edfd0a13353dd36ef5ef97c921193ad91e7cb62674e0f8a01741160cc9b9932e"
+    },
+    {
+      "suite": "com.cashly.cashly_api.architecture.ApplicationPackageConventionTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "b54401b80534ce11a16df9f5bdbce370f3a60dc4561770051409cf233f466f0c"
+    },
+    {
+      "suite": "com.cashly.cashly_api.architecture.CapabilityStructureTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "77594810f0f3dac90d6d508663a7ab035fe28746938a47e319a9e3b890c0465b"
+    },
+    {
+      "suite": "com.cashly.cashly_api.architecture.LayerDependencyTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "4aa016c8998fe9c808eae0d3f75a794bf83c4ef4b1cac08873bfd932c99bc6f2"
+    },
+    {
+      "suite": "com.cashly.cashly_api.architecture.ReportingOwnershipTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "4617903fb4e76b0879f48132587ec9103b67d460e0b811c1a0bdb5411451f10e"
+    },
+    {
+      "suite": "com.cashly.cashly_api.catalog.categories.domain.entity.CatalogUsageBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "b0b23ba483551fed19530013ff68cf25b9f04aa94c059aaba06e0447b47a6e00"
+    },
+    {
+      "suite": "com.cashly.cashly_api.catalog.products.application.architecture.ProductCatalogBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "083fae2c39c87d01ed5f5f38d0332fe0d45d35b52a715c64f8a1f9967524819b"
+    },
+    {
+      "suite": "com.cashly.cashly_api.catalog.products.application.architecture.ProductStockBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "784dc034e2547caad00a7ec4269846b01abdbd1e7eb80b7eaeaab26dddc26d04"
+    },
+    {
+      "suite": "com.cashly.cashly_api.catalog.products.infrastructure.persistence.repositories.ProductPricePersistenceBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "e1a4ed9eb6d943b42226f0def51530072e3b50b4470a8c06571122a91dbbd1e0"
+    },
+    {
+      "suite": "com.cashly.cashly_api.catalog.products.infrastructure.persistence.repositories.ProductReferenceQueryBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "13469ac43d88e4c9e56110102b32d9b3b491a3f0528ed623096f4f6b6572314c"
+    },
+    {
+      "suite": "com.cashly.cashly_api.catalog.products.infrastructure.persistence.repositories.ProductStockQueryBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "1b473388068c411dc23332b28afe6ac126f55d6b6975ff2760459e9abd7e194d"
+    },
+    {
+      "suite": "com.cashly.cashly_api.catalog.products.reporting.application.architecture.CommercialCatalogBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "ffbbc1a72e634d47020410968d63183ffd9842a0608881545f2a37cb0095e475"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.billing.credit_notes.application.architecture.CreditNoteModuleBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "ff9948684ed76d659a7338cb85deb04dd5e4866f2f4fe8e0bfdac186d5ef068b"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.billing.debit_notes.application.architecture.DebitNoteModuleBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "e4cb4290470a666249a2e385d33eecd82124514bd9008d0df25c1e1b08a4a429"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.billing.invoices.application.architecture.CreditConsumerBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "268b55ebe75bb9d33e28b4e31fbb419e0ea9beab0c5ad760322924f6e9b0272c"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.billing.invoices.application.architecture.InvoiceAuthorizationBoundaryTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "d6b56c17ad85455d6f88e5593eb2d40023357b0774f87b9be98ffd3bb97b6e15"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.billing.invoices.application.architecture.InvoiceCreationBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "d9f1743e04f1c5cfde48ccee91faf42a4767c72357c8a113d0999e80b429f804"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.billing.invoices.application.architecture.InvoiceEditingBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "570c09c6736e3ac3fc6cffb0f09f7f7666efeace7811a7fe7a7fa19489ea6875"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.billing.invoices.application.architecture.InvoiceInventoryBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "2fc0c058aa2729f5cd04ae12e37378ed7ab624951d0972846cb12ddf325a87e1"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.billing.invoices.application.architecture.StockReadBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "912cfd4a52ab95cbdad0ab3df4008d2ee80c56640f9eb5b5ed3d1e044bb04781"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.billing.invoices.application.architecture.operations.services.InvoiceEditingBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "662cdb99f8d4440b2969a9f084d47f9a024e299497325321b4708af1271e2da8"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.billing.invoices.application.issue.architecture.InvoiceIssuanceArchitectureTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "0366df8a4dbef227b03c719e210578e5db5337df404d40807eae30d6910beafe"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.billing.invoices.domain.entity.InvoiceReturnBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "a8296e8e8ac4b7da1a6101d07e71cd8dac34673cabe0a1d14ed0d24cbfb1a7f5"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.billing.invoices.reporting.application.architecture.InvoiceReportsBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "214465e24633782aae3512f57e5ae132b3b5be89a90cc6c9d3673949611724bf"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.billing.returns.application.architecture.ReturnFinancialBoundaryTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "0d7c111103f884fdf623f1510195ad2c0396441841f0398c28ad1ef38bbf632c"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.billing.returns.application.architecture.ReturnInventoryBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "652af58a651805835bf62756a31626e73d45c88cf0d9a21952298094883094aa"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.billing.returns.domain.architecture.ReturnInvoiceReferenceBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "07a53cb7df4dcd9b0be6773404c097dd1299846dcc10297314e91daafdafaf9d"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.treasury.cash_register.application.architecture.CashRegisterBoundaryTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "230cd488840fa4c54158926012c5575e727d26048bae4089fb413909fa708d7a"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.treasury.payment_methods.application.architecture.PaymentMethodBoundaryTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "41f9f59bad0d92fe73ae5379811de1a74285cf5663cd56b4cb002c7ae4f3fb29"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.treasury.payments.application.architecture.CustomerCreditQueryBoundaryTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "210c64cd4dca7011abcbd205ced050804cafba9a1dbd63861fbbc19cd7427f07"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.treasury.payments.application.architecture.PaymentModuleBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "edeba7f249f8a56a26ff455f46a63246f9bbc6fc91fa308133b12cf11772b113"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.treasury.payments.reporting.application.architecture.PaymentReportsBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "ea0a46e3bb2cb6c5ee8b050fde81aa48b3f65e4e6cb7b87e6633ecaffb7c9f72"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.treasury.receivables.application.architecture.ReceivablesBoundaryTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "5478184be3521b1de04d408185f19393636ab0b3dfefee9e9f8f0072bef78e8e"
+    },
+    {
+      "suite": "com.cashly.cashly_api.finance.treasury.receivables.reporting.application.architecture.AccountsReceivableReportsBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "5aec77b057838c301b4ad5fb0001011bf6ea99d10d254bbc935d38f56e9eeb1a"
+    },
+    {
+      "suite": "com.cashly.cashly_api.inventory.warehouses.stock.application.architecture.ManualStockCatalogBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "34b8cf0b546a9db713b45fc027fc7fd4c5edaa96e37f3fa9600ec3b5ad4aaf9e"
+    },
+    {
+      "suite": "com.cashly.cashly_api.partners.customers.balance.domain.entity.CustomerBalanceBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "d49f01373220b50aced8e8d1969d1b39f9693c018faac56f6c15660aefb8e57c"
+    },
+    {
+      "suite": "com.cashly.cashly_api.partners.customers.warehouse_access.application.architecture.CustomerWarehouseBoundaryTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "d8b55dce784d0f94e2c2f5936b9835f5d306db8b0b98a7c7f75ca4ce2582a2d7"
+    },
+    {
+      "suite": "com.cashly.cashly_api.platform.auth.application.architecture.RefreshTokenBoundaryTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "56f442d7a9758875649ff1e55e529a4320940b86d67771bb6e917339934b956f"
+    },
+    {
+      "suite": "com.cashly.cashly_api.procurement.purchases.application.architecture.PurchaseIdentityCatalogBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "1b8d86ea6507a916d40e917dd3d045ef1a991962ba7e1aa58d408b3c64fc3759"
+    },
+    {
+      "suite": "com.cashly.cashly_api.procurement.purchases.application.architecture.PurchaseWarehouseReadBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "ed1eb866f79660ab17e77a315e3e4d8bd97c534f08d8a63f5c6ed274137b0952"
+    },
+    {
+      "suite": "com.cashly.cashly_api.procurement.purchases.reporting.application.architecture.PurchaseReportsBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "5def0373eec98b230dd2af86950c2a9a5c1f75c3265782ffbd2f8e9b4b106253"
+    },
+    {
+      "suite": "com.cashly.cashly_api.sales.orders.application.architecture.GetOrdersCategoryQueryBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "4c46fb274b5c1f69ef29efb2d7aaf106a0ed9dbecaaa82c18ffce1eeb2a41df9"
+    },
+    {
+      "suite": "com.cashly.cashly_api.sales.orders.application.architecture.OrderInvoiceConversionBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "9f7a612d4ea58ac31a815b5e2b58758d58fdaa7cdf693f019a0edc8a11b98d2f"
+    },
+    {
+      "suite": "com.cashly.cashly_api.sales.orders.reporting.application.architecture.OrderReportsBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "a7f31bebcd65cb255173261ea944d6ad5069ae364c70f44577abd93d3479d98f"
+    },
+    {
+      "suite": "com.cashly.cashly_api.sales.quotes.application.architecture.QuoteCancellationBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "f5cffcfc5d7afc7670cd9b81baf6e2162263ec215c69d866b3283fb657f7b690"
+    },
+    {
+      "suite": "com.cashly.cashly_api.sales.quotes.application.architecture.QuoteInvoiceConversionBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "14f83c1d8d763e5bec083497b35d4c5322241f226c729b6c108eddbe4ec6e577"
+    },
+    {
+      "suite": "com.cashly.cashly_api.sales.quotes.application.architecture.QuoteModuleBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "f144671d82d2f14f35dba97cca3afd67f5ffccb679aed93d455ad7c375f8e5e8"
+    },
+    {
+      "suite": "com.cashly.cashly_api.sales.quotes.application.architecture.QuoteOrderConversionBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "d0135275cc0ce49c694cb6fcd55feb15db674e3f50fddb28be130b8cca223218"
+    },
+    {
+      "suite": "com.cashly.cashly_api.sales.quotes.reporting.application.architecture.QuoteReportsBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "d5c5170df699ea018f9c2d71a59196681a00cefe47591d19b462810a5cd701c9"
+    },
+    {
+      "suite": "com.cashly.cashly_api.shared.application.architecture.ErpAreaStructureTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "78072e7ff59f391a85d87007322d27b8081a57bece976b2ca6b5b1c5b8f4b5c5"
+    },
+    {
+      "suite": "com.cashly.cashly_api.shared.application.architecture.ResponsibilityStructureTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "b43ee917d665aeeb02592031240f381eeac84848d49d0f22136b59bbfc99e594"
+    },
+    {
+      "suite": "com.cashly.cashly_api.shared.dto.PageResponseBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xml_sha256": "bbeb59efd95a8b93b3027a732bb70b8e7c5c834f761371136e2c61e58233f073"
+    }
+  ],
+  "totals": {
+    "tests": 97,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}

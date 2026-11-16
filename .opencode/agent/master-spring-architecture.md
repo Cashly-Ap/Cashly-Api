@@ -1175,9 +1175,11 @@ public class ProductEntity {
 
 ### CRITICAL RULES:
 
-1. **NEVER create new migrations for table changes**
-2. **ALWAYS update the original migration file**
-3. **Only create new migrations for NEW tables**
+1. **NEVER create incremental migrations for structural changes in this test project**
+2. **ALWAYS update the original CREATE TABLE migration for tables, columns, indexes, and constraints**
+3. **Use the existing CommandLineRunner seed infrastructure for initial and reference data**
+4. **Only create a new migration when explicitly required for a production-safe data transformation or when the user requests one**
+5. **When the database is disposable, reset its Docker volume after structural changes instead of adding a corrective migration**
 
 ### Migration Example (Optimized)
 ```sql

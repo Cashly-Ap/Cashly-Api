@@ -1,0 +1,20 @@
+package com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.ports.in;
+import java.math.BigDecimal;
+import java.util.UUID;
+public interface CashRegisterOperations {
+    void requireOpenRegister();
+    boolean hasOpenRegister();
+    void record(Entry entry);
+    void cancelBySource(String sourceType, UUID sourceId, String reason,
+            UUID actorId, String actorName);
+    enum Direction {
+        IN, OUT
+    }
+    enum EntryType {
+        PAYMENT, INVOICE
+    }
+    record Entry(Direction direction, EntryType type, BigDecimal amount,
+            UUID paymentMethodId, String description, String sourceType,
+            UUID sourceId, UUID actorId, String actorName) {
+    }
+}

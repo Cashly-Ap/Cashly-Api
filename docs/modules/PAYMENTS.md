@@ -1,6 +1,8 @@
 # Payments
 
-Payments record customer money, support invoice allocation, and expose approval workflows for portal payments.
+> Estructura actual del código: `payments/collection` y `payments/credit`. Dentro de cada responsabilidad se ubican sus capas existentes; los controllers están en `infrastructure/web`, la persistencia en `infrastructure/persistence` y los casos de uso en `application/<operación>`. Consulta [ARCHITECTURE.md](../ARCHITECTURE.md) y [el árbol completo](../../openspec/changes/screaming-backend-structure/trees/after.md) para las rutas vigentes. Los ejemplos de planificación o paquetes Lexand de esta guía requieren contrastarse con el código actual.
+
+Payments record customer money, support invoice allocation, and expose approval workflows for pending payments.
 
 ## API
 
@@ -22,7 +24,7 @@ Base path: `/api/payments`.
 
 - Amounts must be positive and cannot exceed the applicable balance.
 - Allocation is explicit and prevents overpayment.
-- Portal-originated payments remain pending until validation.
+- Pending payments require approval before allocation.
 - Approval/rejection and invoice allocation are transactional.
 
 ## Code map

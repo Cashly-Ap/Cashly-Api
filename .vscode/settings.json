@@ -1,0 +1,23 @@
+{
+  "[java]": {
+    "editor.defaultFormatter": "Oracle.oracle-java",
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false
+  },
+  "jdk.format.options": {
+    "expand-tabs": true,
+    "tab-size": 4,
+    "spaces-per-tab": 4,
+    "indent-shift-width": 4,
+    "continuationIndentSize": 8,
+    "text-limit-width": 80,
+    "allowConvertToStarImport": false,
+    "allowConvertToStaticStarImport": false,
+    "enableCommentFormatting": false,
+    "classDeclBracePlacement": "SAME_LINE",
+    "methodDeclBracePlacement": "SAME_LINE",
+    "otherBracePlacement": "SAME_LINE"
+  }
+}

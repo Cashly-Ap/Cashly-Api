@@ -1,0 +1,97 @@
+{
+  "scope": "Focused issuance and caller regression tests",
+  "suites": [
+    {
+      "name": "com.cashly.cashly_api.invoices.application.issue.InvoiceIssuanceFinancialFlowTest",
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.cashly.cashly_api.invoices.application.issue.InvoiceIssuanceFinancialFlowTest$CashAuthorizationWithBalance",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.cashly.cashly_api.invoices.application.issue.InvoiceIssuanceFinancialFlowTest$CreditAuthorization",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.cashly.cashly_api.orders.application.convert_to_invoice.ConvertToInvoiceUseCaseUnitTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.cashly.cashly_api.quotes.application.convert_to_invoice.ConvertQuoteToInvoiceUseCaseTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.cashly.cashly_api.invoices.infrastructure.integration.InvoiceAuthorizationWiringTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.cashly.cashly_api.invoices.application.architecture.InvoiceAuthorizationBoundaryTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.cashly.cashly_api.invoices.application.confirm.ConfirmInvoiceUseCaseTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.cashly.cashly_api.invoices.application.create.CreateInvoiceUseCaseTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.cashly.cashly_api.invoices.application.issue.InvoiceIssuanceTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.cashly.cashly_api.invoices.application.issue.InvoiceIssuanceArchitectureTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.cashly.cashly_api.invoices.application.architecture.CreditConsumerBoundaryTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "totals": {
+    "tests": 57,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "python_tooling_tests": 20,
+  "python_tooling_result": "passed"
+}

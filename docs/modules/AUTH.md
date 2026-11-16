@@ -1,5 +1,9 @@
 # AUTH Module
 
+Current user/profile/role/department and permission contracts are documented in [ACCESS_CONTROL.md](ACCESS_CONTROL.md). That source-reviewed reference supersedes fixed-role and public-registration examples below. Historical sections below have not been revalidated for this change.
+
+> Estructura actual del código: `auth/authentication`, `auth/token` y `auth/user`. Dentro de cada responsabilidad se ubican sus capas existentes; los controllers están en `infrastructure/web`, la persistencia en `infrastructure/persistence` y los casos de uso en `application/<operación>`. Consulta [ARCHITECTURE.md](../ARCHITECTURE.md) y [el árbol completo](../../openspec/changes/screaming-backend-structure/trees/after.md) para las rutas vigentes. Los ejemplos de planificación o paquetes Lexand de esta guía requieren contrastarse con el código actual.
+
 ## Overview
 The AUTH module handles user authentication and authorization using JWT (JSON Web Tokens). It manages user registration, login, token refresh, and logout operations.
 
@@ -224,6 +228,49 @@ The AUTH module handles user authentication and authorization using JWT (JSON We
 
 ---
 
+### 5. Confirm Email Verification
+**Endpoint**: `POST /api/auth/email-verification/confirm`
+
+**Authentication**: Not required
+
+**Description**: Confirms an email address using a single-use token sent by email. The token is stored only as a SHA-256 hash, expires after 24 hours and is consumed on first use.
+
+**Request Body**:
+```json
+{
+  "token": "8ppH5mKcnd3QM9YPhjthSEZU-1GfmYNwc4-GpyD2XbA"
+}
+```
+
+**Response** (200 OK):
+```json
+{
+  "emailVerified": true
+}
+```
+
+**Errors**:
+- `400 Bad Request` `EMAIL_VERIFICATION_INVALID`: Unknown or missing token
+- `409 Conflict` `EMAIL_VERIFICATION_USED`: Token already consumed
+- `410 Gone` `EMAIL_VERIFICATION_EXPIRED`: Token expired
+
+---
+
+### 6. Resend Email Verification
+**Endpoint**: `POST /api/auth/email-verification/resend`
+
+**Authentication**: Required (JWT)
+
+**Description**: Issues a new verification token for the authenticated user, invalidating any previous unused token. Requests are rate limited to one every 60 seconds. Verified accounts receive `202` without sending mail.
+
+**Response** (202 Accepted): Empty body
+
+**Errors**:
+- `401 Unauthorized`: Missing or invalid access token
+- `429 Too Many Requests` `EMAIL_VERIFICATION_RATE_LIMITED`: Cooldown still active
+
+---
+
 ## DTOs (Data Transfer Objects)
 
 ### Request DTOs
@@ -426,3 +473,17 @@ CREATE TABLE refresh_tokens (
 - Unit tests for domain entities and their business methods
 - Unit tests for use cases with mocked repositories
 - Integration tests for controllers with test database
+
+### Own account profile
+
+`GET /api/auth/profile` returns `UserResponse` for the authenticated user, including personal names, a single phone, address, assigned role and department names, account state, email verification and creation/update timestamps. Identity comes exclusively from `Authentication.getName()`; no path or query parameter can select another account. Authentication is required, but `USERS:READ` is not required for this self-service operation. Passwords, hashes and tokens are never part of this response.
+
+`PUT /api/auth/profile` updates only `userName`, `firstName`, `lastName`, a single `phone` and `address` for that same authenticated subject. Unknown top-level fields are rejected with 400, including identifiers, email, password, role, department, permissions and account state. The transaction takes the shared administration lock before loading the user under READ_COMMITTED isolation, preserving concurrent administrative assignments. The personal domain update does not change access, verification or credentials.
+
+### Permission enforcement
+
+Every protected controller action uses action-specific `@PreAuthorize` checks. The JWT filter resolves the account's current persisted role on every request, so removing a grant affects the next request even with an existing token. Read-only grants do not authorize writes, execution or exports. Report exports require both their owning module's EXPORT grant and DOCUMENT_ADMIN:EXPORT.
+
+Role and department option endpoints require USERS:READ plus USERS:CREATE or USERS:UPDATE, matching their assignment-only use case; role options contain only roles the administrator may delegate. Updating a role verifies both its existing permissions and requested permissions against the acting administrator's scope before saving, so replacing a superior role with fewer permissions cannot bypass that boundary.
+
+`EndpointPermissionEnforcementTest` executes the real Spring preauthorization evaluator for every protected controller operation, covering authenticated accounts without grants, read-only accounts, authorized accounts and individual missing actions. Endpoint coverage also denies newly introduced unmapped API operations.

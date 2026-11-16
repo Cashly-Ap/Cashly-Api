@@ -204,16 +204,16 @@ storage.s3.secret-key=minioadmin
 storage.s3.bucket=lexand-files
 ```
 
-### 5. For Production (AWS S3)
+### 5. For Production (S3-compatible storage)
 
-Change the endpoint and credentials:
+Change the endpoint and credentials to match your S3-compatible provider:
 
 ```properties
 storage.type=s3
-storage.s3.endpoint=https://s3.us-east-1.amazonaws.com
-storage.s3.access-key=${AWS_ACCESS_KEY}
-storage.s3.secret-key=${AWS_SECRET_KEY}
-storage.s3.bucket=lexand-production-files
+storage.s3.endpoint=${STORAGE_S3_ENDPOINT}
+storage.s3.access-key=${STORAGE_S3_ACCESS_KEY}
+storage.s3.secret-key=${STORAGE_S3_SECRET_KEY}
+storage.s3.bucket=${STORAGE_S3_BUCKET}
 ```
 
 ## Environment Variables for Docker

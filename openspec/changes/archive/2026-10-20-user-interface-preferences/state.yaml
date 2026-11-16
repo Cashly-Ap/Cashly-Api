@@ -1,0 +1,28 @@
+schema: spec-driven
+change: user-interface-preferences
+status: archived
+current_phase: archived
+artifact_store: openspec
+explore: complete
+proposal: complete
+spec: complete
+design: complete
+tasks: complete
+apply: complete
+verify: complete
+archive: complete
+persistence: account-synchronized
+delivery: local-reviewable-work-units
+publication: not-requested
+work_units:
+  - foundation
+  - appearance-and-settings
+  - shortcuts-and-integration
+verification_verdict: pass-with-warnings
+backend_tests: 585
+frontend_targeted_tests: 102
+frontend_regression_tests: 47
+dialog_tests: 23
+browser_tests: 27
+frontend_scoped_line_coverage: 97.63
+frontend_scoped_branch_coverage: 91.3

@@ -1,0 +1,330 @@
+[
+  {
+    "old": "src/main/resources/application-dev.properties",
+    "new": "src/main/resources/application-dev.properties",
+    "owner": "application-dev.properties",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "a28f10a8ace30d8284b49ec0814b5942a57e75aac87acfe0de0da5a992aa3c6b"
+  },
+  {
+    "old": "src/main/resources/application-production.properties",
+    "new": "src/main/resources/application-production.properties",
+    "owner": "application-production.properties",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "9e67029b7a9fbb9156b6485fd45af0253821d7b59aeb61fcd2514ae674fa278a"
+  },
+  {
+    "old": "src/main/resources/application.properties",
+    "new": "src/main/resources/application.properties",
+    "owner": "application.properties",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "c8c9686ec67ac19dec17b71bcb3e98ce62229eed17a6c6d72b310d1d999a81e4"
+  },
+  {
+    "old": "src/main/resources/data.sql",
+    "new": "src/main/resources/data.sql",
+    "owner": "data.sql",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "70ca1907129a0234d740838d25bbed3c2dab2367a6aeb3001624b88b5264c1a2"
+  },
+  {
+    "old": "src/main/resources/db/migration/V10__create_order_line_allocations.sql",
+    "new": "src/main/resources/db/migration/V10__create_order_line_allocations.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "399dae34d68f6f617d785ebefbe8b9a74d3902da69e539ab29b07e322ff8fae8"
+  },
+  {
+    "old": "src/main/resources/db/migration/V11__create_invoices_tables.sql",
+    "new": "src/main/resources/db/migration/V11__create_invoices_tables.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "0041ebd9fd4f49a4268fa3e0a35edb42f7c3c5eee6f7696238becbad906614d8"
+  },
+  {
+    "old": "src/main/resources/db/migration/V12__create_invoice_line_allocations.sql",
+    "new": "src/main/resources/db/migration/V12__create_invoice_line_allocations.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "b6031046b722b4a8e1214cac14e4aeb544e5081613fe5db93716ed3414fbbbd7"
+  },
+  {
+    "old": "src/main/resources/db/migration/V13__create_quotes_tables.sql",
+    "new": "src/main/resources/db/migration/V13__create_quotes_tables.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "846f1dcc0cb648354bb880bcfdd2ac9800fdeafb765b2b3651ab7920805ad653"
+  },
+  {
+    "old": "src/main/resources/db/migration/V14__create_payments_tables.sql",
+    "new": "src/main/resources/db/migration/V14__create_payments_tables.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "45e1977e460fe9d618cdf210a7f0f65e7140b85489d90db808cf6bc3131792c1"
+  },
+  {
+    "old": "src/main/resources/db/migration/V15__create_returns_tables.sql",
+    "new": "src/main/resources/db/migration/V15__create_returns_tables.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "ad22ceb7db02016cb732b114f9e01fe39e02f6655ec859e4ee3d4693693c23ab"
+  },
+  {
+    "old": "src/main/resources/db/migration/V16__create_credit_notes_table.sql",
+    "new": "src/main/resources/db/migration/V16__create_credit_notes_table.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "1df690c68539fb333a09e7caa345bef7a61aee46b8ad98bd56bd19c746918602"
+  },
+  {
+    "old": "src/main/resources/db/migration/V17__create_debit_notes_table.sql",
+    "new": "src/main/resources/db/migration/V17__create_debit_notes_table.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "844780ea484defad87d74f5d95fdf5c8efe7be3f1b2025f9a027ed8bbed91611"
+  },
+  {
+    "old": "src/main/resources/db/migration/V18__create_cash_closures_tables.sql",
+    "new": "src/main/resources/db/migration/V18__create_cash_closures_tables.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "fdac17de455e81e24c4c40155a2e44f09baaa0f89550a2982afd97d879ae23a6"
+  },
+  {
+    "old": "src/main/resources/db/migration/V19__create_suppliers_tables.sql",
+    "new": "src/main/resources/db/migration/V19__create_suppliers_tables.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "623020aed701d1b918da301f185cc36dad22cf1141cb9383e5b5c965be250c86"
+  },
+  {
+    "old": "src/main/resources/db/migration/V1__create_users_table.sql",
+    "new": "src/main/resources/db/migration/V1__create_users_table.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "448fe2c9b5e1929677622c381a59d0bfd8e0cee489856d4944c1c4ccbb0ca79c"
+  },
+  {
+    "old": "src/main/resources/db/migration/V20__create_purchases_tables.sql",
+    "new": "src/main/resources/db/migration/V20__create_purchases_tables.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "a431d442ddfb1f9fa61300d8ebed9a41d662c835a2d149d495ed6dde51df2cba"
+  },
+  {
+    "old": "src/main/resources/db/migration/V21__create_return_cancelled_allocations.sql",
+    "new": "src/main/resources/db/migration/V21__create_return_cancelled_allocations.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "7b10742d189e63eb11ca265efe704f4c5a56cd22d02607ac952481df98fb2a25"
+  },
+  {
+    "old": "src/main/resources/db/migration/V22__create_notifications_table.sql",
+    "new": "src/main/resources/db/migration/V22__create_notifications_table.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "c5ac34707d22885c4d0de4a616d1a2bf867736ad3d65c8e0f647657e8dbd6799"
+  },
+  {
+    "old": "src/main/resources/db/migration/V23__create_cash_register_movements.sql",
+    "new": "src/main/resources/db/migration/V23__create_cash_register_movements.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "bad3a82359276bfa9ea2b89d4a1618fb29a70447d762273555b62bd8a991795d"
+  },
+  {
+    "old": "src/main/resources/db/migration/V24__create_invoice_source_links.sql",
+    "new": "src/main/resources/db/migration/V24__create_invoice_source_links.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "5097a76682ab209f330a880e3e67a4897d1a2d5703829d52fe050d3257eef33b"
+  },
+  {
+    "old": "src/main/resources/db/migration/V25__create_sales_line_category_snapshots.sql",
+    "new": "src/main/resources/db/migration/V25__create_sales_line_category_snapshots.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "448cbc65a87550e1d08d55dfe8c70ea58d5984a438614c3b63d0ddf7aff5639c"
+  },
+  {
+    "old": "src/main/resources/db/migration/V2__create_refresh_tokens_table.sql",
+    "new": "src/main/resources/db/migration/V2__create_refresh_tokens_table.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "7ce666bec6e9b083407b606ea82df67a08cffcacaac8f47a38cee23316a69adf"
+  },
+  {
+    "old": "src/main/resources/db/migration/V3__create_price_types.sql",
+    "new": "src/main/resources/db/migration/V3__create_price_types.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "1a48c30821a5f2fc0619f82bcdc7f9f6a9f9dfdb62a0b888f915307ac8595266"
+  },
+  {
+    "old": "src/main/resources/db/migration/V4__create_customers_table.sql",
+    "new": "src/main/resources/db/migration/V4__create_customers_table.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "a6ac478834bdd50eb9264b18fe80bc2c082342569a9a189e742313021075a14a"
+  },
+  {
+    "old": "src/main/resources/db/migration/V5__create_categories.sql",
+    "new": "src/main/resources/db/migration/V5__create_categories.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "cf205162d05860bc523dc6faef4abb7a155cecea0b5ed0efadb065f8b176810d"
+  },
+  {
+    "old": "src/main/resources/db/migration/V6__create_products.sql",
+    "new": "src/main/resources/db/migration/V6__create_products.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "2e46ed9ddb4b7955da539bb4902727f34803f31f642029728f0210360e392cb7"
+  },
+  {
+    "old": "src/main/resources/db/migration/V7__create_warehouses.sql",
+    "new": "src/main/resources/db/migration/V7__create_warehouses.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "82a4d4d7bb27480849af9e70da5c426564ce906de19cc469c27751288db80bb3"
+  },
+  {
+    "old": "src/main/resources/db/migration/V8__create_product_prices.sql",
+    "new": "src/main/resources/db/migration/V8__create_product_prices.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "f1e6bf70764b91e94bb7f9ea6657c8dea40a28931bfa0aa1c72309db41dbecea"
+  },
+  {
+    "old": "src/main/resources/db/migration/V9__create_orders_tables.sql",
+    "new": "src/main/resources/db/migration/V9__create_orders_tables.sql",
+    "owner": "db",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "c0f008c2fe9e751264f859863b21178d3d5783b7199fa6cad7724b28481d0b9c"
+  },
+  {
+    "old": "src/main/resources/pdf/cashly-logo.png",
+    "new": "src/main/resources/pdf/cashly-logo.png",
+    "owner": "pdf",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "1a48b798cc554978a43cfb53deff77303bea2d235c295f8e175b83a3a3ed6f5a"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/auth/user/infrastructure/persistence/UserEntityUnitTest.java.bak",
+    "new": "src/test/java/com/cashly/cashly_api/auth/user/infrastructure/persistence/UserEntityUnitTest.java.bak",
+    "owner": "com",
+    "disposition": "retain",
+    "reason": "Preserve noncompiled backup bytes; follow test relocation when a current peer exists.",
+    "source_sha256": "7cadca5eea56abd2b8fb2307246f9a05eb898650e67f1ec1c908718577955f79"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/ConfirmInvoiceUseCaseUnitTest.java.bak",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/ConfirmInvoiceUseCaseUnitTest.java.bak",
+    "owner": "com",
+    "disposition": "retain",
+    "reason": "Preserve noncompiled backup bytes; follow test relocation when a current peer exists.",
+    "source_sha256": "ebc4af12777cb68e6f9315bb9229ba54c47c52483a3ab25adf09c9a7a93cc1bf"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/CreateInvoiceUseCaseUnitTest.java.bak",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/CreateInvoiceUseCaseUnitTest.java.bak",
+    "owner": "com",
+    "disposition": "retain",
+    "reason": "Preserve noncompiled backup bytes; follow test relocation when a current peer exists.",
+    "source_sha256": "ddb25b209703e0fb702a68ae3ef5383f1b5b69a05491c994991f6eb4de92396d"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/DeleteInvoiceUseCaseUnitTest.java.bak",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/DeleteInvoiceUseCaseUnitTest.java.bak",
+    "owner": "com",
+    "disposition": "retain",
+    "reason": "Preserve noncompiled backup bytes; follow test relocation when a current peer exists.",
+    "source_sha256": "b58c4bc9c65715ae725474e317249f50ccc2ca7ce0b64f1db4f3c8c4ecffd806"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/DuplicateInvoiceUseCaseUnitTest.java.bak",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/DuplicateInvoiceUseCaseUnitTest.java.bak",
+    "owner": "com",
+    "disposition": "retain",
+    "reason": "Preserve noncompiled backup bytes; follow test relocation when a current peer exists.",
+    "source_sha256": "b6659b62b576ba29f335432a9e9190639975250f27e7c47b4b9e490fc798717a"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/GetInvoicesUseCaseUnitTest.java.bak",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/GetInvoicesUseCaseUnitTest.java.bak",
+    "owner": "com",
+    "disposition": "retain",
+    "reason": "Preserve noncompiled backup bytes; follow test relocation when a current peer exists.",
+    "source_sha256": "7c9ffc58b5febdbf3305628f9d83fa07d345d00ef6b95f5954c6a48b08cf5b87"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/UpdateInvoiceUseCaseUnitTest.java.bak",
+    "new": "src/test/java/com/cashly/cashly_api/invoices/application/usecases/UpdateInvoiceUseCaseUnitTest.java.bak",
+    "owner": "com",
+    "disposition": "retain",
+    "reason": "Preserve noncompiled backup bytes; follow test relocation when a current peer exists.",
+    "source_sha256": "0dfb76be8557fa17db4a2b16070e315a58cee74d926bcf47f6b3a60b93b96cde"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/orders/application/usecases/GetOrdersUseCaseUnitTest.java.bak",
+    "new": "src/test/java/com/cashly/cashly_api/orders/application/usecases/GetOrdersUseCaseUnitTest.java.bak",
+    "owner": "com",
+    "disposition": "retain",
+    "reason": "Preserve noncompiled backup bytes; follow test relocation when a current peer exists.",
+    "source_sha256": "f056f0dd263b815aa81f76986adfa659e5e009faa88985802cc9f88ce78c1605"
+  },
+  {
+    "old": "src/test/java/com/cashly/cashly_api/price_types/application/usecases/ListPriceTypesUseCaseUnitTest.java.bak",
+    "new": "src/test/java/com/cashly/cashly_api/price_types/application/usecases/ListPriceTypesUseCaseUnitTest.java.bak",
+    "owner": "com",
+    "disposition": "retain",
+    "reason": "Preserve noncompiled backup bytes; follow test relocation when a current peer exists.",
+    "source_sha256": "a1113e4eacd3e5563ae2945eed06bd913c6c98c5f2d75c048c512cf0af39c826"
+  },
+  {
+    "old": "src/test/resources/application-test.properties",
+    "new": "src/test/resources/application-test.properties",
+    "owner": "application-test.properties",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "440494f8995dc5021a4ffc24702411c07a93fbd92422a8c73a3db7c9164bad67"
+  },
+  {
+    "old": "src/test/resources/application-web-test.properties",
+    "new": "src/test/resources/application-web-test.properties",
+    "owner": "application-web-test.properties",
+    "disposition": "retain",
+    "reason": "Preserve resource path and bytes; historical migrations are immutable.",
+    "source_sha256": "47fc1434c58a9c68c7d5be51a19a0f10c3c94fb2f7fc74c09160f5df7f0011da"
+  }
+]

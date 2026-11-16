@@ -1,0 +1,8 @@
+{
+  "status": 200,
+  "body": {
+    "status": "UP"
+  },
+  "new_package_classes": 1231,
+  "old_package_classes_absent": true
+}

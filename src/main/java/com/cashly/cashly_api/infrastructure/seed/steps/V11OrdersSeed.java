@@ -1,0 +1,146 @@
+package com.cashly.cashly_api.infrastructure.seed.steps;
+
+import static com.cashly.cashly_api.infrastructure.seed.SeedIds.*;
+import static com.cashly.cashly_api.infrastructure.seed.SeedDocuments.*;
+
+import com.cashly.cashly_api.infrastructure.seed.SeedStep;
+import com.cashly.cashly_api.infrastructure.seed.SeedDocuments;
+import com.cashly.cashly_api.sales.orders.infrastructure.persistence.entities.OrderEntity;
+import com.cashly.cashly_api.sales.orders.infrastructure.persistence.entities.OrderLineEntity;
+import com.cashly.cashly_api.sales.orders.infrastructure.persistence.entities.OrderNumberSequenceEntity;
+import com.cashly.cashly_api.sales.orders.domain.valueobjects.OrderStatus;
+import jakarta.persistence.EntityManager;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import org.springframework.stereotype.Component;
+
+@Component
+public class V11OrdersSeed implements SeedStep {
+    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2026, 1, 7,
+            8, 0);
+    private final EntityManager entityManager;
+    public V11OrdersSeed(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+    @Override
+    public int version() {
+        return 11;
+    }
+    @Override
+    public void seed() {
+        order(ORDER_ONE, "ORD-2026-0001", CUSTOMER_ONE, "Mercado Central, C.A.",
+                "J-10000001-1", id("order-line.one"), PRODUCT_COFFEE,
+                "Ground coffee", "PRD-0001", "2", "6.50", CATEGORY_DRINKS,
+                CREATED_AT);
+        order(ORDER_TWO, "ORD-2026-0002", CUSTOMER_TWO, "Ana Pérez",
+                "V-10000002-2", id("order-line.two"), PRODUCT_WATER,
+                "Mineral water", "PRD-0002", "3", "1.00", CATEGORY_DRINKS,
+                CREATED_AT);
+        for (var sample : SeedDocuments.additional()) {
+            order(id("order." + sample.key()), sample.documentNumber("ORD"),
+                    sample.customerId(), sample.customerName(),
+                    sample.customerRif(), id("order-line." + sample.key()),
+                    sample.productId(), sample.productName(),
+                    sample.productCode(), sample.quantity(), sample.price(),
+                    CATEGORY_DRINKS, sample.createdAt(8, 0));
+            applyScenario(sample, sample.scenario());
+        }
+        for (int year : SeedDocuments.years()) {
+            var sequence = entityManager.find(OrderNumberSequenceEntity.class,
+                    year);
+            int nextValue = SeedDocuments.nextNumberFor(year);
+            if (sequence == null) {
+                sequence = new OrderNumberSequenceEntity();
+                sequence.setYear(year);
+                sequence.setNextValue(nextValue);
+                entityManager.persist(sequence);
+            } else if (sequence.getNextValue() < nextValue) {
+                sequence.setNextValue(nextValue);
+            }
+        }
+    }
+    private void order(UUID id, String number, UUID customerId,
+            String customerName, String rif, UUID lineId, UUID productId,
+            String productName, String code, String quantity, String price,
+            UUID categoryId, LocalDateTime createdAt) {
+        BigDecimal qty = new BigDecimal(quantity),
+                unitPrice = new BigDecimal(price);
+        var existing = entityManager.find(OrderEntity.class, id);
+        if (existing != null) {
+            ensureLine(existing, lineId, productId, productName, code, qty,
+                    unitPrice, categoryId);
+            return;
+        }
+        var order = new OrderEntity();
+        order.setId(id);
+        order.setOrderNumber(number);
+        order.setCustomerId(customerId);
+        order.setCustomerName(customerName);
+        order.setCustomerRif(rif);
+        order.setCreatedBy(OPERATOR_USER);
+        order.setCreatedByName("Sales Operator");
+        order.setStatus("CONFIRMED");
+        order.setNotes("Deterministic seed order");
+        order.setSubtotal(qty.multiply(unitPrice));
+        order.setCreatedAt(createdAt);
+        order.setUpdatedAt(createdAt);
+        order.getLines().add(buildLine(order, lineId, productId, productName,
+                code, qty, unitPrice, categoryId));
+        entityManager.persist(order);
+    }
+
+    private void ensureLine(OrderEntity order, UUID lineId, UUID productId,
+            String productName, String code, BigDecimal qty,
+            BigDecimal unitPrice, UUID categoryId) {
+        if (entityManager.find(OrderLineEntity.class, lineId) != null)
+            return;
+        order.getLines().clear();
+        order.getLines().add(buildLine(order, lineId, productId, productName,
+                code, qty, unitPrice, categoryId));
+        order.setSubtotal(qty.multiply(unitPrice));
+        order.setUpdatedAt(EVENT_AT);
+    }
+
+    private OrderLineEntity buildLine(OrderEntity order, UUID lineId,
+            UUID productId, String productName, String code, BigDecimal qty,
+            BigDecimal unitPrice, UUID categoryId) {
+        var line = new OrderLineEntity();
+        line.setId(lineId);
+        line.setOrder(order);
+        line.setProductId(productId);
+        line.setProductName(productName);
+        line.setProductCode(code);
+        line.setQuantity(qty);
+        line.setUnitPrice(unitPrice);
+        line.setLineTotal(qty.multiply(unitPrice));
+        line.setCategorySnapshot(categoryId);
+        return line;
+    }
+
+    private void applyScenario(SeedDocuments.Sample sample, Scenario scenario) {
+        var order = entityManager.find(OrderEntity.class,
+                id("order." + sample.key()));
+        if (order == null
+                || !"Deterministic seed order".equals(order.getNotes())) {
+            return;
+        }
+        order.setStatus(scenario.order().name());
+        order.setInvoiceId(scenario.order() == OrderStatus.INVOICED
+                ? id("invoice." + sample.key())
+                : null);
+        order.setInvoiceNumber(scenario.order() == OrderStatus.INVOICED
+                ? sample.documentNumber("INV")
+                : null);
+        order.setCancelledAt(
+                scenario.order() == OrderStatus.CANCELLED
+                        ? sample.createdAt(10, 0)
+                        : null);
+        order.setCancelledReason(scenario.order() == OrderStatus.CANCELLED
+                ? CANCELLATION_REASON
+                : null);
+        order.setNotes(SCENARIO_NOTES);
+        order.setUpdatedAt(sample.createdAt(10, 0));
+    }
+
+}

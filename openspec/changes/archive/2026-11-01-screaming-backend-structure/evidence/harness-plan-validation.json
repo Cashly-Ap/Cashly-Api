@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "scope": "Proposed harness YAML and planning state only; services not created or started",
+  "isolated_databases": 2,
+  "read_only_source_mounts": true,
+  "target_is_mountpoint": false
+}

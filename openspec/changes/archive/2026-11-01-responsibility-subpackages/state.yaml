@@ -1,0 +1,17 @@
+schema: spec-driven
+change: responsibility-subpackages
+status: implemented-and-verified
+verify: complete
+apply: complete
+backend_tests: 3258
+ordinary_executable_classes: 568
+mysql_it_classes: 10
+main_relocations: 411
+test_relocations: 251
+failures: 0
+errors: 0
+skipped: 0
+python_tooling_tests: 20
+coverage: exact-class-relocation-and-module-nonregression-passed
+runtime: restarted-and-health-up
+delivery: local-changes-no-commit-or-push-requested

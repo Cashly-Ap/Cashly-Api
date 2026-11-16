@@ -1,5 +1,7 @@
 # CASH REGISTER Module
 
+> Estructura actual del código: `cash_register/sessions` y `cash_register/reporting`. Dentro de cada responsabilidad se ubican sus capas existentes; los controllers están en `infrastructure/web`, la persistencia en `infrastructure/persistence` y los casos de uso en `application/<operación>`. Consulta [ARCHITECTURE.md](../ARCHITECTURE.md) y [el árbol completo](../../openspec/changes/screaming-backend-structure/trees/after.md) para las rutas vigentes. Los ejemplos de planificación o paquetes Lexand de esta guía requieren contrastarse con el código actual.
+
 ## Overview
 
 The cash register is a session-based ledger. A session starts only when an authorized user opens it and remains active until an authorized user closes it, including across calendar days. The system allows multiple sessions on the same day but enforces at most one open session globally.
@@ -63,16 +65,24 @@ Commercial concepts calculate net billing without changing the expected physical
 | `GET` | `/api/cash-register/active` | Returns the open session or `404` without creating one |
 | `POST` | `/api/cash-register/open` | Opens a session with `openedByName` and `openingBalance` |
 | `POST` | `/api/cash-register/{id}/close` | Closes with `closedByName`, `declaredBalance`, and notes |
-| `POST` | `/api/cash-register/{id}/movements` | Records a manual monetary movement |
-| `GET` | `/api/cash-register/history` | Paged history; `detailed=true` includes ledger movements |
+| `POST` | `/api/cash-register/{id}/movements` | Records a manual monetary movement; expenses may target an open or closed session and accept an optional `occurredAt` |
+| `POST` | `/api/cash-register/movements/{movementId}/cancel` | Cancels a manual expense belonging to a closed session with a mandatory `reason` |
+| `GET` | `/api/cash-register/history` | Paged history; `detailed=true` includes ledger movements; optional `registerId` filters a single session |
+| `GET` | `/api/cash-register/expenses` | Paged expense-only listing filtered by `occurredAt`, register, payment method and text search |
 | `GET` | `/api/cash-register/{id}/report` | Session report with `format=PDF|EXCEL` and `type=SIMPLE|DETAILED` |
 | `GET` | `/api/cash-register/reports` | Date-range report with PDF/Excel, simple/detailed/grouped modes and commercial filters |
 
 All endpoints require an administrative or operator role and `MODULE_FINANCES` authority.
 
+## Expenses
+
+Manual `EXPENSE` movements can be assigned to any existing session, open or closed. The optional `occurredAt` field sets the expense date and time; when omitted the server uses the current time. Adding an expense to a closed session recalculates its expected closing balance and difference from the stored totals plus the new movement, preserving legacy aggregate totals.
+
+Deleting a manual expense is only allowed while its session is `OPEN`. Once the session is closed, the expense must be cancelled through the cancellation endpoint with a mandatory reason. Cancelled expenses keep their audit data (`cancellationReason`, `cancelledAt`, `cancelledBy`, `cancelledByName`), remain visible in history, and are excluded from monetary totals and reports.
+
 ## Persistence
 
-Migration `V30__create_cash_register_ledger.sql` removes the date uniqueness restriction, adds session balance columns, enforces a single open session, creates `cash_register_movements`, normalizes legacy open sessions, and backfills monetary operations belonging to the surviving active session.
+Migration `V18__create_cash_registers.sql` removes the date uniqueness restriction, adds session balance columns, enforces a single open session, creates `cash_register_movements`, normalizes legacy open sessions, and backfills monetary operations belonging to the surviving active session.
 
 Closed legacy sessions keep their stored aggregate totals when no itemized ledger is available, so detailed history and reports remain arithmetically correct while showing an empty movement list.
 

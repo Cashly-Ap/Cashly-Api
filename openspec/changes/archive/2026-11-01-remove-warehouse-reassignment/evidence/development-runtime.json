@@ -1,0 +1,9 @@
+{
+  "verified_at_utc": "2026-10-16T22:28:20.241499+00:00",
+  "http_status": 200,
+  "health": "UP",
+  "compiled_invoice_save_and_flush": true,
+  "obsolete_assignment_components_present": false,
+  "runtime_restarted_after_compile": true,
+  "development_business_data_modified_for_testing": false
+}

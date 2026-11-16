@@ -1,0 +1,8 @@
+{
+  "status": 200,
+  "body": {
+    "status": "UP"
+  },
+  "obsolete_authorization_component_absent": true,
+  "centralized_issuance_compiled": true
+}

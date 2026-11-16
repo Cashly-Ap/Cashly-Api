@@ -1,0 +1,37 @@
+package com.cashly.cashly_api.platform.auth.authentication.domain.entity;
+
+import com.cashly.cashly_api.platform.auth.authentication.domain.valueobjects.AuthenticableType;
+
+import java.time.LocalDateTime;
+import com.cashly.cashly_api.platform.auth.user.domain.valueobjects.UserRole;
+
+public interface Authenticable {
+
+    String getSubjectId();
+
+    default String getPhotoPath() {
+        return null;
+    }
+
+    String getEmail();
+
+    String getHashedPassword();
+
+    String getUserName();
+
+    AuthenticableType getType();
+
+    boolean canAuthenticate();
+
+    boolean isActive();
+
+    LocalDateTime getCreatedAt();
+
+    default LocalDateTime getUpdatedAt() {
+        return null;
+    }
+
+    default UserRole getRole() {
+        return null;
+    }
+}

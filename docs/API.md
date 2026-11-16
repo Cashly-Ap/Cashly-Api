@@ -2,7 +2,7 @@
 
 ## 📖 Interactive API Documentation
 
-The Lexand API provides comprehensive interactive documentation through **OpenAPI 3.0** specification with **Swagger UI**.
+The Cashly API provides comprehensive interactive documentation through **OpenAPI 3.0** specification with **Swagger UI**.
 
 ### 🌐 Access Documentation
 
@@ -29,36 +29,11 @@ The Lexand API provides comprehensive interactive documentation through **OpenAP
 - Test any endpoint directly from the interface
 - View request/response examples and schemas
 
-### 2. Postman Collection
-For comprehensive testing workflows, use our complete Postman collection:
-
-📦 **[→ Postman Setup Guide](../postman/POSTMAN.md)**
-
-#### Quick Import
-1. Download collection files:
-   - `Lexand-API.postman_collection.json`
-   - `Lexand-Local.postman_environment.json`
-
-2. Import into Postman:
-   - Open Postman → **Import** → Select both files
-
-3. Select "Lexand Local" environment and start testing!
-
-#### Features
-- ✅ **Automated Authentication** - Tokens saved automatically
-- ✅ **Environment Variables** - Auto-saved IDs and tokens
-- ✅ **Complete Workflows** - From registration to analytics
-- ✅ **Pre/Post Scripts** - Automatic data management
-
-## � Getting Started
+## 🚀 Getting Started
 
 ### 1. Start the Application
 ```bash
-# Development mode
 docker compose up --build
-
-# Or with development profile
-DOCKERFILE=Dockerfile.dev SPRING_PROFILES_ACTIVE=dev docker compose up --build
 ```
 
 ### 2. Access Documentation
@@ -73,7 +48,7 @@ curl http://localhost:8080/actuator/health
 
 ## 📋 API Overview
 
-The Lexand API provides comprehensive enterprise invoicing and inventory management capabilities through RESTful endpoints.
+The Cashly API provides comprehensive enterprise invoicing and inventory management capabilities through RESTful endpoints.
 
 ### Implemented Modules ✅
 
@@ -177,8 +152,25 @@ For detailed API specifications, request/response examples, and business rules, 
 4. **Refresh** access token when expired using refresh token
 5. **Logout** to revoke refresh token
 
+`GET /api/auth/access` returns the caller's role identity and effective `permissions` as a flat `string[]`. It is authoritative and uncached (`Cache-Control: no-store`); the JWT carries identity only. Role writes reject child permissions without the module `VIEW_LIST` root with `400` and `code: INVALID_PERMISSION_DEPENDENCY`. See [ACCESS_CONTROL](./modules/ACCESS_CONTROL.md).
+
 All endpoints are fully documented in the OpenAPI specification with example requests and responses.
 
 ---
 
 [← Back to Main README](../README.md)
+## Installation company
+
+Cashly manages one company per installation. `GET /api/company` is available to every authenticated user for navigation branding. `PUT /api/company` requires `COMPANY:UPDATE` and accepts `legalName`, `tradeName`, `taxId`, `email`, `phone`, `website` and `address` (`street`, `city`, `region`, `country`, `postalCode`). The legal name and address object are required; optional values may be empty. Responses additionally include the immutable `id` and nullable `logoPath`.
+
+`POST /api/company/logo` accepts multipart `file`; `DELETE /api/company/logo` removes it. Both require `COMPANY:UPDATE` and return the updated company. `GET /api/company/logo` returns the authenticated PNG image, or 404 when absent. PNG and JPEG uploads are limited to 5 MiB and 4096 × 4096 pixels and are decoded and reencoded as PNG; uploaded SVG files and corrupt images are rejected.
+
+Migration V31 backfills all existing persistent application tables with a required `company_id` foreign key. Its database default also links future records inserted through existing repositories. The companies table enforces one immutable installation ID, so clients cannot switch data ownership. System administrators receive company permissions through the permission registry; existing roles with role-update access receive company read/update grants. Other roles can be granted those permissions through role administration.
+
+### User photos
+
+Authenticated users manage their own photo with `POST /api/auth/profile/photo` (multipart `file`) and `DELETE /api/auth/profile/photo`. `GET /api/auth/profile/photo` returns the PNG or 404 when no image exists. Identity comes from the authenticated principal, never a request-supplied user ID.
+
+Administrators read photos through `GET /api/users/{id}/photo` with `USERS:READ`, and upload/remove through `POST`/`DELETE` with `USERS:UPDATE`. Mutation responses return the updated user including nullable `photoPath`; login and profile responses also include that field. Migration V30 adds the photo reference.
+
+Photos use the same raster limits and normalization as company logos. Image reads return `no-store` and `nosniff`. The generic catalog file route excludes identity media so its catalog permission cannot bypass user-photo authorization. Replaced files are retired after commit, and newly stored files are cleaned up on transaction rollback.

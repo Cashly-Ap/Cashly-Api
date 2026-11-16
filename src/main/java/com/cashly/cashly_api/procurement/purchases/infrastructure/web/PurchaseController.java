@@ -1,0 +1,168 @@
+package com.cashly.cashly_api.procurement.purchases.infrastructure.web;
+
+import com.cashly.cashly_api.procurement.purchases.application.cancel.request.CancelPurchaseRequest;
+import com.cashly.cashly_api.procurement.purchases.application.confirm.request.ConfirmPurchaseRequest;
+import com.cashly.cashly_api.procurement.purchases.application.create.request.CreatePurchaseRequest;
+import com.cashly.cashly_api.procurement.purchases.application.update.request.UpdatePurchaseRequest;
+import com.cashly.cashly_api.procurement.purchases.application.dto.response.PurchaseDetailResponse;
+import com.cashly.cashly_api.procurement.purchases.application.dto.response.PurchaseListResponse;
+import com.cashly.cashly_api.procurement.purchases.application.cancel.use_case.CancelPurchaseUseCase;
+import com.cashly.cashly_api.procurement.purchases.application.confirm.use_case.ConfirmPurchaseUseCase;
+import com.cashly.cashly_api.procurement.purchases.application.create.use_case.CreatePurchaseUseCase;
+import com.cashly.cashly_api.procurement.purchases.application.delete.use_case.DeletePurchaseUseCase;
+import com.cashly.cashly_api.procurement.purchases.application.products.use_case.GetProductsForPurchaseUseCase;
+import com.cashly.cashly_api.procurement.purchases.application.get.use_case.GetPurchaseByIdUseCase;
+import com.cashly.cashly_api.procurement.purchases.application.list.use_case.ListPurchasesUseCase;
+import com.cashly.cashly_api.procurement.purchases.application.update.use_case.UpdatePurchaseUseCase;
+import com.cashly.cashly_api.shared.domain.valueobjects.DocumentAction;
+import com.cashly.cashly_api.shared.dto.PageResponse;
+import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/purchases")
+public class PurchaseController {
+
+    private final CreatePurchaseUseCase createPurchaseUseCase;
+    private final GetPurchaseByIdUseCase getPurchaseByIdUseCase;
+    private final ListPurchasesUseCase listPurchasesUseCase;
+    private final UpdatePurchaseUseCase updatePurchaseUseCase;
+    private final ConfirmPurchaseUseCase confirmPurchaseUseCase;
+    private final CancelPurchaseUseCase cancelPurchaseUseCase;
+    private final DeletePurchaseUseCase deletePurchaseUseCase;
+
+    private final GetProductsForPurchaseUseCase getProductsForPurchaseUseCase;
+
+    public PurchaseController(CreatePurchaseUseCase createPurchaseUseCase,
+            GetPurchaseByIdUseCase getPurchaseByIdUseCase,
+            ListPurchasesUseCase listPurchasesUseCase,
+            UpdatePurchaseUseCase updatePurchaseUseCase,
+            ConfirmPurchaseUseCase confirmPurchaseUseCase,
+            CancelPurchaseUseCase cancelPurchaseUseCase,
+            DeletePurchaseUseCase deletePurchaseUseCase,
+            GetProductsForPurchaseUseCase getProductsForPurchaseUseCase) {
+        this.createPurchaseUseCase = createPurchaseUseCase;
+        this.getPurchaseByIdUseCase = getPurchaseByIdUseCase;
+        this.listPurchasesUseCase = listPurchasesUseCase;
+        this.updatePurchaseUseCase = updatePurchaseUseCase;
+        this.confirmPurchaseUseCase = confirmPurchaseUseCase;
+        this.cancelPurchaseUseCase = cancelPurchaseUseCase;
+        this.deletePurchaseUseCase = deletePurchaseUseCase;
+        this.getProductsForPurchaseUseCase = getProductsForPurchaseUseCase;
+    }
+
+    @PostMapping
+    @PreAuthorize("hasAuthority('PURCHASES_CREATE')")
+    public ResponseEntity<PurchaseDetailResponse> create(
+            @Valid @RequestBody CreatePurchaseRequest request,
+            Authentication authentication) {
+        UUID userId = UUID.fromString((String) authentication.getPrincipal());
+        PurchaseDetailResponse response = createPurchaseUseCase.execute(request,
+                userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAuthority('PURCHASES_VIEW_LIST')")
+    public ResponseEntity<PageResponse<PurchaseListResponse>> getAll(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+            @RequestParam(required = false) UUID supplierId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) UUID productId,
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String orderBy,
+            @RequestParam(defaultValue = "desc") String orderDir,
+            @RequestParam(required = false) DocumentAction action) {
+        return ResponseEntity.ok(listPurchasesUseCase.executePage(fromDate,
+                toDate, supplierId, status, productId, categoryId, search, page,
+                normalizeSize(size), orderBy, orderDir, action));
+    }
+
+    public ResponseEntity<PageResponse<PurchaseListResponse>> getAll(
+            LocalDate fromDate, LocalDate toDate, UUID supplierId,
+            String status, UUID productId, UUID categoryId, String orderBy,
+            String orderDir) {
+        return getAll(fromDate, toDate, supplierId, status, productId,
+                categoryId, null, 0, 100, orderBy, orderDir, null);
+    }
+
+    private static int normalizeSize(int size) {
+        return Math.min(Math.max(size, 1), 100);
+    }
+
+    @GetMapping("/products")
+    @PreAuthorize("hasAuthority('PURCHASES_VIEW_LIST')")
+    public ResponseEntity<?> getProducts(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(getProductsForPurchaseUseCase.execute(search,
+                categoryId, page, size));
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('PURCHASES_VIEW_DETAIL')")
+    public ResponseEntity<PurchaseDetailResponse> getById(
+            @PathVariable UUID id) {
+        PurchaseDetailResponse response = getPurchaseByIdUseCase.execute(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('PURCHASES_EDIT')")
+    public ResponseEntity<PurchaseDetailResponse> update(@PathVariable UUID id,
+            @Valid @RequestBody UpdatePurchaseRequest request) {
+        PurchaseDetailResponse response = updatePurchaseUseCase.execute(id,
+                request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/confirm")
+    @PreAuthorize("hasAuthority('PURCHASES_CONFIRM')")
+    public ResponseEntity<PurchaseDetailResponse> confirm(
+            @PathVariable UUID id,
+            @RequestBody(required = false) ConfirmPurchaseRequest request,
+            Authentication authentication) {
+        UUID userId = authentication != null
+                ? UUID.fromString(String.valueOf(authentication.getPrincipal()))
+                : null;
+        PurchaseDetailResponse response = confirmPurchaseUseCase.execute(id,
+                request != null ? request.confirmationPassword() : null,
+                userId);
+        return ResponseEntity.ok(response);
+    }
+
+    public ResponseEntity<PurchaseDetailResponse> confirm(UUID id) {
+        return ResponseEntity.ok(confirmPurchaseUseCase.execute(id));
+    }
+
+    @PutMapping("/{id}/cancel")
+    @PreAuthorize("hasAuthority('PURCHASES_CANCEL')")
+    public ResponseEntity<PurchaseDetailResponse> cancel(@PathVariable UUID id,
+            @Valid @RequestBody CancelPurchaseRequest request) {
+        PurchaseDetailResponse response = cancelPurchaseUseCase.execute(id,
+                request);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('PURCHASES_DELETE')")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        deletePurchaseUseCase.execute(id);
+        return ResponseEntity.noContent().build();
+    }
+}

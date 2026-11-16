@@ -1,0 +1,39 @@
+schema: spec-driven
+change: screaming-backend-structure
+artifact_store: openspec
+status: implemented-and-verified
+current_phase: verified-awaiting-review
+requested_scope: all-backend-production-and-tests
+delivery_strategy: ask-on-risk
+chain_strategy: deferred-until-pr-creation-local-work-units
+execution_authorization: user-requested-implementation
+phases:
+  explore: complete
+  propose: complete
+  spec: complete
+  design: complete
+  tasks: complete
+  apply: complete
+  verify: complete
+  archive: not-started
+baseline:
+  architecture: passed-11-tests
+  complete_suite: passed-3160-tests-zero-skips
+  integration: passed-seven-mysql-suites
+  coverage: domain-94.1834-application-90.9054-infrastructure-75.8905
+  startup_and_contracts: passed-identical-63-http-cases-before-and-after
+preparation_validation:
+  manifest_and_document_integrity: passed
+  negative_manifest_checks: 4
+  official_openspec_cli_version: 1.14.2
+  official_strict_change_validation: passed
+final_verification:
+  complete_suite: passed-3231-tests-zero-skips
+  discovered_classes: 560-ordinary-and-8-it
+  coverage_comparison: passed-all-modules-and-layers
+  remote_ci: not-run
+  evidence: evidence/full-final/summary.json
+scope_exclusions:
+  - new-overview-endpoints-or-unused-classes
+  - business-rule-or-database-migration-changes
+  - automatic-archive-of-other-changes

@@ -1,0 +1,16 @@
+schema: spec-driven
+change: module-owned-reporting
+status: implemented-and-verified
+current_phase: verified
+apply: complete
+verify: complete
+archive: not-requested
+java_tests: 3239
+ordinary_executable_classes: 564
+mysql_it_classes: 8
+failures: 0
+errors: 0
+skipped: 0
+coverage_comparison: passed-global-module-class-and-split-family-gates
+delivery: user-authorized-commit-and-normal-push
+branch: develop

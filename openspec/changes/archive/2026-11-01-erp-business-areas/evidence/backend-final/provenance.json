@@ -1,0 +1,29 @@
+{
+  "project": "cashly-screaming-erp-20261017-final1",
+  "current_code_and_resources_match_tested_snapshot": true,
+  "excluded_os_metadata": [
+    {
+      "path": "src/main/java/com/cashly/cashly_api/orders/.DS_Store",
+      "reason": "OS metadata removed during empty-directory cleanup; not a source/resource/build input"
+    }
+  ],
+  "checked_files": 1870,
+  "individually_compared_moved_instrumented_classes": 1128,
+  "command": "./mvnw -B clean verify -Dtest=Test\\*\\,\\*Test\\,\\*Tests\\,\\*TestCase\\,\\*IT -DfailIfNoTests=true -Dinventory.test.url=jdbc:mysql://inventory-db:3306/screaming_inventory -Dinventory.test.username=screaming_test -Dinventory.test.password=screaming_test",
+  "run": [
+    "mode=final",
+    "project=cashly-screaming-erp-20261017-final1",
+    "source=/Users/gabrielvargas/Work/Personals/Cashly/cashly-api",
+    "started_utc=2026-10-17T16:23:28Z",
+    "image=cashly-api-app:latest",
+    "finished_utc=2026-10-17T16:26:35Z",
+    "exit_code=0",
+    "coverage_gate_exit_code=0"
+  ],
+  "artifacts": {
+    "runtime.txt": "2bfd8903e4481f427e837bc2b5e341f4155c3484b7908aa0f3a4993c1450dcfd",
+    "maven.log": "328f490020081ed0482fc6a43dac413bd5eed5e154ba29b93e86ca447aad6878",
+    "source-sha256.txt": "15ca43e7dfb4012bbf5c1f3983a3d561b1ac88df2b42892e7da1bce9c4909bdd",
+    "jacoco/jacoco.xml": "97f49ab0e796e29640c7eef281db8cec5fd8d30e827b57f227655cf144a52826"
+  }
+}

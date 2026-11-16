@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "scope": "preparation snapshot and document integrity only",
+  "manifests": {
+    "source-moves.json": 1248,
+    "test-moves.json": 573,
+    "resource-inventory.json": 41
+  },
+  "unique_artifacts": 1862,
+  "negative_checks": 4,
+  "runtime_migration_verified": false
+}

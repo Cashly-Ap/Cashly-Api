@@ -1,0 +1,12 @@
+Architecture baseline: PASS
+Finished: 2026-10-16T09:40:24Z
+Command: docker compose exec -T app ./mvnw -B test -Dtest=LayerDependencyTest,ApplicationPackageConventionTest
+Working directory: cashly-api
+Tests: 11; failures: 0; errors: 0; skipped: 0
+LayerDependencyTest: 5 passed
+ApplicationPackageConventionTest: 6 passed
+BUILD SUCCESS
+Maven reported main/test classes up to date; this is not a clean-build baseline.
+Known warning observed: Maven Guice uses terminally deprecated sun.misc.Unsafe.
+No database, application startup, full-suite, integration or coverage verification was performed.
+Original XML environment properties and logs are not included; hashes are in summary.json.

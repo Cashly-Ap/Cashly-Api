@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Define how notification clicks open referenced payments, budgets, orders, and invoices across backoffice and portal clients.
+Define how notification clicks open referenced payments, budgets, orders, and invoices in the back-office client.
 
 ## Requirements
 
@@ -49,23 +49,6 @@ Backoffice **MUST** navigate valid references to the existing concrete detail ro
 - GIVEN a supported notification with an accessible reference ID
 - WHEN a backoffice user clicks it
 - THEN the client MUST navigate to that resource's concrete detail route
-
-### Requirement: Portal resource focus
-
-Portal **MUST** navigate to the referenced resource collection with a stable focus value and open its existing detail view. Focus **MUST** be cleared after consumption or close so stale state does not reopen the detail.
-
-#### Scenario: Focus portal resource
-
-- GIVEN a supported notification with an accessible reference ID
-- WHEN a portal user clicks it
-- THEN the portal MUST navigate to the matching collection and focus that ID
-- AND the matching detail view MUST open
-
-#### Scenario: Close focused detail
-
-- GIVEN a detail opened from notification focus
-- WHEN the user closes it
-- THEN the portal MUST clear focus without reopening the detail
 
 ### Requirement: Safe destination fallback
 

@@ -15,7 +15,7 @@ Este comando se ejecuta desde `Cashly-Api`. Las rutas de construcción se resuel
 
 ## Variables locales
 
-El `.env` de la carpeta Cashly se ha generado con valores aleatorios y permanece fuera de Git. En una instalación nueva, crea ese archivo a partir de `.env.cashly.example` y rellena `CASHLY_DB_PASSWORD`, `CASHLY_DB_ROOT_PASSWORD`, `CASHLY_STORAGE_PASSWORD` y `CASHLY_JWT_SECRET`. Usa secretos distintos; JWT debe tener al menos 32 bytes de entropía. No reutilices secretos de otro proyecto ni pongas credenciales en URLs.
+El `.env` de la carpeta Cashly se ha generado con valores aleatorios y permanece fuera de Git. En una instalación nueva, crea ese archivo y rellena `CASHLY_DB_PASSWORD`, `CASHLY_DB_ROOT_PASSWORD`, `CASHLY_STORAGE_PASSWORD` y `CASHLY_JWT_SECRET`. Usa secretos distintos; JWT debe tener al menos 32 bytes de entropía. No reutilices secretos de otro proyecto ni pongas credenciales en URLs.
 
 Compose exige estas variables. El volumen externo `cashly-maven-cache` solo guarda dependencias Maven; se crea con el comando anterior.
 
@@ -31,17 +31,21 @@ Los puertos se publican únicamente en la interfaz de loopback. App consume API 
 
 ## Datos y arranque
 
-Flyway crea el esquema al iniciar API. Los SQL heredados de `db/init` no se montan durante la inicialización de MySQL: contienen INSERT sobre tablas que todavía no existen antes de Flyway. No se importan usuarios, contraseñas, facturas ni archivos del proyecto original.
+Flyway crea el esquema completo al iniciar API. Las migraciones son scripts de creación para una base de desarrollo nueva; no conservan el historial de alteraciones anterior. La base debe inicializarse desde cero con este conjunto de migraciones antes de cargar datos.
 
-### Seed SQL de desarrollo
+### Seed Java de desarrollo
 
-El seed existente `db/seed.sql` carga los archivos de `db/seeds` en orden. Docker monta el archivo como `/seed.sql` y la carpeta como `/seeds`. Con API iniciada y las migraciones Flyway aplicadas, carga los datos directamente en MySQL desde Cashly:
+Los datos de desarrollo se cargan mediante `DatabaseSeedRunner` y 29 pasos Java ordenados, uno por cada migración. Configura `CASHLY_SEED_ENABLED=true` en `.env` para ejecutarlos automáticamente después de que Flyway haya aplicado el esquema. Si la variable no existe, el valor predeterminado es `false`.
+
+Acceso local: `gabriel@gmail.com`, contraseña `49510561Gabriel.`, rol `SUPER_ADMIN`. Los pasos son idempotentes, por lo que reiniciar la API con el seed habilitado no duplica registros. Esta opción debe permanecer deshabilitada sobre bases de producción o datos que deban conservarse.
+
+La reconstrucción de esquema vacía requiere eliminar el volumen MySQL local y volver a levantar la API. Este proceso elimina todos los datos locales de Cashly; no debe usarse sobre una base que necesite conservar información. Desde la carpeta Cashly:
 
 ```powershell
-docker compose --env-file .env exec -T mysql sh -c 'MYSQL_PWD="$MYSQL_PASSWORD" mysql --default-character-set=utf8mb4 --user="$MYSQL_USER" "$MYSQL_DATABASE" < /seed.sql'
+docker compose --env-file .env down
+docker volume rm cashly_mysql_data
+docker compose --env-file .env up -d --build
 ```
-
-Acceso local: `superadmin@cashly.com`, contraseña `49510561Gabriel.`, rol `SUPER_ADMIN`. El seed también crea usuarios y datos de demostración. Reinicializa las tablas indicadas por los SQL: úsalo sobre el entorno de desarrollo, no sobre datos reales. No se cargará antes de Flyway ni se ejecutará automáticamente en cada arranque.
 MinIO se construye desde las versiones fijadas del servidor y cliente en `Dockerfile.minio`, porque la descarga del repositorio de imágenes original no estaba disponible durante esta entrega. App usa Bun 1.3.3 y `bun.lock` para instalaciones reproducibles. Los cambios de código requieren reconstruir la imagen; este Compose no monta el código del host ni ofrece recarga automática.
 
 ## Operación

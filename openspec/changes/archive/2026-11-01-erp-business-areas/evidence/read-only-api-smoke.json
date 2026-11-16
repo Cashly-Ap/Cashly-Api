@@ -1,0 +1,35 @@
+{
+  "scope": "Unauthenticated read-only health and preserved protected URLs; controller/MySQL behavior verified by full suite",
+  "checks": [
+    {
+      "path": "/actuator/health",
+      "method": "GET",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "path": "/api/quotes",
+      "method": "GET",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "path": "/api/orders",
+      "method": "GET",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "path": "/api/invoices",
+      "method": "GET",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "path": "/api/returns",
+      "method": "GET",
+      "expected": 401,
+      "actual": 401
+    }
+  ]
+}

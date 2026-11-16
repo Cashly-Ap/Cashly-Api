@@ -1,0 +1,9 @@
+{
+  "http_status": 200,
+  "body": {
+    "status": "UP"
+  },
+  "old_package_classes_absent": true,
+  "new_package_classes_compiled": 411,
+  "runtime_compile_log_sha256": "0ec03151d8e3fbf2ed054de666c5f656a0a4660437114c6ce3a1b8163736cf07"
+}

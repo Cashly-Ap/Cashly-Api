@@ -17,12 +17,6 @@ User-visible Spanish copy **MUST** use “presupuesto” or “presupuestos” i
 - THEN visible Spanish copy MUST use the grammatically correct “presupuesto” form
 - AND it MUST NOT contain “cotización” or its unaccented variant
 
-#### Scenario: User views portal copy
-
-- GIVEN a portal screen containing detected quote-related product copy
-- WHEN the screen is rendered in Spanish
-- THEN it MUST display “presupuesto” or “presupuestos” as appropriate
-
 ### Requirement: Stable technical contract
 
 Terminology changes **MUST NOT** rename `QUOTE`, `QUOTE_*`, `Quote*`, routes, endpoints, tables, payload fields, or persisted values. REST and WebSocket payload structures **MUST** remain unchanged.

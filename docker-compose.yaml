@@ -17,6 +17,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-secret}
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
       - SPRING_PROFILES_ACTIVE=dev
+      - CASHLY_SEED_ENABLED=${CASHLY_SEED_ENABLED:-false}
+      - MFA_ENCRYPTION_KEY=${MFA_ENCRYPTION_KEY:-}
       - JWT_SECRET=${JWT_SECRET:-defaultSecretKeyThatIsAtLeast256BitsLongForHS256AlgorithmSecurity}
       - JWT_ACCESS_TOKEN_EXPIRATION=${JWT_ACCESS_TOKEN_EXPIRATION:-900000}
       - JWT_REFRESH_TOKEN_EXPIRATION=${JWT_REFRESH_TOKEN_EXPIRATION:-604800000}
@@ -32,6 +34,9 @@ services:
       - STORAGE_S3_SECRET_KEY=${STORAGE_S3_SECRET_KEY:-minioadmin}
       - STORAGE_S3_BUCKET=${STORAGE_S3_BUCKET:-cashly-files}
       - STORAGE_S3_REGION=${STORAGE_S3_REGION:-us-east-1}
+      - SPRING_MAIL_HOST=${SPRING_MAIL_HOST:-mailpit}
+      - SPRING_MAIL_PORT=${SPRING_MAIL_PORT:-1025}
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=${SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH:-false}
     volumes:
       - .:/app
       - maven_cache:/root/.m2
@@ -40,6 +45,8 @@ services:
         condition: service_healthy
       minio-init:
         condition: service_completed_successfully
+      mailpit:
+        condition: service_healthy
     networks:
       - cashly-network
 
@@ -63,6 +70,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-secret}
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
       - SPRING_PROFILES_ACTIVE=production
+      - CASHLY_SEED_ENABLED=false
+      - MFA_ENCRYPTION_KEY=${MFA_ENCRYPTION_KEY:-}
       - JWT_SECRET=${JWT_SECRET:-defaultSecretKeyThatIsAtLeast256BitsLongForHS256AlgorithmSecurity}
       - JWT_ACCESS_TOKEN_EXPIRATION=${JWT_ACCESS_TOKEN_EXPIRATION:-900000}
       - JWT_REFRESH_TOKEN_EXPIRATION=${JWT_REFRESH_TOKEN_EXPIRATION:-604800000}
@@ -102,8 +111,6 @@ services:
       - '${DB_PORT:-3306}:3306'
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./db/init:/docker-entrypoint-initdb.d
-      - ./db/seeds:/seeds
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-verysecret}"]
       interval: 10s
@@ -146,6 +153,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${TEST_DB_PASSWORD:-testpass}
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
       - SPRING_PROFILES_ACTIVE=test
+      - MFA_ENCRYPTION_KEY=${MFA_ENCRYPTION_KEY:-}
       - JWT_SECRET=${JWT_SECRET:-defaultSecretKeyThatIsAtLeast256BitsLongForHS256AlgorithmSecurity}
       - JWT_ACCESS_TOKEN_EXPIRATION=${JWT_ACCESS_TOKEN_EXPIRATION:-900000}
       - JWT_REFRESH_TOKEN_EXPIRATION=${JWT_REFRESH_TOKEN_EXPIRATION:-604800000}
@@ -165,8 +173,27 @@ services:
       - ${TEST_PROFILE:-test}
     command: ["./mvnw", "test"]
 
+  # Dev-only SMTP catcher: UI at http://localhost:8025, SMTP at :1025
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: ${COMPOSE_PROJECT_NAME:-cashly-api}-mailpit
+    restart: unless-stopped
+    ports:
+      - '${MAILPIT_UI_PORT:-8025}:8025'
+      - '${MAILPIT_SMTP_PORT:-1025}:1025'
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cashly-network
+
   minio:
-    image: minio/minio:latest
+    image: cashly-minio:local
+    build:
+      context: .
+      dockerfile: Dockerfile.minio
     container_name: ${COMPOSE_PROJECT_NAME:-cashly-api}-minio
     restart: unless-stopped
     ports:
@@ -179,7 +206,7 @@ services:
       - minio_data:/data
     command: server /data --console-address ":9001"
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: ["CMD", "minio", "--version"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -187,7 +214,10 @@ services:
       - cashly-network
 
   minio-init:
-    image: minio/minio:latest
+    image: cashly-minio:local
+    build:
+      context: .
+      dockerfile: Dockerfile.minio
     container_name: ${COMPOSE_PROJECT_NAME:-cashly-api}-minio-init
     depends_on:
       minio:
@@ -200,7 +230,7 @@ services:
       /bin/sh -c "
         mc alias set local http://minio:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD &&
         mc mb --ignore-existing local/$$STORAGE_S3_BUCKET &&
-        echo 'Bucket $$STORAGE_S3_BUCKET ready.'
+        echo 'Bucket ready.'
       "
     networks:
       - cashly-network
