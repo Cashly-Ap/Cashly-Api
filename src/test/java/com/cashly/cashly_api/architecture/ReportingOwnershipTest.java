@@ -23,7 +23,7 @@ class ReportingOwnershipTest {
             "orders", "quotes", "purchases", "products", "warehouses",
             "payments", "receivables", "payables");
     private static final Set<String> SHARED_PDF = Set.of("PdfBranding",
-            "PdfStatusColors");
+            "PdfStatusColors", "FastTablePdfRenderer");
     private static final Pattern GLOBAL_REFERENCE = Pattern
             .compile("\\bcom\\.cashly\\.cashly_api\\.reports(?:\\.|\\b)");
 
@@ -35,7 +35,8 @@ class ReportingOwnershipTest {
                 .javaSources(ROOTS.getFirst())) {
             String code = Files.readString(source);
             if (code.contains("new PdfDocument(")
-                    && !code.contains("branding.logo()")) {
+                    && !code.contains("branding.logo()")
+                    && !code.contains("branding.logoBytes()")) {
                 missing.add(source.toString());
             }
         }

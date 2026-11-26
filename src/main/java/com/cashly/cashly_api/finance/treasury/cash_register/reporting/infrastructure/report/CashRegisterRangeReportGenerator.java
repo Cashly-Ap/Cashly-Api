@@ -1,6 +1,7 @@
 package com.cashly.cashly_api.finance.treasury.cash_register.reporting.infrastructure.report;
 
 import com.cashly.cashly_api.shared.infrastructure.i18n.ReportMessages;
+import com.cashly.cashly_api.shared.infrastructure.pdf.FastTablePdfRenderer;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.itextpdf.io.font.constants.StandardFonts;
@@ -12,6 +13,7 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.cashly.cashly_api.finance.treasury.cash_register.reporting.application.dto.model.CashRegisterExportRow;
 import com.cashly.cashly_api.finance.treasury.cash_register.reporting.application.dto.model.CashRegisterReportFilter;
@@ -78,6 +80,9 @@ public class CashRegisterRangeReportGenerator
 
     private byte[] generatePdf(List<CashRegisterExportRow> rows,
             CashRegisterReportFilter filter, ReportType type) {
+        if (type == ReportType.DETAILED) {
+            return generateDetailedPdf(rows, filter);
+        }
         try (var output = new ByteArrayOutputStream()) {
             PdfDocument pdf = new PdfDocument(new PdfWriter(output));
             Document document = new Document(pdf,
@@ -96,9 +101,7 @@ public class CashRegisterRangeReportGenerator
                             .text("finance.treasury.cash_register.reports.to")
                     + ReportMessages.dateFormatter().format(filter.dateTo())));
             document.add(new Paragraph(reportTypeLabel(type)));
-            if (type == ReportType.DETAILED) {
-                addDetailedPdf(document, rows, bold);
-            } else if (type == ReportType.GROUPED) {
+            if (type == ReportType.GROUPED) {
                 addGroupedPdf(document, customerSummaries(rows), bold);
             } else {
                 addSimplePdf(document, totals(rows), bold);
@@ -109,6 +112,54 @@ public class CashRegisterRangeReportGenerator
             throw new IllegalStateException(
                     "Could not generate cash register PDF report", exception);
         }
+    }
+
+    private byte[] generateDetailedPdf(List<CashRegisterExportRow> rows,
+            CashRegisterReportFilter filter) {
+        var dateFormatter = ReportMessages.dateFormatter();
+        List<FastTablePdfRenderer.Column> columns = List.of(
+                new FastTablePdfRenderer.Column(ReportMessages.text(
+                        "finance.treasury.cash_register.reports.date"), 12f,
+                        TextAlignment.CENTER),
+                new FastTablePdfRenderer.Column(ReportMessages.text(
+                        "finance.treasury.cash_register.reports.type"), 7f,
+                        TextAlignment.CENTER),
+                new FastTablePdfRenderer.Column(ReportMessages.text(
+                        "finance.treasury.cash_register.reports.document"), 15f,
+                        TextAlignment.LEFT),
+                new FastTablePdfRenderer.Column(ReportMessages.text(
+                        "finance.treasury.cash_register.reports.operation"), 12f,
+                        TextAlignment.RIGHT),
+                new FastTablePdfRenderer.Column(ReportMessages.text(
+                        "finance.treasury.cash_register.reports.method"), 25f,
+                        TextAlignment.LEFT),
+                new FastTablePdfRenderer.Column(ReportMessages.text(
+                        "finance.treasury.cash_register.reports.customer"), 29f,
+                        TextAlignment.LEFT));
+        List<String[]> reportRows = rows.stream()
+                .sorted(Comparator
+                        .comparing(CashRegisterExportRow::emissionDate)
+                        .thenComparing(CashRegisterExportRow::documentType)
+                        .thenComparingInt(CashRegisterExportRow::sortOrder))
+                .map(row -> new String[]{
+                        dateFormatter.format(row.emissionDate()),
+                        ReportMessages.code(row.documentType()),
+                        row.documentNumber(), money(row.totalOperation()),
+                        paymentSummary(row),
+                        row.customerName() == null ? "-" : row.customerName()})
+                .toList();
+        String subtitle = ReportMessages
+                .text("finance.treasury.cash_register.reports.from")
+                + dateFormatter.format(filter.dateFrom())
+                + ReportMessages
+                        .text("finance.treasury.cash_register.reports.to")
+                + dateFormatter.format(filter.dateTo()) + " | "
+                + reportTypeLabel(ReportType.DETAILED);
+        return FastTablePdfRenderer.render(branding, com.itextpdf.kernel.geom.PageSize.A4.rotate(), ReportMessages.text(
+                "finance.treasury.cash_register.reports.cashRegisterReport"),
+                subtitle, columns, reportRows, List.of(),
+                ReportMessages.text("inventory.warehouses.reports.page"),
+                ReportMessages.text("inventory.warehouses.reports.of"));
     }
 
     private void addSimplePdf(Document document, DailyTotals totals,
@@ -165,45 +216,6 @@ public class CashRegisterRangeReportGenerator
             table.addCell(money(summary.totalReturns()));
             table.addCell(money(summary.balance()));
         });
-        document.add(table);
-    }
-
-    private void addDetailedPdf(Document document,
-            List<CashRegisterExportRow> rows,
-            com.itextpdf.kernel.font.PdfFont bold) {
-        Table table = new Table(UnitValue
-                .createPercentArray(new float[]{12, 7, 15, 12, 25, 29}))
-                .useAllAvailableWidth().setFontSize(8);
-        addHeader(table, new String[]{
-                ReportMessages
-                        .text("finance.treasury.cash_register.reports.date"),
-                ReportMessages
-                        .text("finance.treasury.cash_register.reports.type"),
-                ReportMessages.text(
-                        "finance.treasury.cash_register.reports.document"),
-                ReportMessages.text(
-                        "finance.treasury.cash_register.reports.operation"),
-                ReportMessages
-                        .text("finance.treasury.cash_register.reports.method"),
-                ReportMessages.text(
-                        "finance.treasury.cash_register.reports.customer")},
-                bold);
-        rows.stream()
-                .sorted(Comparator
-                        .comparing(CashRegisterExportRow::emissionDate)
-                        .thenComparing(CashRegisterExportRow::documentType)
-                        .thenComparingInt(CashRegisterExportRow::sortOrder))
-                .forEach(row -> {
-                    table.addCell(ReportMessages.dateFormatter()
-                            .format(row.emissionDate()));
-                    table.addCell(ReportMessages.code(row.documentType()));
-                    table.addCell(row.documentNumber());
-                    table.addCell(money(row.totalOperation()));
-                    table.addCell(paymentSummary(row));
-                    table.addCell(row.customerName() == null
-                            ? "-"
-                            : row.customerName());
-                });
         document.add(table);
     }
 

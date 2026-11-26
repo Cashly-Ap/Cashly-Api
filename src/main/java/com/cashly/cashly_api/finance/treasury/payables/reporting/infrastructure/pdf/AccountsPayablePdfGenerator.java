@@ -4,23 +4,12 @@ import com.cashly.cashly_api.finance.treasury.payables.application.dto.response.
 import com.cashly.cashly_api.finance.treasury.payables.application.dto.response.SupplierDebtSummaryResponse;
 import com.cashly.cashly_api.finance.treasury.payables.application.ports.out.PayablesQueryGateway;
 import com.cashly.cashly_api.finance.treasury.payables.reporting.application.ports.out.AccountsPayableReportPdfPort;
+import com.cashly.cashly_api.shared.infrastructure.pdf.FastTablePdfRenderer;
 import com.cashly.cashly_api.shared.infrastructure.pdf.PdfBranding;
-import com.itextpdf.io.font.constants.StandardFonts;
-import com.itextpdf.kernel.colors.DeviceRgb;
-import com.itextpdf.kernel.font.PdfFont;
-import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.layout.properties.UnitValue;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -32,8 +21,6 @@ import java.util.UUID;
 public class AccountsPayablePdfGenerator
         implements AccountsPayableReportPdfPort {
 
-    private static final DeviceRgb HEADER_BG = new DeviceRgb(30, 30, 30);
-    private static final DeviceRgb HEADER_TEXT = new DeviceRgb(255, 255, 255);
     private static final DateTimeFormatter DATE = DateTimeFormatter
             .ofPattern("dd/MM/yyyy");
 
@@ -50,63 +37,36 @@ public class AccountsPayablePdfGenerator
     public byte[] generate(UUID supplierId, boolean overdueOnly) {
         List<SupplierDebtListResponse> rows = loadRows(supplierId,
                 overdueOnly);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            PdfDocument pdfDoc = new PdfDocument(new PdfWriter(baos));
-            pdfDoc.setDefaultPageSize(PageSize.A4.rotate());
-            Document document = new Document(pdfDoc);
-            document.setMargins(40, 40, 50, 40);
-            PdfFont bold = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
-            PdfFont regular = PdfFontFactory.createFont(StandardFonts.HELVETICA);
-
-            document.add(branding.logo().setMarginBottom(12));
-            document.add(new Paragraph("Cuentas por Pagar").setFont(bold)
-                    .setFontSize(18).setTextAlignment(TextAlignment.CENTER)
-                    .setMarginBottom(6));
-            document.add(new Paragraph(
-                    "Fecha: " + LocalDate.now().format(DATE)).setFont(regular)
-                    .setFontSize(10).setTextAlignment(TextAlignment.CENTER)
-                    .setMarginBottom(16));
-
-            float[] widths = {4f, 2.5f, 2.5f, 2.5f, 2.5f, 2.5f};
-            Table table = new Table(UnitValue.createPercentArray(widths))
-                    .useAllAvailableWidth();
-            for (String header : List.of("Proveedor", "RIF", "Límite crédito",
-                    "Deuda", "Crédito disponible", "Vence")) {
-                table.addHeaderCell(new Cell()
-                        .add(new Paragraph(header).setFont(bold)
-                                .setFontColor(HEADER_TEXT))
-                        .setBackgroundColor(HEADER_BG));
-            }
-            BigDecimal total = BigDecimal.ZERO;
-            for (SupplierDebtListResponse row : rows) {
-                total = total.add(row.totalDebt());
-                table.addCell(new Cell().add(new Paragraph(row.supplierName())
-                        .setFont(regular)));
-                table.addCell(new Cell().add(new Paragraph(
-                        row.supplierRif() != null ? row.supplierRif() : "")
-                        .setFont(regular)));
-                table.addCell(new Cell().add(new Paragraph(
-                        money(row.creditLimit())).setFont(regular)));
-                table.addCell(new Cell().add(new Paragraph(
-                        money(row.totalDebt())).setFont(regular)));
-                table.addCell(new Cell().add(new Paragraph(
-                        money(row.availableCredit())).setFont(regular)));
-                table.addCell(new Cell().add(new Paragraph(
-                        row.oldestDueDate() != null
-                                ? row.oldestDueDate().format(DATE)
-                                : "-")
-                        .setFont(regular)));
-            }
-            document.add(table);
-            document.add(new Paragraph("Total por pagar: " + money(total))
-                    .setFont(bold).setFontSize(12).setMarginTop(14));
-            document.close();
-        } catch (Exception exception) {
-            throw new RuntimeException(
-                    "Error generating accounts payable report PDF", exception);
+        List<FastTablePdfRenderer.Column> columns = List.of(
+                new FastTablePdfRenderer.Column("Proveedor", 4f,
+                        TextAlignment.LEFT),
+                new FastTablePdfRenderer.Column("RIF", 2.5f,
+                        TextAlignment.CENTER),
+                new FastTablePdfRenderer.Column("Límite crédito", 2.5f,
+                        TextAlignment.RIGHT),
+                new FastTablePdfRenderer.Column("Deuda", 2.5f,
+                        TextAlignment.RIGHT),
+                new FastTablePdfRenderer.Column("Crédito disponible", 2.5f,
+                        TextAlignment.RIGHT),
+                new FastTablePdfRenderer.Column("Vence", 2.5f,
+                        TextAlignment.CENTER));
+        BigDecimal total = BigDecimal.ZERO;
+        List<String[]> reportRows = new ArrayList<>(rows.size());
+        for (SupplierDebtListResponse row : rows) {
+            total = total.add(row.totalDebt());
+            reportRows.add(new String[]{row.supplierName(),
+                    row.supplierRif() != null ? row.supplierRif() : "",
+                    money(row.creditLimit()), money(row.totalDebt()),
+                    money(row.availableCredit()),
+                    row.oldestDueDate() != null
+                            ? row.oldestDueDate().format(DATE)
+                            : "-"});
         }
-        return baos.toByteArray();
+        return FastTablePdfRenderer.render(branding, PageSize.A4.rotate(),
+                "Cuentas por Pagar",
+                "Fecha: " + LocalDate.now().format(DATE), columns, reportRows,
+                List.of("Total por pagar: " + money(total)),
+                "Página ", " de ");
     }
 
     private List<SupplierDebtListResponse> loadRows(UUID supplierId,

@@ -56,6 +56,14 @@ public final class PdfBranding {
                         .scaleToFit(LOGO_MAX_WIDTH, LOGO_MAX_HEIGHT));
     }
 
+    public byte[] logoBytes() {
+        byte[] configured = companyLogo.get();
+        if (configured != null) {
+            return trimOuterMargins(configured);
+        }
+        return loadDefaultLogo();
+    }
+
     private static byte[] loadDefaultLogo() {
         try (InputStream input = PdfBranding.class.getResourceAsStream("/pdf/cashly-logo.png")) {
             return input == null ? null : input.readAllBytes();
