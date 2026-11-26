@@ -65,11 +65,7 @@ public final class PdfBranding {
     }
 
     private static byte[] loadDefaultLogo() {
-        try (InputStream input = PdfBranding.class.getResourceAsStream("/pdf/cashly-logo.png")) {
-            return input == null ? null : input.readAllBytes();
-        } catch (IOException exception) {
-            throw new IllegalStateException("Cannot load default Cashly logo", exception);
-        }
+        return DefaultCompanyLogo.bytes();
     }
 
     /** Removes only empty border rows/columns. Every non-background pixel stays inside the result. */

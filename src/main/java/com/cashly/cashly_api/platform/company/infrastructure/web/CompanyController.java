@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.platform.company.infrastructure.web;
 
+import com.cashly.cashly_api.shared.infrastructure.pdf.DefaultCompanyLogo;
 import com.cashly.cashly_api.platform.company.application.services.CompanyService;
 import com.cashly.cashly_api.platform.company.domain.entity.Company;
 import com.cashly.cashly_api.platform.company.infrastructure.services.CompanyPdfPreview;
@@ -64,6 +65,9 @@ public class CompanyController {
     public ResponseEntity<byte[]> logo() {
         var bytes = service.logo();
         if (bytes == null) {
+            bytes = DefaultCompanyLogo.bytes();
+        }
+        if (bytes == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok().cacheControl(CacheControl.noStore())
@@ -89,6 +93,9 @@ public class CompanyController {
     @PreAuthorize("hasAuthority('COMPANY_VIEW')")
     public ResponseEntity<byte[]> pdfLogo() {
         var bytes = service.pdfLogo();
+        if (bytes == null) {
+            bytes = DefaultCompanyLogo.bytes();
+        }
         if (bytes == null) {
             return ResponseEntity.notFound().build();
         }

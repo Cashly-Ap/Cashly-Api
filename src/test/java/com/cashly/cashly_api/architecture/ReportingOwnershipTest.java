@@ -23,7 +23,8 @@ class ReportingOwnershipTest {
             "orders", "quotes", "purchases", "products", "warehouses",
             "payments", "receivables", "payables");
     private static final Set<String> SHARED_PDF = Set.of("PdfBranding",
-            "PdfStatusColors", "FastTablePdfRenderer");
+            "PdfStatusColors", "FastTablePdfRenderer",
+            "DefaultCompanyLogo");
     private static final Pattern GLOBAL_REFERENCE = Pattern
             .compile("\\bcom\\.cashly\\.cashly_api\\.reports(?:\\.|\\b)");
 

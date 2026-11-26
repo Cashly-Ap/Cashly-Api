@@ -32,7 +32,8 @@ class ReportTranslationTest {
             throws Exception {
         var generator = new StockPdfGenerator();
         var items = List.of(new StockReportResponse("Almacén del usuario",
-                "Producto del usuario", "SKU-ES", "Categoría del usuario", 12,
+                "Producto del usuario", "SKU-ES", "Categoría del usuario",
+                new BigDecimal("12"),
                 "Con Stock"));
         for (var language : List.of("es", "en", "es")) {
             LocaleContextHolder.setLocale(Locale.forLanguageTag(language));
@@ -55,7 +56,8 @@ class ReportTranslationTest {
             throws Exception {
         var generator = new StockExcelGenerator();
         var items = List.of(new StockReportResponse("Mi almacén", "Mi producto",
-                "SKU", "Mi categoría", 3, "Sin Stock"));
+                "SKU", "Mi categoría", new BigDecimal("3"),
+                "Sin Stock"));
         for (var language : List.of("en", "es")) {
             LocaleContextHolder.setLocale(Locale.forLanguageTag(language));
             try (var workbook = new XSSFWorkbook(
