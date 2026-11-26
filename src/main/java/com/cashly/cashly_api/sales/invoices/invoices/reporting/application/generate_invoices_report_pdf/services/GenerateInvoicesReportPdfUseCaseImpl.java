@@ -5,10 +5,15 @@ import com.cashly.cashly_api.sales.invoices.invoices.reporting.application.gener
 import com.cashly.cashly_api.sales.invoices.invoices.reporting.application.dto.model.InvoiceReportFilter;
 import com.cashly.cashly_api.sales.invoices.invoices.reporting.application.ports.out.InvoiceReportQueryGateway;
 import com.cashly.cashly_api.sales.invoices.invoices.reporting.application.ports.out.InvoicesReportPdfPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GenerateInvoicesReportPdfUseCaseImpl
         implements
             GenerateInvoicesReportPdfUseCase {
+
+    private static final Logger log = LoggerFactory
+            .getLogger(GenerateInvoicesReportPdfUseCaseImpl.class);
 
     private final InvoiceReportQueryGateway query;
     private final InvoicesReportPdfPort invoicesReportPdfPort;
@@ -21,7 +26,15 @@ public class GenerateInvoicesReportPdfUseCaseImpl
 
     @Override
     public byte[] execute(InvoiceReportFilter filter, String mode) {
-        return invoicesReportPdfPort.generatePdf(query.findAll(filter),
+        long started = System.nanoTime();
+        var rows = query.findAll(filter);
+        long afterQuery = System.nanoTime();
+        byte[] pdf = invoicesReportPdfPort.generatePdf(rows,
                 mode != null ? mode : "simple");
+        long afterPdf = System.nanoTime();
+        log.info("invoices-report rows={} query={} ms pdf={} ms size={}",
+                rows.size(), (afterQuery - started) / 1_000_000,
+                (afterPdf - afterQuery) / 1_000_000, pdf.length);
+        return pdf;
     }
 }

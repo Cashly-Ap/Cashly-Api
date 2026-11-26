@@ -92,6 +92,68 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
     }
 
     @Override
+    public List<ReportRow> findReportRows(LocalDate dateFrom, LocalDate dateTo,
+            UUID customerId, List<String> statuses, UUID productId,
+            UUID categoryId) {
+        LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay() : null;
+        LocalDateTime to = dateTo != null ? dateTo.atTime(23, 59, 59) : null;
+        var rows = jpaRepository.findReportRows(from, to, customerId,
+                (statuses == null || statuses.isEmpty()) ? null : statuses,
+                productId, categoryId);
+        var lineCounts = new java.util.HashMap<UUID, Long>();
+        if (!rows.isEmpty()) {
+            var ids = rows.stream().map(row -> (UUID) row[0]).toList();
+            for (Object[] count : jpaRepository.countLinesByInvoiceIds(ids)) {
+                lineCounts.put((UUID) count[0],
+                        ((Number) count[1]).longValue());
+            }
+        }
+        return rows.stream()
+                .map(row -> new ReportRow((UUID) row[0], (String) row[1],
+                        (String) row[2], (String) row[3], (String) row[4],
+                        ((java.math.BigDecimal) row[5]).subtract(
+                                row[6] == null ? java.math.BigDecimal.ZERO
+                                        : (java.math.BigDecimal) row[6]),
+                        row[7] instanceof java.time.LocalDateTime value
+                                ? value
+                                : ((java.sql.Timestamp) row[7])
+                                        .toLocalDateTime(),
+                        lineCounts.getOrDefault((UUID) row[0], 0L)))
+                .toList();
+    }
+
+    @Override
+    public void updateStatuses(java.util.Collection<UUID> invoiceIds,
+            String status) {
+        if (invoiceIds != null && !invoiceIds.isEmpty()) {
+            jpaRepository.updateStatuses(invoiceIds, status);
+        }
+    }
+
+    @Override
+    public List<InvoiceHeader> findHeaders(UUID customerId,
+            List<String> statuses) {
+        var rows = (statuses == null || statuses.isEmpty())
+                ? jpaRepository.findHeadersByCustomer(customerId)
+                : jpaRepository.findHeadersByCustomerAndStatusIn(customerId,
+                        statuses);
+        return rows.stream().map(this::header).toList();
+    }
+
+    @Override
+    public List<InvoiceHeader> findAllHeaders() {
+        return jpaRepository.findAllHeaders().stream().map(this::header)
+                .toList();
+    }
+
+    private InvoiceHeader header(
+            com.cashly.cashly_api.sales.invoices.invoices.infrastructure.persistence.projections.InvoiceHeaderProjection row) {
+        return new InvoiceHeader(row.getId(), row.getCustomerId(),
+                row.getInvoiceNumber(), row.getStatus(), row.getSubtotal(),
+                row.getReturnedTotal(), row.getDueDate());
+    }
+
+    @Override
     public PageResponse<Invoice> findPageWithFilters(LocalDate dateFrom,
             LocalDate dateTo, UUID customerId, List<String> statuses,
             String search, List<String> returnStatus, String dueStatus,

@@ -5,18 +5,18 @@ import com.cashly.cashly_api.sales.invoices.invoices.application.ports.in.Invoic
 import com.cashly.cashly_api.sales.invoices.invoices.application.ports.in.InvoiceDocumentRow;
 import com.cashly.cashly_api.sales.invoices.invoices.application.ports.in.InvoiceDocumentSnapshot;
 import com.cashly.cashly_api.sales.invoices.invoices.application.get.use_case.GetInvoiceByIdUseCase;
-import com.cashly.cashly_api.sales.invoices.invoices.application.list.use_case.GetInvoicesUseCase;
+import com.cashly.cashly_api.sales.invoices.invoices.domain.repository.InvoiceRepository;
 import java.util.List;
 import java.util.UUID;
 
 public class InvoiceDocumentQueryService implements InvoiceDocumentQuery {
     private final GetInvoiceByIdUseCase invoiceQuery;
-    private final GetInvoicesUseCase invoicesQuery;
+    private final InvoiceRepository invoices;
 
     public InvoiceDocumentQueryService(GetInvoiceByIdUseCase invoiceQuery,
-            GetInvoicesUseCase invoicesQuery) {
+            InvoiceRepository invoices) {
         this.invoiceQuery = invoiceQuery;
-        this.invoicesQuery = invoicesQuery;
+        this.invoices = invoices;
     }
 
     public InvoiceDocumentSnapshot find(UUID invoiceId) {
@@ -35,14 +35,13 @@ public class InvoiceDocumentQueryService implements InvoiceDocumentQuery {
     }
 
     public List<InvoiceDocumentRow> findAll(InvoiceDocumentFilter filter) {
-        return invoicesQuery.execute(filter.dateFrom(), filter.dateTo(),
-                filter.customerId(), filter.statuses(), null,
-                filter.productId(), filter.categoryId(), "createdAt", "desc")
-                .stream()
-                .map(invoice -> new InvoiceDocumentRow(invoice.id(),
-                        invoice.invoiceNumber(), invoice.customerName(),
-                        invoice.paymentType(), invoice.lineCount(),
-                        invoice.status(), invoice.total(), invoice.createdAt()))
+        return invoices.findReportRows(filter.dateFrom(), filter.dateTo(),
+                filter.customerId(), filter.statuses(), filter.productId(),
+                filter.categoryId()).stream()
+                .map(row -> new InvoiceDocumentRow(row.id(), row.number(),
+                        row.customerName(), row.paymentType(),
+                        (int) row.lineCount(), row.status(), row.total(),
+                        row.createdAt()))
                 .toList();
     }
 }

@@ -1,10 +1,9 @@
 package com.cashly.cashly_api.sales.invoices.invoices.reporting.infrastructure.integration;
 
 import com.cashly.cashly_api.sales.invoices.invoices.application.dto.response.InvoiceDetailResponse;
-import com.cashly.cashly_api.sales.invoices.invoices.application.dto.response.InvoiceListResponse;
 import com.cashly.cashly_api.sales.invoices.invoices.application.queries.services.InvoiceDocumentQueryService;
 import com.cashly.cashly_api.sales.invoices.invoices.application.get.use_case.GetInvoiceByIdUseCase;
-import com.cashly.cashly_api.sales.invoices.invoices.application.list.use_case.GetInvoicesUseCase;
+import com.cashly.cashly_api.sales.invoices.invoices.domain.repository.InvoiceRepository;
 import com.cashly.cashly_api.sales.invoices.invoices.reporting.application.dto.model.InvoiceReportFilter;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
@@ -18,7 +17,7 @@ import static org.mockito.Mockito.*;
 class InvoiceDocumentQueryAdapterTest {
     private final GetInvoiceByIdUseCase single = mock(
             GetInvoiceByIdUseCase.class);
-    private final GetInvoicesUseCase list = mock(GetInvoicesUseCase.class);
+    private final InvoiceRepository list = mock(InvoiceRepository.class);
     private final InvoiceDocumentQueryAdapter adapter = new InvoiceDocumentQueryAdapter(
             new InvoiceDocumentQueryService(single, list));
 
@@ -67,19 +66,15 @@ class InvoiceDocumentQueryAdapterTest {
                 LocalDate.of(2026, 12, 31), UUID.randomUUID(), List.of("PAID"),
                 UUID.randomUUID(), UUID.randomUUID());
         var date = LocalDateTime.of(2026, 1, 2, 10, 30);
-        var source = new InvoiceListResponse(UUID.randomUUID(), "INV02",
-                filter.customerId(), "Customer", "PAID", "Paid", "CASH",
-                new BigDecimal("30"), new BigDecimal("31.25"),
-                new BigDecimal("31.25"), BigDecimal.ZERO, BigDecimal.ZERO, 2,
-                null, null, date, "NONE");
-        when(list.execute(filter.dateFrom(), filter.dateTo(),
-                filter.customerId(), filter.statuses(), null,
-                filter.productId(), filter.categoryId(), "createdAt", "desc"))
-                .thenReturn(List.of(source));
+        var source = new InvoiceRepository.ReportRow(UUID.randomUUID(), "INV02",
+                "Customer", "CASH", "PAID", new BigDecimal("31.25"), date, 2);
+        when(list.findReportRows(filter.dateFrom(), filter.dateTo(),
+                filter.customerId(), filter.statuses(), filter.productId(),
+                filter.categoryId())).thenReturn(List.of(source));
         var rows = adapter.findAll(filter);
         var row = rows.getFirst();
         assertEquals(source.id(), row.id());
-        assertEquals(source.invoiceNumber(), row.invoiceNumber());
+        assertEquals(source.number(), row.invoiceNumber());
         assertEquals(source.customerName(), row.customerName());
         assertEquals(source.paymentType(), row.paymentType());
         assertEquals(source.lineCount(), row.lineCount());
@@ -87,9 +82,9 @@ class InvoiceDocumentQueryAdapterTest {
         assertEquals(source.total(), row.total());
         assertEquals(source.createdAt(), row.createdAt());
         assertThrows(UnsupportedOperationException.class, rows::clear);
-        verify(list).execute(filter.dateFrom(), filter.dateTo(),
-                filter.customerId(), filter.statuses(), null,
-                filter.productId(), filter.categoryId(), "createdAt", "desc");
+        verify(list).findReportRows(filter.dateFrom(), filter.dateTo(),
+                filter.customerId(), filter.statuses(), filter.productId(),
+                filter.categoryId());
     }
 
     @Test
@@ -103,12 +98,11 @@ class InvoiceDocumentQueryAdapterTest {
 
     @Test
     void unfilteredEmptyReportPreservesNullFilterSemantics() {
-        when(list.execute(null, null, null, null, null, null, null, "createdAt",
-                "desc")).thenReturn(List.of());
+        when(list.findReportRows(null, null, null, null, null, null))
+                .thenReturn(List.of());
         assertTrue(adapter.findAll(
                 new InvoiceReportFilter(null, null, null, null, null, null))
                 .isEmpty());
-        verify(list).execute(null, null, null, null, null, null, null,
-                "createdAt", "desc");
+        verify(list).findReportRows(null, null, null, null, null, null);
     }
 }
