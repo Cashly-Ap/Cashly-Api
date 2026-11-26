@@ -31,6 +31,9 @@ CREATE TABLE `invoices` (
   KEY `idx_invoices_created_by` (`created_by`),
   KEY `idx_invoices_status` (`status`),
   KEY `idx_invoices_created_at` (`created_at`),
+  KEY `idx_invoices_customer_status_created` (`customer_id`,`status`,`created_at`),
+  KEY `idx_invoices_status_created` (`status`,`created_at`),
+  KEY `idx_invoices_status_due` (`status`,`due_date`),
   KEY `fk_invoices_company` (`company_id`),
   CONSTRAINT `fk_invoices_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`),
   CONSTRAINT `fk_invoices_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`)

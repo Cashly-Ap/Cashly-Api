@@ -40,6 +40,7 @@ CREATE TABLE `payments` (
   KEY `idx_payments_customer_id` (`customer_id`),
   KEY `idx_payments_status` (`status`),
   KEY `idx_payments_payment_date` (`payment_date`),
+  KEY `idx_payments_customer_date` (`customer_id`,`payment_date`),
   KEY `idx_payments_created_at` (`created_at`),
   KEY `idx_payments_verified_by` (`verified_by`),
   KEY `fk_payments_payment_method` (`payment_method_id`),
