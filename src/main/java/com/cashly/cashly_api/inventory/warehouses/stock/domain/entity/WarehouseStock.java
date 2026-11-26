@@ -1,117 +1,124 @@
 package com.cashly.cashly_api.inventory.warehouses.stock.domain.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
 public class WarehouseStock {
 
+    private static final BigDecimal ZERO = BigDecimal.ZERO;
+
     private final UUID id;
     private final UUID warehouseId;
     private final UUID productId;
-    private int quantity;
-    private int reserved;
+    private BigDecimal quantity;
+    private BigDecimal reserved;
     private LocalDateTime lastMovementAt;
     private LocalDateTime updatedAt;
 
     public WarehouseStock(UUID id, UUID warehouseId, UUID productId,
-            int quantity, int reserved, LocalDateTime lastMovementAt,
-            LocalDateTime updatedAt) {
+            BigDecimal quantity, BigDecimal reserved,
+            LocalDateTime lastMovementAt, LocalDateTime updatedAt) {
         Objects.requireNonNull(warehouseId, "Warehouse ID cannot be null");
         Objects.requireNonNull(productId, "Product ID cannot be null");
         this.id = id;
         this.warehouseId = warehouseId;
         this.productId = productId;
-        this.quantity = quantity;
-        this.reserved = reserved;
+        this.quantity = quantity == null ? ZERO : quantity;
+        this.reserved = reserved == null ? ZERO : reserved;
         this.lastMovementAt = lastMovementAt;
         this.updatedAt = updatedAt;
     }
 
     public static WarehouseStock create(UUID warehouseId, UUID productId) {
         LocalDateTime now = LocalDateTime.now();
-        return new WarehouseStock(null, warehouseId, productId, 0, 0, now, now);
+        return new WarehouseStock(null, warehouseId, productId, ZERO, ZERO,
+                now, now);
     }
 
-    public void addStock(int amount) {
-        if (amount <= 0)
-            throw new IllegalArgumentException(
-                    "Amount to add must be positive");
-        this.quantity += amount;
-        this.lastMovementAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+    public void addStock(BigDecimal amount) {
+        requirePositive(amount, "Amount to add");
+        this.quantity = this.quantity.add(amount);
+        touch();
     }
 
-    public void removeStock(int amount) {
-        if (amount <= 0)
-            throw new IllegalArgumentException(
-                    "Amount to remove must be positive");
-        if (this.quantity < amount) {
+    public void removeStock(BigDecimal amount) {
+        requirePositive(amount, "Amount to remove");
+        if (this.quantity.compareTo(amount) < 0) {
             throw new IllegalStateException("Insufficient stock: available="
-                    + this.quantity + ", requested=" + amount);
+                    + this.quantity.toPlainString() + ", requested="
+                    + amount.toPlainString());
         }
-        this.quantity -= amount;
-        this.lastMovementAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.quantity = this.quantity.subtract(amount);
+        touch();
     }
 
-    public void adjustStock(int newQuantity) {
-        if (newQuantity < 0)
+    public void adjustStock(BigDecimal newQuantity) {
+        if (newQuantity == null || newQuantity.signum() < 0) {
             throw new IllegalArgumentException(
                     "Adjusted quantity cannot be negative");
+        }
         this.quantity = newQuantity;
-        this.lastMovementAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        touch();
     }
 
-    public void reserve(int amount) {
-        if (amount <= 0)
-            throw new IllegalArgumentException(
-                    "Amount to reserve must be positive");
-        if (this.quantity - this.reserved < amount) {
+    public void reserve(BigDecimal amount) {
+        requirePositive(amount, "Amount to reserve");
+        if (this.quantity.subtract(this.reserved).compareTo(amount) < 0) {
             throw new IllegalStateException(
                     "Insufficient available stock: available="
-                            + (this.quantity - this.reserved) + ", requested="
-                            + amount);
+                            + this.quantity.subtract(this.reserved)
+                                    .toPlainString()
+                            + ", requested=" + amount.toPlainString());
         }
-        this.reserved += amount;
+        this.reserved = this.reserved.add(amount);
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void releaseReserved(int amount) {
-        if (amount <= 0)
-            throw new IllegalArgumentException(
-                    "Amount to release must be positive");
-        if (this.reserved < amount) {
+    public void releaseReserved(BigDecimal amount) {
+        requirePositive(amount, "Amount to release");
+        if (this.reserved.compareTo(amount) < 0) {
             throw new IllegalStateException(
                     "Cannot release more than reserved: reserved="
-                            + this.reserved + ", requested=" + amount);
+                            + this.reserved.toPlainString() + ", requested="
+                            + amount.toPlainString());
         }
-        this.reserved -= amount;
+        this.reserved = this.reserved.subtract(amount);
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void deductReserved(int amount) {
-        if (amount <= 0)
-            throw new IllegalArgumentException(
-                    "Amount to deduct must be positive");
-        if (this.reserved < amount) {
+    public void deductReserved(BigDecimal amount) {
+        requirePositive(amount, "Amount to deduct");
+        if (this.reserved.compareTo(amount) < 0) {
             throw new IllegalStateException(
                     "Cannot deduct more than reserved: reserved="
-                            + this.reserved + ", requested=" + amount);
+                            + this.reserved.toPlainString() + ", requested="
+                            + amount.toPlainString());
         }
-        if (this.quantity < amount) {
+        if (this.quantity.compareTo(amount) < 0) {
             throw new IllegalStateException("Insufficient stock: available="
-                    + this.quantity + ", requested=" + amount);
+                    + this.quantity.toPlainString() + ", requested="
+                    + amount.toPlainString());
         }
-        this.quantity -= amount;
-        this.reserved -= amount;
+        this.quantity = this.quantity.subtract(amount);
+        this.reserved = this.reserved.subtract(amount);
+        touch();
+    }
+
+    private static void requirePositive(BigDecimal amount, String label) {
+        if (amount == null || amount.signum() <= 0) {
+            throw new IllegalArgumentException(label + " must be positive");
+        }
+    }
+
+    private void touch() {
         this.lastMovementAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
-    public int getAvailableQuantity() {
-        return this.quantity - this.reserved;
+    public BigDecimal getAvailableQuantity() {
+        return this.quantity.subtract(this.reserved);
     }
 
     public UUID getId() {
@@ -123,10 +130,10 @@ public class WarehouseStock {
     public UUID getProductId() {
         return productId;
     }
-    public int getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
-    public int getReserved() {
+    public BigDecimal getReserved() {
         return reserved;
     }
     public LocalDateTime getLastMovementAt() {

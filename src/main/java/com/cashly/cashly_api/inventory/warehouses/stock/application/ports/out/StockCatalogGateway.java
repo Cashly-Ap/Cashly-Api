@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.stock.application.ports.out;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,6 +16,6 @@ public interface StockCatalogGateway {
         }
     }
 
-    record Component(UUID productId, int quantity) {
+    record Component(UUID productId, BigDecimal quantity) {
     }
 }

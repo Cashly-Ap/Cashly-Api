@@ -57,7 +57,7 @@ class GetWarehouseStockUseCaseTest {
         Product product = buildProduct(productId, "PROD-001", "Test Product",
                 true);
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
-        stock.addStock(50);
+        stock.addStock(new BigDecimal("50"));
 
         PageResponse<WarehouseStock> page = new PageResponse<>(List.of(stock),
                 1L, 1, 10, 0, true, true, false);
@@ -77,7 +77,7 @@ class GetWarehouseStockUseCaseTest {
         assertEquals("PROD-001", response.content().get(0).productCode());
         assertEquals("Test Product", response.content().get(0).productName());
         assertTrue(response.content().get(0).composite());
-        assertEquals(50, response.content().get(0).quantity());
+        assertEquals(0, new BigDecimal("50").compareTo(response.content().get(0).quantity()));
         verify(warehouseRepository).findById(warehouseId);
         verify(warehouseStockRepository).findByWarehouseIdPaged(warehouseId, 0,
                 10);
@@ -102,7 +102,7 @@ class GetWarehouseStockUseCaseTest {
     void shouldUseUnknownWhenProductNotFound() {
         Warehouse warehouse = buildActiveWarehouse(warehouseId);
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
-        stock.addStock(25);
+        stock.addStock(new BigDecimal("25"));
 
         PageResponse<WarehouseStock> page = new PageResponse<>(List.of(stock),
                 1L, 1, 10, 0, true, true, false);

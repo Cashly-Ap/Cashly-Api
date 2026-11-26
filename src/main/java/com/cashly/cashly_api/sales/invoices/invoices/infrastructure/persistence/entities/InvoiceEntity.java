@@ -2,6 +2,7 @@ package com.cashly.cashly_api.sales.invoices.invoices.infrastructure.persistence
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -53,12 +54,14 @@ public class InvoiceEntity {
     @Column(name = "order_number", length = 20)
     private String orderNumber;
 
+    @BatchSize(size = 100)
     @ElementCollection
     @CollectionTable(name = "invoice_order_links", joinColumns = @JoinColumn(name = "invoice_id"))
     @Column(name = "order_id", columnDefinition = "BINARY(16)")
     @JdbcTypeCode(SqlTypes.BINARY)
     private List<UUID> orderIds = new ArrayList<>();
 
+    @BatchSize(size = 100)
     @ElementCollection
     @CollectionTable(name = "invoice_quote_links", joinColumns = @JoinColumn(name = "invoice_id"))
     @Column(name = "quote_id", columnDefinition = "BINARY(16)")

@@ -150,7 +150,7 @@ class DeleteReturnUseCaseTest {
 
         // Then — stock reverted
         verify(warehouseStockRepository).save(stock);
-        assertEquals(9, stock.getQuantity(), "Stock should decrease by 1");
+        assertEquals(new BigDecimal("9"), stock.getQuantity(), "Stock should decrease by 1");
 
         // Then — CANCEL_ENTRY movement saved
         verify(stockMovementRepository).save(stockMovementCaptor.capture());
@@ -217,7 +217,7 @@ class DeleteReturnUseCaseTest {
 
         // Then — stock reverted (same as manual)
         verify(warehouseStockRepository).save(stock);
-        assertEquals(4, stock.getQuantity());
+        assertEquals(new BigDecimal("4"), stock.getQuantity());
 
         // Then — CANCEL_ENTRY movement saved
         verify(stockMovementRepository).save(stockMovementCaptor.capture());
@@ -311,7 +311,7 @@ class DeleteReturnUseCaseTest {
 
         // Then — stock still reverted
         verify(warehouseStockRepository).save(stock);
-        assertEquals(4, stock.getQuantity());
+        assertEquals(new BigDecimal("4"), stock.getQuantity());
 
         // Then — CANCEL_ENTRY still saved
         verify(stockMovementRepository).save(any(StockMovement.class));
@@ -350,7 +350,7 @@ class DeleteReturnUseCaseTest {
 
         // Then — stock reverted
         verify(warehouseStockRepository).save(stock);
-        assertEquals(7, stock.getQuantity());
+        assertEquals(new BigDecimal("7"), stock.getQuantity());
 
         // Then — invoice reverted normally
         verify(invoiceAdjustmentGateway).reverse(eq(return_), any(), any(),
@@ -404,8 +404,10 @@ class DeleteReturnUseCaseTest {
 
     private WarehouseStock givenStockExists(int initialQuantity) {
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
-                WAREHOUSE_ID, PRODUCT_ID, initialQuantity, 0,
-                LocalDateTime.now(), LocalDateTime.now());
+                WAREHOUSE_ID, PRODUCT_ID,
+                java.math.BigDecimal.valueOf(initialQuantity),
+                java.math.BigDecimal.ZERO, LocalDateTime.now(),
+                LocalDateTime.now());
         when(warehouseStockRepository.save(any(WarehouseStock.class)))
                 .thenReturn(stock);
         return stock;

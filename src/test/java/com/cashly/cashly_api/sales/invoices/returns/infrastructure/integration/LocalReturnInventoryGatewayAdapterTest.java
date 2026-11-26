@@ -24,7 +24,7 @@ class LocalReturnInventoryGatewayAdapterTest {
     private final ReturnInventoryGateway.Command command = new ReturnInventoryGateway.Command(
             UUID.randomUUID(), "RET-2026-0001", "User",
             List.of(new ReturnInventoryGateway.Allocation(warehouseId,
-                    productId, 2)));
+                    productId, new BigDecimal("2"))));
 
     @Test
     void shouldForwardRestoreMetadataToPublicWarehouseContract() {
@@ -48,7 +48,7 @@ class LocalReturnInventoryGatewayAdapterTest {
     }
 
     @Test
-    void shouldPreserveIntegerTruncationAndSkipNonPositiveAllocations() {
+    void shouldPreserveDecimalQuantitiesAndSkipNonPositiveAllocations() {
         Return returned = mock(Return.class);
         ReturnLine line = mock(ReturnLine.class);
         when(returned.getId()).thenReturn(ReturnId.of(command.returnId()));
@@ -62,7 +62,7 @@ class LocalReturnInventoryGatewayAdapterTest {
                 .thenReturn(List.of(fractional, zero, negative));
         var mapped = ReturnInventoryGateway.Command.from(returned, "User");
         assertEquals(List.of(new ReturnInventoryGateway.Allocation(warehouseId,
-                productId, 2)), mapped.allocations());
+                productId, new BigDecimal("2.9"))), mapped.allocations());
         assertEquals(command.returnId(), mapped.returnId());
         assertEquals("User", mapped.userName());
     }
@@ -78,6 +78,6 @@ class LocalReturnInventoryGatewayAdapterTest {
         return new ReturnStockCommand(command.returnId(),
                 command.returnNumber(), command.userName(),
                 List.of(new ReturnStockCommand.Allocation(warehouseId,
-                        productId, 2)));
+                        productId, new BigDecimal("2"))));
     }
 }

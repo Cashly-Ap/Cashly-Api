@@ -6,6 +6,8 @@ import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.ou
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.dto.query.model.MovementsPdfQuery;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -39,7 +41,7 @@ class GenerateMovementsExcelUseCaseImplTest {
                 java.time.LocalDate.of(2026, 12, 31));
         List<MovementReportResponse> items = List.of(new MovementReportResponse(
                 UUID.randomUUID(), "Warehouse", "Product", "SKU001", "Entrada",
-                10, 5, 15, "notes", LocalDateTime.now()));
+                new BigDecimal("10"), new BigDecimal("5"), new BigDecimal("15"), "notes", LocalDateTime.now()));
         byte[] expectedExcel = "Excel content".getBytes();
 
         when(repository.findAllForPdf(query)).thenReturn(items);

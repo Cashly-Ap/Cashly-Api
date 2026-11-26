@@ -71,11 +71,11 @@ class TransferStockUseCaseTest {
         Product product = buildProduct(productId, "PROD-001", "Test Product");
 
         WarehouseStock sourceStock = WarehouseStock.create(sourceId, productId);
-        sourceStock.addStock(100);
+        sourceStock.addStock(new BigDecimal("100"));
         WarehouseStock destStock = WarehouseStock.create(destId, productId);
 
         TransferStockRequest request = new TransferStockRequest(productId,
-                destId, 20, "Transfer");
+                destId, new BigDecimal("20"), "Transfer");
 
         when(warehouseRepository.findById(sourceId))
                 .thenReturn(Optional.of(source));
@@ -114,10 +114,10 @@ class TransferStockUseCaseTest {
         assertEquals(2, response.size());
         assertEquals(MovementType.TRANSFER_OUT, response.get(0).movementType());
         assertEquals(MovementType.TRANSFER_IN, response.get(1).movementType());
-        assertEquals(20, response.get(0).quantity());
-        assertEquals(20, response.get(1).quantity());
-        assertEquals(80, response.get(0).newStock());
-        assertEquals(20, response.get(1).newStock());
+        assertEquals(0, new BigDecimal("20").compareTo(response.get(0).quantity()));
+        assertEquals(0, new BigDecimal("20").compareTo(response.get(1).quantity()));
+        assertEquals(0, new BigDecimal("80").compareTo(response.get(0).newStock()));
+        assertEquals(0, new BigDecimal("20").compareTo(response.get(1).newStock()));
         verify(stockMovementRepository, times(2))
                 .save(any(StockMovement.class));
         verify(warehouseStockRepository)
@@ -137,7 +137,7 @@ class TransferStockUseCaseTest {
     @DisplayName("throws WarehouseNotFoundException when source not found")
     void shouldThrowWhenSourceNotFound() {
         TransferStockRequest request = new TransferStockRequest(productId,
-                destId, 10, null);
+                destId, new BigDecimal("10"), null);
 
         when(warehouseRepository.findById(sourceId))
                 .thenReturn(Optional.empty());
@@ -151,7 +151,7 @@ class TransferStockUseCaseTest {
     void shouldThrowWhenDestinationNotFound() {
         Warehouse source = buildActiveWarehouse(sourceId);
         TransferStockRequest request = new TransferStockRequest(productId,
-                destId, 10, null);
+                destId, new BigDecimal("10"), null);
 
         when(warehouseRepository.findById(sourceId))
                 .thenReturn(Optional.of(source));
@@ -166,7 +166,7 @@ class TransferStockUseCaseTest {
     void shouldThrowWhenSourceNotActive() {
         Warehouse source = buildInactiveWarehouse(sourceId);
         TransferStockRequest request = new TransferStockRequest(productId,
-                destId, 10, null);
+                destId, new BigDecimal("10"), null);
 
         when(warehouseRepository.findById(sourceId))
                 .thenReturn(Optional.of(source));
@@ -181,7 +181,7 @@ class TransferStockUseCaseTest {
         Warehouse source = buildActiveWarehouse(sourceId);
         Warehouse dest = buildInactiveWarehouse(destId);
         TransferStockRequest request = new TransferStockRequest(productId,
-                destId, 10, null);
+                destId, new BigDecimal("10"), null);
 
         when(warehouseRepository.findById(sourceId))
                 .thenReturn(Optional.of(source));
@@ -198,7 +198,7 @@ class TransferStockUseCaseTest {
         Warehouse source = buildActiveWarehouse(sourceId);
         Warehouse dest = buildActiveWarehouse(destId);
         TransferStockRequest request = new TransferStockRequest(productId,
-                destId, 10, null);
+                destId, new BigDecimal("10"), null);
 
         when(warehouseRepository.findById(sourceId))
                 .thenReturn(Optional.of(source));
@@ -218,7 +218,7 @@ class TransferStockUseCaseTest {
         Warehouse dest = buildActiveWarehouse(destId);
         Product product = buildProduct(productId, "PROD-001", "Test Product");
         TransferStockRequest request = new TransferStockRequest(productId,
-                destId, 10, null);
+                destId, new BigDecimal("10"), null);
 
         when(warehouseRepository.findById(sourceId))
                 .thenReturn(Optional.of(source));
@@ -241,10 +241,10 @@ class TransferStockUseCaseTest {
         Product product = buildProduct(productId, "PROD-001", "Test Product");
 
         WarehouseStock sourceStock = WarehouseStock.create(sourceId, productId);
-        sourceStock.addStock(5);
+        sourceStock.addStock(new BigDecimal("5"));
 
         TransferStockRequest request = new TransferStockRequest(productId,
-                destId, 20, null);
+                destId, new BigDecimal("20"), null);
 
         when(warehouseRepository.findById(sourceId))
                 .thenReturn(Optional.of(source));

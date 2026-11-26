@@ -6,6 +6,7 @@ import com.cashly.cashly_api.catalog.products.domain.entity.ProductComponent;
 import com.cashly.cashly_api.catalog.products.domain.repository.ProductRepository;
 import com.cashly.cashly_api.catalog.products.infrastructure.config.StockCatalogConfig;
 import org.junit.jupiter.api.Test;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,7 +30,7 @@ class LocalStockCatalogGatewayAdapterTest {
         when(product.isComposite()).thenReturn(true);
         when(product.getComponents()).thenReturn(List.of(component));
         when(component.getComponentProductId()).thenReturn(componentId);
-        when(component.getQuantity()).thenReturn(3);
+        when(component.getQuantity()).thenReturn(BigDecimal.valueOf(3));
         when(products.findById(productId)).thenReturn(Optional.of(product));
         var result = adapter.getProduct(productId);
         assertEquals(productId, result.id());
@@ -37,7 +38,8 @@ class LocalStockCatalogGatewayAdapterTest {
         assertEquals("Composite", result.name());
         assertTrue(result.composite());
         assertEquals(componentId, result.components().getFirst().productId());
-        assertEquals(3, result.components().getFirst().quantity());
+        assertEquals(0, BigDecimal.valueOf(3)
+                .compareTo(result.components().getFirst().quantity()));
         assertThrows(UnsupportedOperationException.class,
                 () -> result.components().clear());
     }

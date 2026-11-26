@@ -41,8 +41,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = InvoiceInventoryConcurrencyIT.PersistenceConfig.class)
 class ManualStockConcurrencyIT {
-    private static final int INITIAL_QUANTITY = 10;
-    private static final int REQUESTED_QUANTITY = 7;
+    private static final java.math.BigDecimal INITIAL_QUANTITY = new java.math.BigDecimal("10");
+    private static final java.math.BigDecimal REQUESTED_QUANTITY = new java.math.BigDecimal("7");
     private static final int TIMEOUT_SECONDS = 30;
     private static final int BLOCK_CHECK_MILLISECONDS = 200;
     private final WarehouseStockRepository stocks;
@@ -77,7 +77,7 @@ class ManualStockConcurrencyIT {
         var now = LocalDateTime.now();
         persistedStocks.saveAndFlush(WarehouseStockEntity
                 .fromDomain(new WarehouseStock(UUID.randomUUID(), warehouseId,
-                        productId, INITIAL_QUANTITY, 0, now, now)));
+                        productId, INITIAL_QUANTITY, java.math.BigDecimal.ZERO, now, now)));
         Warehouse warehouse = mock(Warehouse.class);
         when(warehouse.isActive()).thenReturn(true);
         when(warehouses.findById(warehouseId))
@@ -141,9 +141,9 @@ class ManualStockConcurrencyIT {
                     });
             assertInstanceOf(InsufficientStockException.class,
                     task.get().get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
-            assertEquals(INITIAL_QUANTITY - REQUESTED_QUANTITY, persistedStocks
+            assertEquals(0, INITIAL_QUANTITY.subtract(REQUESTED_QUANTITY).compareTo(persistedStocks
                     .findByWarehouseIdAndProductId(warehouseId, productId)
-                    .orElseThrow().getQuantity());
+                    .orElseThrow().getQuantity()));
             verify(movements, never()).save(any());
         }
     }
@@ -161,12 +161,12 @@ class ManualStockConcurrencyIT {
                                 new StockEntryRequest(List.of(
                                         new StockBatchItem(productId,
                                                 REQUESTED_QUANTITY, "Entry"),
-                                        new StockBatchItem(missingProductId, 1,
+                                        new StockBatchItem(missingProductId, java.math.BigDecimal.ONE,
                                                 "Missing"))))));
-        assertEquals(INITIAL_QUANTITY,
+        assertEquals(0, INITIAL_QUANTITY.compareTo(
                 persistedStocks
                         .findByWarehouseIdAndProductId(warehouseId, productId)
-                        .orElseThrow().getQuantity());
+                        .orElseThrow().getQuantity()));
         verify(movements).save(any(StockMovement.class));
     }
 }

@@ -20,6 +20,7 @@ import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.W
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,7 +90,7 @@ public class StockEntryUseCase {
                 .findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId,
                         product.id());
 
-        int prevQty = stock.getQuantity();
+        BigDecimal prevQty = stock.getQuantity();
         stock.addStock(item.quantity());
         WarehouseStock savedStock = warehouseStockRepository.save(stock);
 
@@ -106,19 +107,21 @@ public class StockEntryUseCase {
             CatalogProduct product, Map<UUID, CatalogProduct> productCache,
             List<StockMovementResponse> movements) {
         for (StockCatalogGateway.Component component : product.components()) {
-            int required = component.quantity() * item.quantity();
+            BigDecimal required = component.quantity()
+                    .multiply(item.quantity());
             WarehouseStock componentStock = warehouseStockRepository
                     .findByWarehouseIdAndProductIdForUpdate(warehouseId,
                             component.productId())
                     .orElseThrow(() -> new InsufficientStockException(
-                            component.productId(), warehouseId, 0, required));
+                            component.productId(), warehouseId, BigDecimal.ZERO,
+                            required));
 
-            if (componentStock.getQuantity() < required) {
+            if (componentStock.getQuantity().compareTo(required) < 0) {
                 throw new InsufficientStockException(component.productId(),
                         warehouseId, componentStock.getQuantity(), required);
             }
 
-            int prevComponentQty = componentStock.getQuantity();
+            BigDecimal prevComponentQty = componentStock.getQuantity();
             componentStock.removeStock(required);
             WarehouseStock savedComponent = warehouseStockRepository
                     .save(componentStock);
@@ -142,7 +145,7 @@ public class StockEntryUseCase {
                 .findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId,
                         product.id());
 
-        int prevQty = stock.getQuantity();
+        BigDecimal prevQty = stock.getQuantity();
         stock.addStock(item.quantity());
         WarehouseStock savedStock = warehouseStockRepository.save(stock);
 

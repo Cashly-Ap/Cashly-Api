@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.procurement.purchases.application.ports.out;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -10,6 +11,7 @@ public interface PurchaseWarehouseGateway {
     List<Stock> findByProductId(UUID productId);
     record Warehouse(UUID id, String code, String name) {
     }
-    record Stock(UUID warehouseId, int quantity, int reserved, int available) {
+    record Stock(UUID warehouseId, BigDecimal quantity, BigDecimal reserved,
+            BigDecimal available) {
     }
 }

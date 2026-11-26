@@ -318,12 +318,12 @@ class CreateInvoiceUseCaseTest {
         User user = buildUser(authenticatedUserId);
         Product product = buildProduct(productId);
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId, 2, 0, LocalDateTime.now(),
+                warehouseId, productId, new BigDecimal("2"), new BigDecimal("0"), LocalDateTime.now(),
                 LocalDateTime.now());
         CreateInvoiceRequest.InvoiceLineRequest lineRequest = new CreateInvoiceRequest.InvoiceLineRequest(
                 productId, BigDecimal.valueOf(3), BigDecimal.TEN,
                 List.of(new CreateInvoiceRequest.WarehouseAllocationRequest(
-                        warehouseId, 3)));
+                        warehouseId, BigDecimal.valueOf(3))));
         CreateInvoiceRequest request = new CreateInvoiceRequest(null,
                 customerId, null, "CASH", null, null, null, null, null,
                 List.of(lineRequest));

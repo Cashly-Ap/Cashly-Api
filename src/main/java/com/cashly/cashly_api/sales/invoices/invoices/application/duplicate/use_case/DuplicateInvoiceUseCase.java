@@ -107,7 +107,7 @@ public class DuplicateInvoiceUseCase {
             InvoiceLine line) {
         inventoryGateway.reserveAllocations(line.getAllocations().stream()
                 .map(a -> new InventoryGateway.Allocation(a.getWarehouseId(),
-                        line.getProductId(), a.getAllocated().intValue()))
+                        line.getProductId(), a.getAllocated()))
                 .toList());
         return line.getAllocations().stream().map(a -> InvoiceLineAllocation
                 .create(a.getWarehouseId(), a.getAllocated())).toList();

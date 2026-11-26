@@ -137,7 +137,7 @@ class DeleteInvoiceUseCaseTest {
                 LocalDateTime.now());
 
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId, 50, 3, LocalDateTime.now(),
+                warehouseId, productId, new BigDecimal("50"), new BigDecimal("3"), LocalDateTime.now(),
                 LocalDateTime.now());
 
         when(invoiceRepository.findById(InvoiceId.of(id)))

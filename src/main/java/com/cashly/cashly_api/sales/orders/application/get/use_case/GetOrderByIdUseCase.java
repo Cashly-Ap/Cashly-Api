@@ -49,14 +49,14 @@ public class GetOrderByIdUseCase {
                 .flatMap(line -> line.getAllocations().stream()
                         .map(a -> new StockAvailabilityGateway.AllocationData(
                                 a.getWarehouseId(), line.getProductId(),
-                                a.getAllocated().intValue())))
+                                a.getAllocated())))
                 .toList();
 
-        Map<OrderMapper.WarehouseProductKey, Integer> thisOrderAllocations = new HashMap<>();
+        Map<OrderMapper.WarehouseProductKey, BigDecimal> thisOrderAllocations = new HashMap<>();
         for (StockAvailabilityGateway.AllocationData ad : allocations) {
             OrderMapper.WarehouseProductKey key = new OrderMapper.WarehouseProductKey(
                     ad.warehouseId(), ad.productId());
-            thisOrderAllocations.merge(key, ad.allocated(), Integer::sum);
+            thisOrderAllocations.merge(key, ad.allocated(), BigDecimal::add);
         }
 
         List<StockAvailabilityGateway.EnrichedStock> enriched = stockEnrichmentService

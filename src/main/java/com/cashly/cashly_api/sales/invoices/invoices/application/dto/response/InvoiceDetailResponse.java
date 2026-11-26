@@ -49,12 +49,13 @@ public record InvoiceDetailResponse(UUID id, String invoiceNumber,
     }
 
     public record WarehouseAllocationResponse(UUID id, UUID warehouseId,
-            String warehouseCode, String warehouseName, Integer available,
-            BigDecimal allocated) {
+            String warehouseCode, String warehouseName,
+            BigDecimal available, BigDecimal allocated) {
     }
 
     public record WarehouseStockDetail(UUID warehouseId, String warehouseCode,
-            String warehouseName, int quantity, int reserved, int available) {
+            String warehouseName, BigDecimal quantity, BigDecimal reserved,
+            BigDecimal available) {
     }
 
     public record ReturnDetail(UUID id, String returnNumber, String returnType,

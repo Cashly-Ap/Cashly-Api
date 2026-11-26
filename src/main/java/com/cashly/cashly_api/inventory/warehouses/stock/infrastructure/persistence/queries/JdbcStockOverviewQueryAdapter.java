@@ -71,9 +71,9 @@ public class JdbcStockOverviewQueryAdapter
                 (row, index) -> new Totals(row.getLong("row_count"),
                         new Summary(row.getLong("product_count"),
                                 row.getLong("warehouse_count"),
-                                row.getLong("total_quantity"),
-                                row.getLong("reserved_quantity"),
-                                row.getLong("available_quantity"))));
+                                row.getBigDecimal("total_quantity"),
+                                row.getBigDecimal("reserved_quantity"),
+                                row.getBigDecimal("available_quantity"))));
         parameters.addValue("limit", filter.size()).addValue("offset",
                 (long) filter.page() * filter.size());
         PageResponse<StockOverviewItem> stock = null;
@@ -122,8 +122,10 @@ public class JdbcStockOverviewQueryAdapter
                 (row, index) -> new GroupTotals(uuid(row.getBytes("group_id")),
                         row.getString("group_name"),
                         row.getString("product_code"),
-                        row.getString("category_name"), row.getLong("quantity"),
-                        row.getLong("reserved"), row.getLong("available"),
+                        row.getString("category_name"), row
+                                .getBigDecimal("quantity"),
+                        row.getBigDecimal("reserved"),
+                        row.getBigDecimal("available"),
                         row.getLong("product_count"),
                         row.getLong("warehouse_count")));
         Map<String, List<StockOverviewItem>> groupedItems;
@@ -175,8 +177,10 @@ public class JdbcStockOverviewQueryAdapter
                         row.getString("product_name"),
                         uuid(row.getBytes("category_id")),
                         row.getString("category_name"),
-                        row.getBoolean("composite"), row.getInt("quantity"),
-                        row.getInt("reserved"), row.getInt("available")));
+                        row.getBoolean("composite"),
+                        row.getBigDecimal("quantity"),
+                        row.getBigDecimal("reserved"),
+                        row.getBigDecimal("available")));
     }
 
     private static <T> PageResponse<T> page(List<T> content, long count,
@@ -188,7 +192,8 @@ public class JdbcStockOverviewQueryAdapter
     }
 
     private record GroupTotals(String id, String name, String productCode,
-            String categoryName, long quantity, long reserved, long available,
+            String categoryName, java.math.BigDecimal quantity,
+            java.math.BigDecimal reserved, java.math.BigDecimal available,
             long productCount, long warehouseCount) {
     }
 

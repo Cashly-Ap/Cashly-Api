@@ -21,6 +21,7 @@ import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.W
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -70,7 +71,7 @@ public class StockExitUseCase {
                     .orElseThrow(() -> new ProductNotInWarehouseException(
                             product.id(), warehouseId));
 
-            if (stock.getQuantity() < item.quantity()) {
+            if (stock.getQuantity().compareTo(item.quantity()) < 0) {
                 throw new InsufficientStockException(product.id(), warehouseId,
                         stock.getQuantity(), item.quantity());
             }
@@ -87,7 +88,7 @@ public class StockExitUseCase {
                     .orElseThrow(() -> new ProductNotInWarehouseException(
                             product.id(), warehouseId));
 
-            int prevQty = stock.getQuantity();
+            BigDecimal prevQty = stock.getQuantity();
             stock.removeStock(item.quantity());
             WarehouseStock savedStock = warehouseStockRepository.save(stock);
 

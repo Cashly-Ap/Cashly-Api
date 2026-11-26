@@ -12,6 +12,7 @@ import com.cashly.cashly_api.inventory.warehouses.stock.application.adjustment.u
 import com.cashly.cashly_api.inventory.warehouses.stock.application.entry.use_case.StockEntryUseCase;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.exit.use_case.StockExitUseCase;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.transfer.use_case.TransferStockUseCase;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -141,7 +142,8 @@ class WarehouseStockControllerTest {
                 any(StockAdjustmentRequest.class))).thenReturn(movement);
 
         StockAdjustmentRequest request = new StockAdjustmentRequest(
-                UUID.randomUUID(), 50, "Adjustment");
+                UUID.randomUUID(), new BigDecimal("50"),
+                "Adjustment");
 
         ResponseEntity<StockMovementResponse> result = warehouseStockController
                 .adjustment(warehouseId, request);
@@ -162,7 +164,8 @@ class WarehouseStockControllerTest {
                 any(TransferStockRequest.class))).thenReturn(List.of(movement));
 
         TransferStockRequest request = new TransferStockRequest(
-                UUID.randomUUID(), UUID.randomUUID(), 10, "Transfer notes");
+                UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("10"),
+                "Transfer notes");
 
         ResponseEntity<List<StockMovementResponse>> result = warehouseStockController
                 .transfer(warehouseId, request);

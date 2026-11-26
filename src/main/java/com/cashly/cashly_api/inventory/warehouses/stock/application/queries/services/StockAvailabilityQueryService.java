@@ -7,6 +7,7 @@ import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.WarehouseS
 import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.WarehouseRepository;
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,17 +66,18 @@ public class StockAvailabilityQueryService implements StockAvailabilityQuery {
 
     @Override
     public List<EnrichedStock> enrich(List<AllocationData> allocations) {
-        Map<Key, Integer> groupedAllocations = allocations.stream()
+        Map<Key, BigDecimal> groupedAllocations = allocations.stream()
                 .collect(Collectors.groupingBy(
                         a -> new Key(a.warehouseId(), a.productId()),
-                        Collectors.summingInt(AllocationData::allocated)));
+                        Collectors.reducing(BigDecimal.ZERO,
+                                AllocationData::allocated, BigDecimal::add)));
 
         Map<UUID, Warehouse> warehouseCache = new HashMap<>();
         List<EnrichedStock> result = new ArrayList<>();
 
-        for (Map.Entry<Key, Integer> entry : groupedAllocations.entrySet()) {
+        for (Map.Entry<Key, BigDecimal> entry : groupedAllocations.entrySet()) {
             Key key = entry.getKey();
-            int totalAllocated = entry.getValue();
+            BigDecimal totalAllocated = entry.getValue();
 
             Warehouse warehouse = warehouseCache.computeIfAbsent(
                     key.warehouseId(),
@@ -83,12 +85,12 @@ public class StockAvailabilityQueryService implements StockAvailabilityQuery {
             if (warehouse == null)
                 continue;
 
-            int currentStock = warehouseStockRepository
+            BigDecimal currentStock = warehouseStockRepository
                     .findByWarehouseIdAndProductId(key.warehouseId(),
                             key.productId())
-                    .map(WarehouseStock::getQuantity).orElse(0);
+                    .map(WarehouseStock::getQuantity).orElse(BigDecimal.ZERO);
 
-            int availableStock = currentStock + totalAllocated;
+            BigDecimal availableStock = currentStock.add(totalAllocated);
 
             result.add(new EnrichedStock(key.warehouseId(), key.productId(),
                     warehouse.getCode(), warehouse.getName(), availableStock));

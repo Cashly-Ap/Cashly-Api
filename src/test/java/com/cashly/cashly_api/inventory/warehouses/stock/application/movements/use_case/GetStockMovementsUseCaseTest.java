@@ -70,7 +70,7 @@ class GetStockMovementsUseCaseTest {
         Warehouse warehouse = buildActiveWarehouse(warehouseId);
         Product product = buildProduct(productId, "PROD-001", "Test Product");
         StockMovement movement = StockMovement.create(warehouseId, productId,
-                MovementType.ENTRY, 10, 0, 10, null, null, "Entry");
+                MovementType.ENTRY, new BigDecimal("10"), new BigDecimal("0"), new BigDecimal("10"), null, null, "Entry");
 
         PageResponse<StockMovement> page = new PageResponse<>(List.of(movement),
                 1L, 1, 10, 0, true, true, false);
@@ -101,7 +101,7 @@ class GetStockMovementsUseCaseTest {
         Warehouse warehouse = buildActiveWarehouse(warehouseId);
         Product product = buildProduct(productId, "PROD-001", "Test Product");
         StockMovement movement = StockMovement.create(warehouseId, productId,
-                MovementType.EXIT, 5, 100, 95, null, null, "Exit");
+                MovementType.EXIT, new BigDecimal("5"), new BigDecimal("100"), new BigDecimal("95"), null, null, "Exit");
 
         PageResponse<StockMovement> page = new PageResponse<>(List.of(movement),
                 1L, 1, 10, 0, true, true, false);
@@ -204,7 +204,7 @@ class GetStockMovementsUseCaseTest {
     @Test
     void shouldPreserveUnknownProductLabelsInHistoricalMovements() {
         StockMovement movement = StockMovement.create(warehouseId, productId,
-                MovementType.ENTRY, 10, 0, 10, null, null, "Historical");
+                MovementType.ENTRY, new BigDecimal("10"), new BigDecimal("0"), new BigDecimal("10"), null, null, "Historical");
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.of(buildActiveWarehouse(warehouseId)));
         when(stockMovementRepository.findByWarehouseId(warehouseId, 0, 10))
@@ -249,9 +249,9 @@ class GetStockMovementsUseCaseTest {
         StockMovementsResponse response = useCase.execute(filter);
 
         assertSame(expected, response);
-        assertEquals(8L, response.summary().entryQuantity());
-        assertEquals(2L, response.summary().exitQuantity());
-        assertEquals(6L, response.summary().netQuantity());
+        assertEquals(0, new BigDecimal("8").compareTo(response.summary().entryQuantity()));
+        assertEquals(0, new BigDecimal("2").compareTo(response.summary().exitQuantity()));
+        assertEquals(0, new BigDecimal("6").compareTo(response.summary().netQuantity()));
         assertEquals(List.of("P-1"),
                 response.products().stream().map(ProductOption::code).toList());
         assertEquals(List.of("Main", "North"),
@@ -371,7 +371,7 @@ class GetStockMovementsUseCaseTest {
 
     private StockMovementsResponse globalResponse(
             StockMovementGroupBy groupBy) {
-        Summary summary = new Summary(3, 1, 2, 8, 2, 6);
+        Summary summary = new Summary(3, 1, 2, new BigDecimal("8"), new BigDecimal("2"), new BigDecimal("6"));
         List<WarehouseOption> warehouses = List.of(
                 new WarehouseOption("w-1", "Main"),
                 new WarehouseOption("w-2", "North"));

@@ -138,15 +138,15 @@ class ConfirmPurchaseUseCaseUnitTest {
                 .findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId,
                         productId);
         verify(warehouseStockRepository)
-                .save(argThat(savedStock -> savedStock.getQuantity() == 10));
+                .save(argThat(savedStock -> savedStock.getQuantity().compareTo(java.math.BigDecimal.valueOf(10)) == 0));
         verify(stockMovementRepository).save(argThat(
                 movement -> movement.getMovementType() == MovementType.ENTRY
                         && movement.getReferenceType() == ReferenceType.PURCHASE
-                        && movement.getQuantity() == 10
+                        && movement.getQuantity().compareTo(java.math.BigDecimal.valueOf(10)) == 0
                         && movement.getProductId().equals(productId)
                         && movement.getWarehouseId().equals(warehouseId)
-                        && movement.getPreviousStock() == 0
-                        && movement.getNewStock() == 10
+                        && movement.getPreviousStock().compareTo(java.math.BigDecimal.valueOf(0)) == 0
+                        && movement.getNewStock().compareTo(java.math.BigDecimal.valueOf(10)) == 0
                         && movement.getReferenceId().equals(id)
                         && movement.getReferenceNumber()
                                 .equals(purchase.getPurchaseNumber().getValue())
@@ -178,7 +178,7 @@ class ConfirmPurchaseUseCaseUnitTest {
                 .findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId,
                         productId);
         verify(warehouseStockRepository)
-                .save(argThat(savedStock -> savedStock.getQuantity() == 10));
+                .save(argThat(savedStock -> savedStock.getQuantity().compareTo(java.math.BigDecimal.valueOf(10)) == 0));
         verify(stockMovementRepository).save(argThat(movement -> movement
                 .getMovementType() == MovementType.ENTRY
                 && movement.getReferenceType() == ReferenceType.PURCHASE));

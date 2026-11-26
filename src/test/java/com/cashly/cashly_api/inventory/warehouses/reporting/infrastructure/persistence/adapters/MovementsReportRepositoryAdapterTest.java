@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,9 +46,9 @@ class MovementsReportRepositoryAdapterTest {
         when(projection.getProductName()).thenReturn("Product A");
         when(projection.getSku()).thenReturn("SKU001");
         when(projection.getMovementType()).thenReturn("ENTRY");
-        when(projection.getQuantity()).thenReturn(10);
-        when(projection.getPreviousStock()).thenReturn(5);
-        when(projection.getNewStock()).thenReturn(15);
+        when(projection.getQuantity()).thenReturn(new BigDecimal("10"));
+        when(projection.getPreviousStock()).thenReturn(new BigDecimal("5"));
+        when(projection.getNewStock()).thenReturn(new BigDecimal("15"));
         when(projection.getNotes()).thenReturn("Initial stock");
         when(projection.getCreatedAt()).thenReturn(LocalDateTime.now());
 
@@ -61,8 +62,8 @@ class MovementsReportRepositoryAdapterTest {
         assertEquals("Main Warehouse", result.get(0).warehouseName());
         assertEquals("Product A", result.get(0).productName());
         assertEquals("ENTRY", result.get(0).movementType());
-        assertEquals(10, result.get(0).quantity());
-        assertEquals(15, result.get(0).newStock());
+        assertEquals(0, new BigDecimal("10").compareTo(result.get(0).quantity()));
+        assertEquals(0, new BigDecimal("15").compareTo(result.get(0).newStock()));
         verify(jpaRepository).findAllForPdf(any(), any(), any(), any(), any());
     }
 

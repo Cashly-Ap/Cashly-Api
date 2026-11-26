@@ -1,6 +1,7 @@
 package com.cashly.cashly_api.sales.invoices.returns.application.ports.out;
 
 import com.cashly.cashly_api.sales.invoices.returns.domain.entity.Return;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,13 +21,14 @@ public interface ReturnInventoryGateway {
                             .map(allocation -> new Allocation(
                                     allocation.getWarehouseId(),
                                     line.getProductId(),
-                                    allocation.getAllocated().intValue())))
-                    .filter(allocation -> allocation.quantity() > 0).toList();
+                                    allocation.getAllocated())))
+                    .filter(allocation -> allocation.quantity().signum() > 0)
+                    .toList();
             return new Command(returned.getId().value(),
                     returned.getReturnNumber().value(), userName, allocations);
         }
     }
 
-    record Allocation(UUID warehouseId, UUID productId, int quantity) {
+    record Allocation(UUID warehouseId, UUID productId, BigDecimal quantity) {
     }
 }

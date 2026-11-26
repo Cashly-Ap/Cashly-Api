@@ -103,7 +103,7 @@ public class CreateOrderUseCase {
                     allocation.allocated())));
 
             allocations.add(OrderLineAllocation.create(allocation.warehouseId(),
-                    BigDecimal.valueOf(allocation.allocated())));
+                    allocation.allocated()));
         }
         return allocations;
     }

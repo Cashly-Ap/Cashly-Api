@@ -1,6 +1,7 @@
 package com.cashly.cashly_api.sales.invoices.invoices.application.ports.out;
 
 import com.cashly.cashly_api.sales.invoices.invoices.domain.entity.Invoice;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,10 +24,10 @@ public interface InventoryGateway {
                             .flatMap(line -> line.getAllocations().stream()
                                     .map(a -> new Allocation(a.getWarehouseId(),
                                             line.getProductId(),
-                                            a.getAllocated().intValue())))
+                                            a.getAllocated())))
                             .toList());
         }
     }
-    record Allocation(UUID warehouseId, UUID productId, int quantity) {
+    record Allocation(UUID warehouseId, UUID productId, BigDecimal quantity) {
     }
 }

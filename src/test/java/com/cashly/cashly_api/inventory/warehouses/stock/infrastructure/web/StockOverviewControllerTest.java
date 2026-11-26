@@ -8,6 +8,8 @@ import com.cashly.cashly_api.inventory.warehouses.stock.application.queries.use_
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +44,8 @@ class StockOverviewControllerTest {
     void readsStockAndOptionsWithoutCatalogPermission() throws Exception {
         var response = new StockOverviewResponse(
                 new PageResponse<>(List.of(), 0, 0, 10, 0, true, true, true),
-                new StockOverviewResponse.Summary(0, 0, 0, 0, 0),
+                new StockOverviewResponse.Summary(0, 0, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO),
                 List.of(new StockOverviewResponse.Option("warehouse-id",
                         "Main")),
                 List.of(new StockOverviewResponse.Option("category-id",
@@ -70,7 +73,8 @@ class StockOverviewControllerTest {
     @WithMockUser(authorities = "INVENTORY_WAREHOUSES_VIEW_STOCK")
     void bindsGroupingAndRejectsUnknownGrouping() throws Exception {
         var response = new StockOverviewResponse(null,
-                new StockOverviewResponse.Summary(0, 0, 0, 0, 0), List.of(),
+                new StockOverviewResponse.Summary(0, 0, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO), List.of(),
                 List.of(), StockOverviewGroupBy.PRODUCT,
                 new PageResponse<>(List.of(), 0, 0, 1, 0, true, true, true));
         when(gateway.search(any())).thenReturn(response);
@@ -107,7 +111,8 @@ class StockOverviewControllerTest {
         var warehouseId = UUID.randomUUID();
         var categoryId = UUID.randomUUID();
         var response = new StockOverviewResponse(null,
-                new StockOverviewResponse.Summary(0, 0, 0, 0, 0), List.of(),
+                new StockOverviewResponse.Summary(0, 0, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO), List.of(),
                 List.of(), StockOverviewGroupBy.WAREHOUSE,
                 new PageResponse<>(List.of(), 0, 0, 25, 2, false, true, true));
         when(gateway.search(any())).thenReturn(response);
@@ -128,7 +133,8 @@ class StockOverviewControllerTest {
     private static StockOverviewResponse ungroupedResponse() {
         return new StockOverviewResponse(
                 new PageResponse<>(List.of(), 0, 0, 10, 0, true, true, true),
-                new StockOverviewResponse.Summary(0, 0, 0, 0, 0), List.of(),
+                new StockOverviewResponse.Summary(0, 0, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO), List.of(),
                 List.of());
     }
 

@@ -8,6 +8,7 @@ import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.WarehouseS
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockMovementRepository;
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.junit.jupiter.api.Test;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,13 +27,13 @@ class ReturnInventoryServiceTest {
     private final ReturnStockCommand command = new ReturnStockCommand(
             UUID.randomUUID(), "RET-2026-0001", "User",
             List.of(new ReturnStockCommand.Allocation(warehouseId, productId,
-                    2)));
+                    new BigDecimal("2"))));
 
     @Test
     void shouldRestoreLockedStockAndPreserveReturnEntryMetadata() {
         WarehouseStock stock = stockWithQuantity(10);
         inventory.restoreStock(command);
-        assertEquals(12, stock.getQuantity());
+        assertEquals(0, new BigDecimal("12").compareTo(stock.getQuantity()));
         verifyMovement(MovementType.RETURN_ENTRY, 10, 12,
                 "Return: " + command.returnNumber());
         verify(stocks).save(stock);
@@ -43,7 +44,7 @@ class ReturnInventoryServiceTest {
     void shouldReverseLockedStockAndPreserveDeletionMetadata() {
         WarehouseStock stock = stockWithQuantity(10);
         inventory.reverseStock(command);
-        assertEquals(8, stock.getQuantity());
+        assertEquals(0, new BigDecimal("8").compareTo(stock.getQuantity()));
         verifyMovement(MovementType.CANCEL_ENTRY, 10, 8,
                 "Return deleted: " + command.returnNumber() + " by User");
         verify(stocks).save(stock);
@@ -57,7 +58,7 @@ class ReturnInventoryServiceTest {
 
         inventory.restoreStock(command);
 
-        assertEquals(2, created.getQuantity());
+        assertEquals(0, new BigDecimal("2").compareTo(created.getQuantity()));
         verify(stocks).save(created);
         verifyMovement(MovementType.RETURN_ENTRY, 0, 2,
                 "Return: " + command.returnNumber());
@@ -76,7 +77,7 @@ class ReturnInventoryServiceTest {
         WarehouseStock stock = stockWithQuantity(1);
         assertThrows(IllegalStateException.class,
                 () -> inventory.reverseStock(command));
-        assertEquals(1, stock.getQuantity());
+        assertEquals(0, BigDecimal.ONE.compareTo(stock.getQuantity()));
         verify(stocks, never()).save(any());
         verifyNoInteractions(movements);
     }
@@ -98,21 +99,21 @@ class ReturnInventoryServiceTest {
                 () -> new ReturnStockCommand(UUID.randomUUID(), null, null,
                         List.of()));
         assertThrows(NullPointerException.class,
-                () -> new ReturnStockCommand.Allocation(null, productId, 1));
+                () -> new ReturnStockCommand.Allocation(null, productId, BigDecimal.ONE));
         assertThrows(NullPointerException.class,
-                () -> new ReturnStockCommand.Allocation(warehouseId, null, 1));
+                () -> new ReturnStockCommand.Allocation(warehouseId, null, BigDecimal.ONE));
         assertThrows(IllegalArgumentException.class,
                 () -> new ReturnStockCommand.Allocation(warehouseId, productId,
-                        0));
+                        BigDecimal.ZERO));
         assertThrows(IllegalArgumentException.class,
                 () -> new ReturnStockCommand.Allocation(warehouseId, productId,
-                        -1));
+                        new BigDecimal("-1")));
         assertThrows(UnsupportedOperationException.class,
                 () -> command.allocations().clear());
     }
     private WarehouseStock stockWithQuantity(int quantity) {
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
-        stock.addStock(quantity);
+        stock.addStock(BigDecimal.valueOf(quantity));
         when(stocks.findByWarehouseIdAndProductIdForUpdate(warehouseId,
                 productId)).thenReturn(Optional.of(stock));
         when(stocks.findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId,
@@ -128,9 +129,9 @@ class ReturnInventoryServiceTest {
         assertEquals(type, movement.getMovementType());
         assertEquals(warehouseId, movement.getWarehouseId());
         assertEquals(productId, movement.getProductId());
-        assertEquals(2, movement.getQuantity());
-        assertEquals(previous, movement.getPreviousStock());
-        assertEquals(current, movement.getNewStock());
+        assertEquals(0, new BigDecimal("2").compareTo(movement.getQuantity()));
+        assertEquals(0, BigDecimal.valueOf(previous).compareTo(movement.getPreviousStock()));
+        assertEquals(0, BigDecimal.valueOf(current).compareTo(movement.getNewStock()));
         assertEquals(ReferenceType.RETURN, movement.getReferenceType());
         assertEquals(command.returnId(), movement.getReferenceId());
         assertEquals(command.returnNumber(), movement.getReferenceNumber());

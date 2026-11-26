@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,7 @@ class StockAvailabilityQueryServiceTest {
                 "Deposito Principal", "Dir", "Estado", "Municipio", "9999",
                 true, LocalDateTime.now(), LocalDateTime.now());
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId, 50, 10, LocalDateTime.now(),
+                warehouseId, productId, new BigDecimal("50"), new BigDecimal("10"), LocalDateTime.now(),
                 LocalDateTime.now());
 
         when(warehouseRepository.findById(warehouseId))
@@ -67,7 +68,7 @@ class StockAvailabilityQueryServiceTest {
 
         List<StockAvailabilityQuery.AllocationData> allocations = List
                 .of(new StockAvailabilityQuery.AllocationData(warehouseId,
-                        productId, 5));
+                        productId, new BigDecimal("5")));
 
         List<StockAvailabilityQuery.EnrichedStock> result = service
                 .enrich(allocations);
@@ -77,7 +78,7 @@ class StockAvailabilityQueryServiceTest {
         assertEquals(productId, result.get(0).productId());
         assertEquals("WH-MAIN", result.get(0).warehouseCode());
         assertEquals("Deposito Principal", result.get(0).warehouseName());
-        assertEquals(55, result.get(0).availableStock());
+        assertEquals(0, new BigDecimal("55").compareTo(result.get(0).availableStock()));
         verify(warehouseRepository).findById(warehouseId);
         verify(warehouseStockRepository)
                 .findByWarehouseIdAndProductId(warehouseId, productId);
@@ -91,7 +92,7 @@ class StockAvailabilityQueryServiceTest {
         when(warehouse.getCode()).thenReturn("WH-MAIN");
         when(warehouse.getName()).thenReturn("Principal");
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId, 100, 0, LocalDateTime.now(),
+                warehouseId, productId, new BigDecimal("100"), new BigDecimal("0"), LocalDateTime.now(),
                 LocalDateTime.now());
 
         when(warehouseRepository.findById(warehouseId))
@@ -101,15 +102,15 @@ class StockAvailabilityQueryServiceTest {
 
         List<StockAvailabilityQuery.AllocationData> allocations = List.of(
                 new StockAvailabilityQuery.AllocationData(warehouseId,
-                        productId, 3),
+                        productId, new BigDecimal("3")),
                 new StockAvailabilityQuery.AllocationData(warehouseId,
-                        productId, 7));
+                        productId, new BigDecimal("7")));
 
         List<StockAvailabilityQuery.EnrichedStock> result = service
                 .enrich(allocations);
 
         assertEquals(1, result.size());
-        assertEquals(110, result.get(0).availableStock());
+        assertEquals(0, new BigDecimal("110").compareTo(result.get(0).availableStock()));
         verify(warehouseRepository).findById(warehouseId);
         verify(warehouseStockRepository)
                 .findByWarehouseIdAndProductId(warehouseId, productId);
@@ -125,7 +126,7 @@ class StockAvailabilityQueryServiceTest {
 
         List<StockAvailabilityQuery.AllocationData> allocations = List
                 .of(new StockAvailabilityQuery.AllocationData(warehouseId,
-                        productId, 5));
+                        productId, new BigDecimal("5")));
 
         List<StockAvailabilityQuery.EnrichedStock> result = service
                 .enrich(allocations);
@@ -148,13 +149,13 @@ class StockAvailabilityQueryServiceTest {
 
         List<StockAvailabilityQuery.AllocationData> allocations = List
                 .of(new StockAvailabilityQuery.AllocationData(warehouseId,
-                        productId, 5));
+                        productId, new BigDecimal("5")));
 
         List<StockAvailabilityQuery.EnrichedStock> result = service
                 .enrich(allocations);
 
         assertEquals(1, result.size());
-        assertEquals(5, result.get(0).availableStock());
+        assertEquals(0, new BigDecimal("5").compareTo(result.get(0).availableStock()));
     }
 
     @Test
@@ -178,7 +179,7 @@ class StockAvailabilityQueryServiceTest {
         when(warehouse.getCode()).thenReturn("WH-MAIN");
         when(warehouse.getName()).thenReturn("Deposito Principal");
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId, 50, 10, LocalDateTime.now(),
+                warehouseId, productId, new BigDecimal("50"), new BigDecimal("10"), LocalDateTime.now(),
                 LocalDateTime.now());
 
         when(customerWarehouseAccessRepository.findByCustomerId(customerId))
@@ -195,9 +196,9 @@ class StockAvailabilityQueryServiceTest {
         assertTrue(result.containsKey(productId));
         assertEquals(1, result.get(productId).size());
         assertEquals("WH-MAIN", result.get(productId).get(0).warehouseCode());
-        assertEquals(50, result.get(productId).get(0).quantity());
-        assertEquals(10, result.get(productId).get(0).reserved());
-        assertEquals(40, result.get(productId).get(0).available());
+        assertEquals(0, new BigDecimal("50").compareTo(result.get(productId).get(0).quantity()));
+        assertEquals(0, new BigDecimal("10").compareTo(result.get(productId).get(0).reserved()));
+        assertEquals(0, new BigDecimal("40").compareTo(result.get(productId).get(0).available()));
         verify(customerWarehouseAccessRepository).findByCustomerId(customerId);
     }
 
@@ -230,10 +231,10 @@ class StockAvailabilityQueryServiceTest {
         when(warehouse.getCode()).thenReturn("WH-MAIN");
         when(warehouse.getName()).thenReturn("Principal");
         WarehouseStock stock1 = new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId1, 30, 5, LocalDateTime.now(),
+                warehouseId, productId1, new BigDecimal("30"), new BigDecimal("5"), LocalDateTime.now(),
                 LocalDateTime.now());
         WarehouseStock stock2 = new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId2, 20, 2, LocalDateTime.now(),
+                warehouseId, productId2, new BigDecimal("20"), new BigDecimal("2"), LocalDateTime.now(),
                 LocalDateTime.now());
 
         when(customerWarehouseAccessRepository.findByCustomerId(customerId))
@@ -250,8 +251,8 @@ class StockAvailabilityQueryServiceTest {
                         List.of(productId1, productId2));
 
         assertEquals(2, result.size());
-        assertEquals(25, result.get(productId1).get(0).available());
-        assertEquals(18, result.get(productId2).get(0).available());
+        assertEquals(0, new BigDecimal("25").compareTo(result.get(productId1).get(0).available()));
+        assertEquals(0, new BigDecimal("18").compareTo(result.get(productId2).get(0).available()));
     }
 
     @Test
@@ -267,10 +268,10 @@ class StockAvailabilityQueryServiceTest {
         when(warehouse.getCode()).thenReturn("WH-ACC");
         when(warehouse.getName()).thenReturn("Accessible");
         WarehouseStock accessibleStock = new WarehouseStock(UUID.randomUUID(),
-                accessibleWarehouseId, productId, 10, 0, LocalDateTime.now(),
+                accessibleWarehouseId, productId, new BigDecimal("10"), new BigDecimal("0"), LocalDateTime.now(),
                 LocalDateTime.now());
         WarehouseStock restrictedStock = new WarehouseStock(UUID.randomUUID(),
-                restrictedWarehouseId, productId, 99, 0, LocalDateTime.now(),
+                restrictedWarehouseId, productId, new BigDecimal("99"), new BigDecimal("0"), LocalDateTime.now(),
                 LocalDateTime.now());
 
         when(customerWarehouseAccessRepository.findByCustomerId(customerId))
@@ -284,6 +285,6 @@ class StockAvailabilityQueryServiceTest {
                 .getAllStockByProducts(customerId, List.of(productId));
 
         assertEquals(1, result.get(productId).size());
-        assertEquals(10, result.get(productId).get(0).available());
+        assertEquals(0, new BigDecimal("10").compareTo(result.get(productId).get(0).available()));
     }
 }

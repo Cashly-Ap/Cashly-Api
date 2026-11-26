@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -47,7 +48,7 @@ class JpaStockMovementRepositoryTest {
 
     private StockMovement createSampleMovement() {
         return new StockMovement(UUID.randomUUID(), UUID.randomUUID(),
-                UUID.randomUUID(), MovementType.ENTRY, 10, 100, 110, null, null,
+                UUID.randomUUID(), MovementType.ENTRY, new BigDecimal("10"), new BigDecimal("100"), new BigDecimal("110"), null, null,
                 null, null, null, "Initial stock entry", LocalDateTime.now());
     }
 
@@ -95,7 +96,7 @@ class JpaStockMovementRepositoryTest {
         @Test
         void should_SaveWithGeneratedId_When_DomainHasNullId() {
             StockMovement movement = StockMovement.create(UUID.randomUUID(),
-                    UUID.randomUUID(), MovementType.EXIT, 5, 110, 105, null,
+                    UUID.randomUUID(), MovementType.EXIT, new BigDecimal("5"), new BigDecimal("110"), new BigDecimal("105"), null,
                     null, "Sale exit");
 
             StockMovementEntity expectedEntity = StockMovementEntity
@@ -123,7 +124,7 @@ class JpaStockMovementRepositoryTest {
             UUID warehouseId = UUID.randomUUID();
             UUID productId = UUID.randomUUID();
             StockMovement movement = new StockMovement(UUID.randomUUID(),
-                    warehouseId, productId, MovementType.ENTRY, 10, 100, 110,
+                    warehouseId, productId, MovementType.ENTRY, new BigDecimal("10"), new BigDecimal("100"), new BigDecimal("110"),
                     null, null, null, null, null, "Entry", LocalDateTime.now());
 
             StockMovementEntity entity = StockMovementEntity
@@ -191,8 +192,8 @@ class JpaStockMovementRepositoryTest {
         void should_ReturnPageResponseWithDomainObjects_When_EntitiesFound() {
             UUID warehouseId = UUID.randomUUID();
             StockMovement movement = new StockMovement(UUID.randomUUID(),
-                    warehouseId, UUID.randomUUID(), MovementType.ENTRY, 10, 100,
-                    110, null, null, null, null, null, "Entry",
+                    warehouseId, UUID.randomUUID(), MovementType.ENTRY, new BigDecimal("10"), new BigDecimal("100"),
+                    new BigDecimal("110"), null, null, null, null, null, "Entry",
                     LocalDateTime.now());
 
             StockMovementEntity entity = StockMovementEntity
@@ -247,7 +248,7 @@ class JpaStockMovementRepositoryTest {
         void should_FilterByMovementTypeBeforeMappingThePage() {
             UUID warehouseId = UUID.randomUUID();
             StockMovement movement = new StockMovement(UUID.randomUUID(),
-                    warehouseId, UUID.randomUUID(), MovementType.EXIT, 4, 10, 6,
+                    warehouseId, UUID.randomUUID(), MovementType.EXIT, new BigDecimal("4"), new BigDecimal("10"), new BigDecimal("6"),
                     null, null, null, null, null, "Exit", LocalDateTime.now());
             Page<StockMovementEntity> page = new PageImpl<>(
                     List.of(StockMovementEntity.fromDomain(movement)),

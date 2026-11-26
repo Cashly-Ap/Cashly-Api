@@ -86,7 +86,7 @@ class ConvertQuoteToOrderUseCaseTest {
         Quote quote = buildDraftQuote(quoteId, warehouseId, productId);
         User user = buildUser(authenticatedUserId);
         WarehouseStock stock = new WarehouseStock(null, warehouseId, productId,
-                100, 0, null, null);
+                new BigDecimal("100"), new BigDecimal("0"), null, null);
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
         when(userRepository.findById(new UserId(authenticatedUserId)))
@@ -109,7 +109,7 @@ class ConvertQuoteToOrderUseCaseTest {
         assertNotNull(result.orderId());
         assertNotNull(result.orderNumber());
 
-        assertEquals(97, stock.getQuantity());
+        assertEquals(new BigDecimal("97"), stock.getQuantity());
 
         assertEquals(result.orderId(), quote.getOrderId());
         assertEquals(result.orderNumber(), quote.getOrderNumber());
@@ -188,7 +188,7 @@ class ConvertQuoteToOrderUseCaseTest {
         line.addAllocation(new QuoteAllocation(allocationProductId, warehouseId,
                 "Warehouse", BigDecimal.valueOf(3)));
         WarehouseStock stock = new WarehouseStock(null, warehouseId,
-                allocationProductId, 100, 0, null, null);
+                allocationProductId, new BigDecimal("100"), new BigDecimal("0"), null, null);
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
         when(orderRepository.getNextSequenceForYear(anyInt())).thenReturn(5);
         when(orderRepository.save(any(Order.class)))
@@ -199,7 +199,7 @@ class ConvertQuoteToOrderUseCaseTest {
 
         useCase.execute(quoteId, null);
 
-        assertEquals(97, stock.getQuantity());
+        assertEquals(new BigDecimal("97"), stock.getQuantity());
         verify(userRepository, never()).findById(any());
         verify(warehouseStockRepository, never())
                 .findByWarehouseIdAndProductIdForUpdate(warehouseId,

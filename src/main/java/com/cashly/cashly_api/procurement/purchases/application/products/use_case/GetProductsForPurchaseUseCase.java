@@ -60,16 +60,23 @@ public class GetProductsForPurchaseUseCase {
         List<WarehouseStockItem> stockItems = allWarehouses.stream()
                 .map(warehouse -> {
                     Stock stock = stockByWarehouse.get(warehouse.id());
-                    int quantity = stock != null ? stock.quantity() : 0;
-                    int reserved = stock != null ? stock.reserved() : 0;
-                    int available = stock != null ? stock.available() : 0;
+                    java.math.BigDecimal quantity = stock != null
+                            ? stock.quantity()
+                            : java.math.BigDecimal.ZERO;
+                    java.math.BigDecimal reserved = stock != null
+                            ? stock.reserved()
+                            : java.math.BigDecimal.ZERO;
+                    java.math.BigDecimal available = stock != null
+                            ? stock.available()
+                            : java.math.BigDecimal.ZERO;
                     return new WarehouseStockItem(warehouse.id().toString(),
                             warehouse.code(), warehouse.name(), quantity,
                             reserved, available);
                 }).toList();
 
-        int totalStock = stockItems.stream()
-                .mapToInt(WarehouseStockItem::quantity).sum();
+        java.math.BigDecimal totalStock = stockItems.stream()
+                .map(WarehouseStockItem::quantity)
+                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
 
         return new PurchaseProductResponse(product.id().toString(),
                 product.code(), product.name(), product.categoryId().toString(),

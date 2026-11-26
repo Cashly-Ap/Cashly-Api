@@ -4,6 +4,8 @@ import com.cashly.cashly_api.sales.invoices.invoices.application.ports.out.Inven
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.InvoiceInventoryApi;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.InvoiceStockCommand;
 import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
 import org.mockito.ArgumentCaptor;
 import java.util.List;
 import java.util.UUID;
@@ -20,7 +22,7 @@ class LocalInventoryGatewayAdapterTest {
     private final InventoryGateway.InvoiceInventoryCommand command = new InventoryGateway.InvoiceInventoryCommand(
             invoiceId, "INV-2026-00001",
             List.of(new InventoryGateway.Allocation(warehouseId, productId,
-                    7)));
+                    new BigDecimal("7"))));
     @Test
     void should_translate_invoice_allocations_to_public_inventory_contract() {
         adapter.confirmInvoice(command);
@@ -30,7 +32,8 @@ class LocalInventoryGatewayAdapterTest {
         assertEquals(invoiceId, captor.getValue().invoiceId());
         assertEquals("INV-2026-00001", captor.getValue().invoiceNumber());
         assertEquals(List.of(
-                new InvoiceStockCommand.Allocation(warehouseId, productId, 7)),
+                new InvoiceStockCommand.Allocation(warehouseId, productId,
+                new BigDecimal("7"))),
                 captor.getValue().allocations());
         verifyNoMoreInteractions(api);
     }
@@ -57,7 +60,8 @@ class LocalInventoryGatewayAdapterTest {
     void should_reserve_allocations_through_public_inventory_contract() {
         adapter.reserveAllocations(command.allocations());
         verify(api).reserveAllocations(List.of(
-                new InvoiceStockCommand.Allocation(warehouseId, productId, 7)));
+                new InvoiceStockCommand.Allocation(warehouseId, productId,
+                new BigDecimal("7"))));
         verifyNoMoreInteractions(api);
     }
     @Test
@@ -66,7 +70,7 @@ class LocalInventoryGatewayAdapterTest {
         verify(api).releaseReservations(
                 new InvoiceStockCommand(invoiceId, "INV-2026-00001",
                         List.of(new InvoiceStockCommand.Allocation(warehouseId,
-                                productId, 7))));
+                                productId, new BigDecimal("7")))));
         verifyNoMoreInteractions(api);
     }
     @Test

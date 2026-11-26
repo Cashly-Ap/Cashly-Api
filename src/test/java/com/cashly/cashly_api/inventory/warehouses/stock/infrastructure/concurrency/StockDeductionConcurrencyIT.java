@@ -26,8 +26,8 @@ import static org.junit.jupiter.api.Assertions.*;
         InvoiceInventoryConcurrencyIT.PersistenceConfig.class,
         StockDeductionConfig.class})
 class StockDeductionConcurrencyIT {
-    private static final int INITIAL_QUANTITY = 10;
-    private static final int REQUESTED_QUANTITY = 7;
+    private static final java.math.BigDecimal INITIAL_QUANTITY = new java.math.BigDecimal("10");
+    private static final java.math.BigDecimal REQUESTED_QUANTITY = new java.math.BigDecimal("7");
     private static final int TIMEOUT_SECONDS = 30;
     private final StockDeductionApi inventory;
     private final SpringDataWarehouseStockRepository stocks;
@@ -61,7 +61,7 @@ class StockDeductionConcurrencyIT {
         stock.setWarehouseId(warehouseId);
         stock.setProductId(productId);
         stock.setQuantity(INITIAL_QUANTITY);
-        stock.setReserved(0);
+        stock.setReserved(java.math.BigDecimal.ZERO);
         stock.setLastMovementAt(LocalDateTime.now());
         stock.setUpdatedAt(LocalDateTime.now());
         stocks.save(stock);
@@ -82,9 +82,9 @@ class StockDeductionConcurrencyIT {
             var stock = stocks
                     .findByWarehouseIdAndProductId(warehouseId, productId)
                     .orElseThrow();
-            assertEquals(INITIAL_QUANTITY - REQUESTED_QUANTITY,
-                    stock.getQuantity());
-            assertEquals(0, stock.getReserved());
+            assertEquals(0, INITIAL_QUANTITY.subtract(REQUESTED_QUANTITY)
+                    .compareTo(stock.getQuantity()));
+            assertEquals(0, java.math.BigDecimal.ZERO.compareTo(stock.getReserved()));
         } finally {
             start.countDown();
         }
@@ -97,10 +97,10 @@ class StockDeductionConcurrencyIT {
                         new StockDeductionApi.Allocation(warehouseId, productId,
                                 REQUESTED_QUANTITY),
                         new StockDeductionApi.Allocation(warehouseId,
-                                UUID.randomUUID(), 1))));
-        assertEquals(INITIAL_QUANTITY,
+                                UUID.randomUUID(), java.math.BigDecimal.ONE))));
+        assertEquals(0, INITIAL_QUANTITY.compareTo(
                 stocks.findByWarehouseIdAndProductId(warehouseId, productId)
-                        .orElseThrow().getQuantity());
+                        .orElseThrow().getQuantity()));
     }
 
     private boolean deductAfterSignal(CountDownLatch ready,

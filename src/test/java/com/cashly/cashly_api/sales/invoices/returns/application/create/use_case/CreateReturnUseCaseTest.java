@@ -112,7 +112,7 @@ class CreateReturnUseCaseTest {
 
         WarehouseStock mockStock = WarehouseStock.create(UUID.randomUUID(),
                 UUID.randomUUID());
-        mockStock.addStock(1000);
+        mockStock.addStock(new BigDecimal("1000"));
         when(warehouseStockRepository
                 .findOrCreateByWarehouseIdAndProductIdForUpdate(any(), any()))
                 .thenReturn(mockStock);

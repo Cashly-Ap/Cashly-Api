@@ -6,6 +6,7 @@ import com.cashly.cashly_api.sales.orders.domain.entity.Order;
 import com.cashly.cashly_api.sales.orders.domain.entity.OrderLine;
 import com.cashly.cashly_api.sales.orders.application.ports.out.StockAvailabilityGateway;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -16,7 +17,7 @@ public class OrderMapper {
     }
 
     public record WarehouseEnrichment(String code, String name,
-            int availableStock) {
+            BigDecimal availableStock) {
     }
 
     private OrderMapper() {
@@ -25,7 +26,7 @@ public class OrderMapper {
     public static OrderDetailResponse toDetailResponse(Order order,
             Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
             Map<UUID, List<StockAvailabilityGateway.WarehouseStockInfo>> productStocks,
-            Map<WarehouseProductKey, Integer> thisOrderAllocations,
+            Map<WarehouseProductKey, BigDecimal> thisOrderAllocations,
             java.math.BigDecimal creditLimit,
             java.math.BigDecimal availableCredit) {
         List<OrderDetailResponse.OrderLineDetailResponse> lineResponses = order
@@ -53,7 +54,7 @@ public class OrderMapper {
     public static OrderDetailResponse toDetailResponse(Order order,
             Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
             Map<UUID, List<StockAvailabilityGateway.WarehouseStockInfo>> productStocks,
-            Map<WarehouseProductKey, Integer> thisOrderAllocations) {
+            Map<WarehouseProductKey, BigDecimal> thisOrderAllocations) {
         return toDetailResponse(order, enrichmentMap, productStocks,
                 thisOrderAllocations, null, null);
     }
@@ -74,7 +75,7 @@ public class OrderMapper {
             OrderLine line,
             Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
             Map<UUID, List<StockAvailabilityGateway.WarehouseStockInfo>> productStocks,
-            Map<WarehouseProductKey, Integer> thisOrderAllocations) {
+            Map<WarehouseProductKey, BigDecimal> thisOrderAllocations) {
 
         List<OrderDetailResponse.OrderLineDetailResponse.AllocationDetail> allocationDetails = line
                 .getAllocations().stream().map(a -> {
@@ -83,9 +84,9 @@ public class OrderMapper {
                     WarehouseEnrichment enrichment = enrichmentMap.get(key);
                     String code = enrichment != null ? enrichment.code() : null;
                     String name = enrichment != null ? enrichment.name() : null;
-                    int availableStock = enrichment != null
+                    BigDecimal availableStock = enrichment != null
                             ? enrichment.availableStock()
-                            : 0;
+                            : BigDecimal.ZERO;
                     return new OrderDetailResponse.OrderLineDetailResponse.AllocationDetail(
                             a.getWarehouseId(), code, name, a.getAllocated(),
                             availableStock);
@@ -96,13 +97,14 @@ public class OrderMapper {
                 .map(s -> {
                     WarehouseProductKey key = new WarehouseProductKey(
                             s.warehouseId(), line.getProductId());
-                    int thisAllocation = thisOrderAllocations.getOrDefault(key,
-                            0);
+                    BigDecimal thisAllocation = thisOrderAllocations
+                            .getOrDefault(key, BigDecimal.ZERO);
                     return new OrderDetailResponse.WarehouseStockDetail(
                             s.warehouseId(), s.warehouseCode(),
                             s.warehouseName(), s.quantity(),
-                            Math.max(0, s.reserved() - thisAllocation),
-                            s.available() + thisAllocation);
+                            s.reserved().subtract(thisAllocation)
+                                    .max(BigDecimal.ZERO),
+                            s.available().add(thisAllocation));
                 }).toList();
 
         return new OrderDetailResponse.OrderLineDetailResponse(

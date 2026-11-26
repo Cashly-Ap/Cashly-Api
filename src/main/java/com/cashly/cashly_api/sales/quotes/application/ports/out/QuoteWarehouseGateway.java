@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.sales.quotes.application.ports.out;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -15,6 +16,7 @@ public interface QuoteWarehouseGateway {
     record Warehouse(UUID id, String name, String address) {
     }
 
-    record Stock(UUID warehouseId, String warehouseName, int available) {
+    record Stock(UUID warehouseId, String warehouseName,
+            BigDecimal available) {
     }
 }

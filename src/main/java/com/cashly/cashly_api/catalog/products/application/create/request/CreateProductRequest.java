@@ -31,6 +31,10 @@ public record CreateProductRequest(
     public record ComponentRequest(
             @NotNull(message = "Component product ID is required") UUID componentProductId,
 
-            @NotNull(message = "Component quantity is required") Integer quantity) {
+            @NotNull(message = "Component quantity is required") @DecimalMin(value = "0.0001", message = "Component quantity must be greater than zero") BigDecimal quantity) {
+
+        public ComponentRequest(UUID componentProductId, int quantity) {
+            this(componentProductId, BigDecimal.valueOf(quantity));
+        }
     }
 }

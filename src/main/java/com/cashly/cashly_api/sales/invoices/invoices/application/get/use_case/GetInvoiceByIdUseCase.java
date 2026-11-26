@@ -60,14 +60,14 @@ public class GetInvoiceByIdUseCase {
                         allocation -> new StockAvailabilityGateway.AllocationData(
                                 allocation.getWarehouseId(),
                                 line.getProductId(),
-                                allocation.getAllocated().intValue())))
+                                allocation.getAllocated())))
                 .toList();
-        Map<InvoiceMapper.WarehouseProductKey, Integer> thisInvoiceAllocations = new HashMap<>();
+        Map<InvoiceMapper.WarehouseProductKey, BigDecimal> thisInvoiceAllocations = new HashMap<>();
         for (StockAvailabilityGateway.AllocationData allocation : allocations) {
             InvoiceMapper.WarehouseProductKey key = new InvoiceMapper.WarehouseProductKey(
                     allocation.warehouseId(), allocation.productId());
             thisInvoiceAllocations.merge(key, allocation.allocated(),
-                    Integer::sum);
+                    BigDecimal::add);
         }
         Map<InvoiceMapper.WarehouseProductKey, InvoiceMapper.WarehouseEnrichment> enrichmentMap = new HashMap<>();
         for (StockAvailabilityGateway.EnrichedStock stock : stockAvailability

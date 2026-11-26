@@ -184,8 +184,8 @@ class ConfirmInvoiceUseCaseTest {
         Invoice invoice = buildInvoiceWithLine(id, InvoiceStatus.DRAFT,
                 PaymentType.CASH, warehouseId, productId);
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
-        stock.addStock(100);
-        stock.reserve(10);
+        stock.addStock(new java.math.BigDecimal("100"));
+        stock.reserve(new java.math.BigDecimal("10"));
         User user = buildUser(authenticatedUserId);
 
         when(invoiceRepository.findById(InvoiceId.of(id)))
@@ -218,7 +218,8 @@ class ConfirmInvoiceUseCaseTest {
 
         verify(stockMovementRepository).save(argThat(
                 movement -> movement.getMovementType() == MovementType.SALE_EXIT
-                        && movement.getQuantity() == 10));
+                        && movement.getQuantity()
+                                .compareTo(new java.math.BigDecimal("10")) == 0));
     }
 
     @Test

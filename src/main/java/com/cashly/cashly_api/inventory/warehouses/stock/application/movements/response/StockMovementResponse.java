@@ -4,14 +4,16 @@ import com.cashly.cashly_api.inventory.warehouses.stock.domain.valueobjects.Move
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.valueobjects.ReferenceType;
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.entity.StockMovement;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record StockMovementResponse(String id, String warehouseId,
         String warehouseName, String productId, String productCode,
         String productName, String categoryName, MovementType movementType,
-        int quantity, int previousStock, int newStock, String originMovementId,
-        String transferBatchId, ReferenceType referenceType, String referenceId,
-        String referenceNumber, String notes, LocalDateTime createdAt) {
+        BigDecimal quantity, BigDecimal previousStock, BigDecimal newStock,
+        String originMovementId, String transferBatchId,
+        ReferenceType referenceType, String referenceId, String referenceNumber,
+        String notes, LocalDateTime createdAt) {
     public static StockMovementResponse from(StockMovement m, String productCode,
             String productName) {
         return from(m, null, productCode, productName, null);

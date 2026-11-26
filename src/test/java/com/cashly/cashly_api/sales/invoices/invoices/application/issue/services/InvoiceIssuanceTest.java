@@ -80,7 +80,8 @@ class InvoiceIssuanceTest {
         Invoice invoice = invoice(PaymentType.CASH);
         service.issue(invoice, cashCommand(), InvoiceOrigin.QUOTE, actorId);
         verify(stock).deduct(List.of(new StockDeductionGateway.Allocation(
-                warehouseId, invoice.getLines().getFirst().getProductId(), 2)));
+                warehouseId, invoice.getLines().getFirst().getProductId(),
+                new java.math.BigDecimal("2"))));
         verifyNoInteractions(reservations);
     }
 

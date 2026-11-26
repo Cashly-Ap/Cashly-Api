@@ -57,7 +57,7 @@ class ConfirmOrderUseCaseUnitTest {
         assertEquals("CONFIRMED", result.status());
         verify(inventory).deductReservations(
                 List.of(new OrderInventoryGateway.Allocation(warehouseId,
-                        productId, 4)),
+                        productId, new BigDecimal("4"))),
                 new OrderInventoryGateway.Reference(id, "ORD-2026-00001",
                         "Order confirmed"));
         verify(activityNotifications).record(org.mockito.ArgumentMatchers.any());

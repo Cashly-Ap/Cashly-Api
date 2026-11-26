@@ -80,9 +80,9 @@ public class MovementsExcelGenerator implements MovementsExcelPort {
                 createStringCell(row, 3, item.sku(), cellStyle);
                 createStringCell(row, 4,
                         ReportMessages.code(item.movementType()), cellStyle);
-                createNumericCell(row, 5, item.quantity(), cellStyle);
-                createNumericCell(row, 6, item.previousStock(), cellStyle);
-                createNumericCell(row, 7, item.newStock(), cellStyle);
+                createNumericCell(row, 5, item.quantity().doubleValue(), cellStyle);
+                createNumericCell(row, 6, item.previousStock().doubleValue(), cellStyle);
+                createNumericCell(row, 7, item.newStock().doubleValue(), cellStyle);
                 createStringCell(row, 8,
                         item.notes() != null ? item.notes() : "-", cellStyle);
             }
@@ -161,7 +161,7 @@ public class MovementsExcelGenerator implements MovementsExcelPort {
         cell.setCellStyle(style);
     }
 
-    private void createNumericCell(Row row, int col, int value,
+    private void createNumericCell(Row row, int col, double value,
             CellStyle style) {
         Cell cell = row.createCell(col);
         cell.setCellValue(value);

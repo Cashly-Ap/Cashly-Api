@@ -103,7 +103,7 @@ class OrderMapperTest {
                 warehouseId, productId);
         Map<OrderMapper.WarehouseProductKey, OrderMapper.WarehouseEnrichment> enrichmentMap = Map
                 .of(key, new OrderMapper.WarehouseEnrichment("WH-01",
-                        "Main Warehouse", 50));
+                        "Main Warehouse", new BigDecimal("50")));
 
         OrderDetailResponse response = OrderMapper.toDetailResponse(order,
                 enrichmentMap, Map.of());
@@ -119,7 +119,7 @@ class OrderMapperTest {
         assertEquals(1, lineResponse.warehouseAllocations().size());
         assertEquals("WH-01",
                 lineResponse.warehouseAllocations().get(0).warehouseCode());
-        assertEquals(50,
+        assertEquals(new BigDecimal("50"),
                 lineResponse.warehouseAllocations().get(0).availableStock());
     }
 

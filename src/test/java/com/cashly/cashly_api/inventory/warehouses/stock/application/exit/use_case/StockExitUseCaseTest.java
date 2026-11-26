@@ -68,10 +68,10 @@ class StockExitUseCaseTest {
         Warehouse warehouse = buildActiveWarehouse(warehouseId);
         Product product = buildProduct(productId, "PROD-001", "Test Product");
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
-        stock.addStock(100);
+        stock.addStock(new BigDecimal("100"));
 
         StockExitRequest request = new StockExitRequest(
-                List.of(new StockBatchItem(productId, 10, "Sale")));
+                List.of(new StockBatchItem(productId, new BigDecimal("10"), "Sale")));
 
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.of(warehouse));
@@ -101,7 +101,7 @@ class StockExitUseCaseTest {
         assertNotNull(response);
         assertEquals(1, response.size());
         assertEquals(MovementType.EXIT, response.get(0).movementType());
-        assertEquals(10, response.get(0).quantity());
+        assertEquals(0, new BigDecimal("10").compareTo(response.get(0).quantity()));
         assertEquals("PROD-001", response.get(0).productCode());
         verify(warehouseStockRepository).save(any(WarehouseStock.class));
         verify(warehouseStockRepository, atLeastOnce())
@@ -115,7 +115,7 @@ class StockExitUseCaseTest {
     @DisplayName("throws WarehouseNotFoundException when warehouse not found")
     void shouldThrowWhenWarehouseNotFound() {
         StockExitRequest request = new StockExitRequest(
-                List.of(new StockBatchItem(productId, 10, null)));
+                List.of(new StockBatchItem(productId, new BigDecimal("10"), null)));
 
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.empty());
@@ -131,7 +131,7 @@ class StockExitUseCaseTest {
         Product product = buildProduct(productId, "PROD-001", "Test Product");
 
         StockExitRequest request = new StockExitRequest(
-                List.of(new StockBatchItem(productId, 10, null)));
+                List.of(new StockBatchItem(productId, new BigDecimal("10"), null)));
 
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.of(warehouse));
@@ -151,10 +151,10 @@ class StockExitUseCaseTest {
         Warehouse warehouse = buildActiveWarehouse(warehouseId);
         Product product = buildProduct(productId, "PROD-001", "Test Product");
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
-        stock.addStock(5);
+        stock.addStock(new BigDecimal("5"));
 
         StockExitRequest request = new StockExitRequest(
-                List.of(new StockBatchItem(productId, 10, null)));
+                List.of(new StockBatchItem(productId, new BigDecimal("10"), null)));
 
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.of(warehouse));

@@ -47,8 +47,8 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = InvoiceInventoryConcurrencyIT.PersistenceConfig.class)
 class InvoiceInventoryConcurrencyIT {
-    private static final int STOCK_QUANTITY = 10;
-    private static final int REQUESTED_QUANTITY = 7;
+    private static final java.math.BigDecimal STOCK_QUANTITY = new java.math.BigDecimal("10");
+    private static final java.math.BigDecimal REQUESTED_QUANTITY = new java.math.BigDecimal("7");
     private static final int TIMEOUT_SECONDS = 30;
 
     static final MySQLContainer<?> MYSQL = new MySQLContainer<>("mysql:8.0")
@@ -101,7 +101,7 @@ class InvoiceInventoryConcurrencyIT {
         var now = LocalDateTime.now();
         stocks.saveAndFlush(WarehouseStockEntity
                 .fromDomain(new WarehouseStock(UUID.randomUUID(), warehouseId,
-                        productId, STOCK_QUANTITY, 0, now, now)));
+                        productId, STOCK_QUANTITY, java.math.BigDecimal.ZERO, now, now)));
     }
 
     @Test
@@ -128,8 +128,8 @@ class InvoiceInventoryConcurrencyIT {
             WarehouseStockEntity saved = stocks
                     .findByWarehouseIdAndProductId(warehouseId, productId)
                     .orElseThrow();
-            assertEquals(REQUESTED_QUANTITY, saved.getReserved());
-            assertEquals(STOCK_QUANTITY, saved.getQuantity());
+            assertEquals(0, REQUESTED_QUANTITY.compareTo(saved.getReserved()));
+            assertEquals(0, STOCK_QUANTITY.compareTo(saved.getQuantity()));
         } finally {
             start.countDown();
         }
@@ -142,12 +142,12 @@ class InvoiceInventoryConcurrencyIT {
                 () -> inventory.reserveAllocations(List.of(
                         new Allocation(warehouseId, productId,
                                 REQUESTED_QUANTITY),
-                        new Allocation(warehouseId, missingProductId, 1))));
+                        new Allocation(warehouseId, missingProductId, java.math.BigDecimal.ONE))));
         WarehouseStockEntity saved = stocks
                 .findByWarehouseIdAndProductId(warehouseId, productId)
                 .orElseThrow();
-        assertEquals(0, saved.getReserved());
-        assertEquals(STOCK_QUANTITY, saved.getQuantity());
+        assertEquals(0, java.math.BigDecimal.ZERO.compareTo(saved.getReserved()));
+        assertEquals(0, STOCK_QUANTITY.compareTo(saved.getQuantity()));
     }
 
     private ReservationOutcome reserveAfterSignal(CountDownLatch ready,

@@ -20,6 +20,7 @@ import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.W
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import java.util.Comparator;
@@ -88,7 +89,7 @@ public class TransferStockUseCase {
                                         warehouseId, product.id())));
         WarehouseStock sourceStock = lockedStocks.get(sourceWarehouseId);
 
-        if (sourceStock.getQuantity() < request.quantity()) {
+        if (sourceStock.getQuantity().compareTo(request.quantity()) < 0) {
             throw new InsufficientStockException(product.id(),
                     sourceWarehouseId, sourceStock.getQuantity(),
                     request.quantity());
@@ -96,7 +97,7 @@ public class TransferStockUseCase {
 
         String batchId = UUID.randomUUID().toString();
 
-        int sourcePrev = sourceStock.getQuantity();
+        BigDecimal sourcePrev = sourceStock.getQuantity();
         sourceStock.removeStock(request.quantity());
         WarehouseStock savedSource = warehouseStockRepository.save(sourceStock);
 
@@ -110,7 +111,7 @@ public class TransferStockUseCase {
         WarehouseStock destStock = lockedStocks
                 .get(request.destinationWarehouseId());
 
-        int destPrev = destStock.getQuantity();
+        BigDecimal destPrev = destStock.getQuantity();
         destStock.addStock(request.quantity());
         WarehouseStock savedDest = warehouseStockRepository.save(destStock);
 

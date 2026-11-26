@@ -126,9 +126,9 @@ class JdbcStockMovementQueryAdapterTest {
         assertThat(response.summary().movementCount()).isEqualTo(4);
         assertThat(response.summary().productCount()).isEqualTo(2);
         assertThat(response.summary().warehouseCount()).isEqualTo(2);
-        assertThat(response.summary().entryQuantity()).isEqualTo(17);
-        assertThat(response.summary().exitQuantity()).isEqualTo(4);
-        assertThat(response.summary().netQuantity()).isEqualTo(13);
+        assertThat(response.summary().entryQuantity()).isEqualByComparingTo("17");
+        assertThat(response.summary().exitQuantity()).isEqualByComparingTo("4");
+        assertThat(response.summary().netQuantity()).isEqualByComparingTo("13");
 
         StockMovementsResponse filtered = adapter
                 .search(new StockMovementFilter(alpha, null, null, null, 0, 20,
@@ -137,9 +137,9 @@ class JdbcStockMovementQueryAdapterTest {
         assertThat(filtered.summary().movementCount()).isEqualTo(3);
         assertThat(filtered.summary().productCount()).isEqualTo(2);
         assertThat(filtered.summary().warehouseCount()).isEqualTo(1);
-        assertThat(filtered.summary().entryQuantity()).isEqualTo(17);
+        assertThat(filtered.summary().entryQuantity()).isEqualByComparingTo("17");
         assertThat(filtered.summary().exitQuantity()).isZero();
-        assertThat(filtered.summary().netQuantity()).isEqualTo(17);
+        assertThat(filtered.summary().netQuantity()).isEqualByComparingTo("17");
     }
 
     @Test
@@ -220,9 +220,9 @@ class JdbcStockMovementQueryAdapterTest {
         assertThat(appleGroup.productCode()).isEqualTo("APP");
         assertThat(appleGroup.categoryName()).isEqualTo("Motors");
         assertThat(appleGroup.movementCount()).isEqualTo(3);
-        assertThat(appleGroup.entryQuantity()).isEqualTo(10);
-        assertThat(appleGroup.exitQuantity()).isEqualTo(4);
-        assertThat(appleGroup.netQuantity()).isEqualTo(6);
+        assertThat(appleGroup.entryQuantity()).isEqualByComparingTo("10");
+        assertThat(appleGroup.exitQuantity()).isEqualByComparingTo("4");
+        assertThat(appleGroup.netQuantity()).isEqualByComparingTo("6");
         assertThat(appleGroup.items()).hasSize(3);
         assertThat(appleGroup.items()).extracting(
                 movement -> movement.movementType()).containsExactly(
@@ -241,10 +241,10 @@ class JdbcStockMovementQueryAdapterTest {
         assertThat(second.groups().content().getFirst().categoryName())
                 .isEqualTo("Hardware");
         assertThat(second.groups().content().getFirst().entryQuantity())
-                .isEqualTo(7);
+                .isEqualByComparingTo("7");
         assertThat(second.groups().content().getFirst().exitQuantity()).isZero();
         assertThat(second.groups().content().getFirst().netQuantity())
-                .isEqualTo(7);
+                .isEqualByComparingTo("7");
         assertThat(second.groups().content().getFirst().items()).hasSize(1);
         assertThat(second.groups().last()).isTrue();
     }
@@ -263,16 +263,16 @@ class JdbcStockMovementQueryAdapterTest {
         assertThat(alphaGroup.warehouseName()).isEqualTo("Alpha");
         assertThat(alphaGroup.categoryName()).isNull();
         assertThat(alphaGroup.movementCount()).isEqualTo(3);
-        assertThat(alphaGroup.entryQuantity()).isEqualTo(17);
+        assertThat(alphaGroup.entryQuantity()).isEqualByComparingTo("17");
         assertThat(alphaGroup.exitQuantity()).isZero();
-        assertThat(alphaGroup.netQuantity()).isEqualTo(17);
+        assertThat(alphaGroup.netQuantity()).isEqualByComparingTo("17");
         assertThat(alphaGroup.items()).hasSize(3);
         StockMovementGroup betaGroup = response.groups().content().get(1);
         assertThat(betaGroup.id()).isEqualTo(beta.toString());
         assertThat(betaGroup.movementCount()).isEqualTo(1);
         assertThat(betaGroup.entryQuantity()).isZero();
-        assertThat(betaGroup.exitQuantity()).isEqualTo(4);
-        assertThat(betaGroup.netQuantity()).isEqualTo(-4);
+        assertThat(betaGroup.exitQuantity()).isEqualByComparingTo("4");
+        assertThat(betaGroup.netQuantity()).isEqualByComparingTo("-4");
     }
 
     @Test
@@ -287,9 +287,9 @@ class JdbcStockMovementQueryAdapterTest {
                 group -> group.id()).containsExactly("ADJUSTMENT", "ENTRY");
         StockMovementGroup entryGroup = response.groups().content().get(1);
         assertThat(entryGroup.movementCount()).isEqualTo(2);
-        assertThat(entryGroup.entryQuantity()).isEqualTo(17);
+        assertThat(entryGroup.entryQuantity()).isEqualByComparingTo("17");
         assertThat(entryGroup.exitQuantity()).isZero();
-        assertThat(entryGroup.netQuantity()).isEqualTo(17);
+        assertThat(entryGroup.netQuantity()).isEqualByComparingTo("17");
         assertThat(entryGroup.movementType()).isEqualTo(MovementType.ENTRY);
         assertThat(entryGroup.items()).hasSize(2);
 
@@ -302,7 +302,7 @@ class JdbcStockMovementQueryAdapterTest {
         assertThat(filtered.groups().content().getFirst().movementCount())
                 .isEqualTo(2);
         assertThat(filtered.groups().content().getFirst().entryQuantity())
-                .isEqualTo(17);
+                .isEqualByComparingTo("17");
     }
 
     @Test
@@ -382,7 +382,7 @@ class JdbcStockMovementQueryAdapterTest {
         assertThat(byWarehouse.groups().content().getFirst().id())
                 .isEqualTo(alpha.toString());
         assertThat(byWarehouse.groups().content().getFirst().entryQuantity())
-                .isEqualTo(10);
+                .isEqualByComparingTo("10");
         assertThat(byWarehouse.groups().content().getFirst().items()).hasSize(1);
     }
 

@@ -40,8 +40,8 @@ public record PurchaseDetailResponse(UUID id, String purchaseNumber,
         }
 
         public record StockItemDetail(UUID warehouseId, String warehouseCode,
-                String warehouseName, int quantity, int reserved,
-                int available) {
+                String warehouseName, BigDecimal quantity,
+                BigDecimal reserved, BigDecimal available) {
         }
     }
 }

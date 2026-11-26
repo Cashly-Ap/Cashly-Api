@@ -23,7 +23,7 @@ public interface OrderProductCatalogGateway {
 
     record ProductEntry(UUID id, String code, String name, UUID categoryId,
             String categoryName, boolean composite, boolean active,
-            String photo, BigDecimal customerPrice, int totalStock,
+            String photo, BigDecimal customerPrice, BigDecimal totalStock,
             List<Stock> stock) {
         public ProductEntry {
             stock = List.copyOf(stock);
@@ -31,6 +31,6 @@ public interface OrderProductCatalogGateway {
     }
 
     record Stock(UUID warehouseId, String warehouseCode, String warehouseName,
-            int quantity, int reserved, int available) {
+            BigDecimal quantity, BigDecimal reserved, BigDecimal available) {
     }
 }

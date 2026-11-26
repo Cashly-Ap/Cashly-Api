@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.sales.orders.application.ports.out;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,7 +15,7 @@ public interface OrderInventoryGateway {
 
     void restore(List<Allocation> allocations, Reference reference);
 
-    record Allocation(UUID warehouseId, UUID productId, int quantity) {
+    record Allocation(UUID warehouseId, UUID productId, BigDecimal quantity) {
     }
 
     record Reference(UUID id, String number, String description) {

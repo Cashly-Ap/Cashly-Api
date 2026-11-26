@@ -82,8 +82,9 @@ public class GetProductsForTransactionUseCase {
                         stock.warehouseName(), stock.quantity(),
                         stock.reserved(), stock.available()))
                 .toList();
-        int totalStock = stockItems.stream()
-                .mapToInt(WarehouseStockItem::quantity).sum();
+        BigDecimal totalStock = stockItems.stream()
+                .map(WarehouseStockItem::quantity)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return new ProductWithStockResponse(product.getId().toString(),
                 product.getCode(), product.getName(),

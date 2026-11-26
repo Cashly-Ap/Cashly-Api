@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -34,11 +35,11 @@ public class WarehouseStockEntity {
     @JdbcTypeCode(SqlTypes.BINARY)
     private UUID productId;
 
-    @Column(name = "quantity", nullable = false)
-    private int quantity;
+    @Column(name = "quantity", nullable = false, precision = 15, scale = 4)
+    private BigDecimal quantity;
 
-    @Column(name = "reserved", nullable = false)
-    private int reserved;
+    @Column(name = "reserved", nullable = false, precision = 15, scale = 4)
+    private BigDecimal reserved;
 
     @Column(name = "last_movement_at")
     private LocalDateTime lastMovementAt;

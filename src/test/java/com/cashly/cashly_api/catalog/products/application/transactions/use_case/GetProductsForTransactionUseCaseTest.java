@@ -65,7 +65,7 @@ class GetProductsForTransactionUseCaseTest {
                 true, 1, 2);
         var item = response.content().getFirst();
         assertEquals(BigDecimal.TEN, item.customerPrice());
-        assertEquals(30, item.totalStock());
+        assertEquals(new BigDecimal("30"), item.totalStock());
         assertEquals(2, item.stock().size());
         assertEquals(5, response.totalElements());
         assertEquals(3, response.totalPages());
@@ -100,7 +100,7 @@ class GetProductsForTransactionUseCaseTest {
                 10);
         assertEquals(new BigDecimal("5"),
                 response.content().getFirst().customerPrice());
-        assertEquals(0, response.content().getFirst().totalStock());
+        assertEquals(new BigDecimal("0"), response.content().getFirst().totalStock());
         assertTrue(response.content().getFirst().stock().isEmpty());
     }
 
@@ -114,7 +114,10 @@ class GetProductsForTransactionUseCaseTest {
 
     private ProductWarehouseStockGateway.Stock stock(UUID id, boolean exists,
             int quantity) {
+        java.math.BigDecimal value = java.math.BigDecimal.valueOf(quantity);
         return new ProductWarehouseStockGateway.Stock(id, "WH", "Warehouse",
-                exists, quantity, 2, quantity - 2, LocalDateTime.now());
+                exists, value, new java.math.BigDecimal("2"),
+                value.subtract(new java.math.BigDecimal("2")),
+                LocalDateTime.now());
     }
 }

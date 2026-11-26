@@ -61,7 +61,7 @@ public class IssueInvoiceService {
                         .map(allocation -> new StockDeductionGateway.Allocation(
                                 allocation.getWarehouseId(),
                                 line.getProductId(),
-                                allocation.getAllocated().intValue())))
+                                allocation.getAllocated())))
                         .toList());
             case MANUAL_DRAFT -> reservations.confirmInvoice(
                     InventoryGateway.InvoiceInventoryCommand.from(invoice));

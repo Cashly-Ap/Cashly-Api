@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,7 +40,7 @@ class StockReportRepositoryAdapterTest {
         when(projection.getProductName()).thenReturn("Product A");
         when(projection.getSku()).thenReturn("SKU001");
         when(projection.getCategoryName()).thenReturn("Electronics");
-        when(projection.getQuantity()).thenReturn(50);
+        when(projection.getQuantity()).thenReturn(new BigDecimal("50"));
 
         when(jpaRepository.findAllForPdf(any(), any(), any(), any()))
                 .thenReturn(List.of(projection));
@@ -64,7 +65,7 @@ class StockReportRepositoryAdapterTest {
         when(projection.getProductName()).thenReturn("Product");
         when(projection.getSku()).thenReturn("SKU");
         when(projection.getCategoryName()).thenReturn("Category");
-        when(projection.getQuantity()).thenReturn(0);
+        when(projection.getQuantity()).thenReturn(BigDecimal.ZERO);
 
         when(jpaRepository.findAllForPdf(any(), any(), any(), any()))
                 .thenReturn(List.of(projection));

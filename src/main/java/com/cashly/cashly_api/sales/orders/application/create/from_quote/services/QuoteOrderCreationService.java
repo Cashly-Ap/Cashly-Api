@@ -45,7 +45,7 @@ public class QuoteOrderCreationService implements QuoteOrderCreationApi {
                 .flatMap(line -> line.allocations().stream()
                         .map(item -> new OrderInventoryGateway.Allocation(
                                 item.warehouseId(), item.productId(),
-                                item.quantity().intValue())))
+                                item.quantity())))
                 .toList());
         var saved = orders.save(order);
         return new CreatedOrder(saved.getId().value(),

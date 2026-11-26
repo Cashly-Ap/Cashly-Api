@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -11,11 +12,12 @@ public record InvoiceStockCommand(UUID invoiceId, String invoiceNumber,
         Objects.requireNonNull(invoiceNumber, "Invoice number cannot be null");
         allocations = List.copyOf(allocations);
     }
-    public record Allocation(UUID warehouseId, UUID productId, int quantity) {
+    public record Allocation(UUID warehouseId, UUID productId,
+            BigDecimal quantity) {
         public Allocation {
             Objects.requireNonNull(warehouseId, "Warehouse ID cannot be null");
             Objects.requireNonNull(productId, "Product ID cannot be null");
-            if (quantity <= 0)
+            if (quantity == null || quantity.signum() <= 0)
                 throw new IllegalArgumentException(
                         "Allocation quantity must be positive");
         }

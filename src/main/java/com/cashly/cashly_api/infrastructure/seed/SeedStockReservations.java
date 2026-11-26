@@ -20,13 +20,14 @@ public final class SeedStockReservations {
                     "OrderLineAllocationEntity", "orderLine", "order");
             var invoices = reserved(entityManager, stock,
                     "InvoiceLineAllocationEntity", "invoiceLine", "invoice");
-            int expected = orders.add(invoices).intValueExact();
-            if (expected < 0 || expected > stock.getQuantity()) {
+            BigDecimal expected = orders.add(invoices);
+            if (expected.signum() < 0
+                    || expected.compareTo(stock.getQuantity()) > 0) {
                 throw new IllegalStateException(
                         "Draft document reservations exceed stock for product "
                                 + stock.getProductId());
             }
-            if (stock.getReserved() != expected) {
+            if (stock.getReserved().compareTo(expected) != 0) {
                 stock.setReserved(expected);
                 stock.setUpdatedAt(LocalDateTime.now());
             }

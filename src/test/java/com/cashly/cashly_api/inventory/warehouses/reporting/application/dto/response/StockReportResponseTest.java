@@ -3,6 +3,8 @@ package com.cashly.cashly_api.inventory.warehouses.reporting.application.dto.res
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("StockReportResponse Unit Tests")
@@ -12,13 +14,13 @@ class StockReportResponseTest {
     @DisplayName("should create stock report response with all fields")
     void should_create_stock_report_response() {
         var response = new StockReportResponse("Main Warehouse", "Product A",
-                "SKU001", "Electronics", 50, "Con Stock");
+                "SKU001", "Electronics", new BigDecimal("50"), "Con Stock");
 
         assertEquals("Main Warehouse", response.warehouseName());
         assertEquals("Product A", response.productName());
         assertEquals("SKU001", response.sku());
         assertEquals("Electronics", response.categoryName());
-        assertEquals(50, response.quantity());
+        assertEquals(0, new BigDecimal("50").compareTo(response.quantity()));
         assertEquals("Con Stock", response.status());
     }
 
@@ -26,9 +28,9 @@ class StockReportResponseTest {
     @DisplayName("should create stock report response with zero stock")
     void should_create_stock_report_response_with_zero_stock() {
         var response = new StockReportResponse("Warehouse", "Product B",
-                "SKU002", "Category", 0, "Sin Stock");
+                "SKU002", "Category", BigDecimal.ZERO, "Sin Stock");
 
-        assertEquals(0, response.quantity());
+        assertEquals(0, BigDecimal.ZERO.compareTo(response.quantity()));
         assertEquals("Sin Stock", response.status());
     }
 }

@@ -3,6 +3,7 @@ package com.cashly.cashly_api.inventory.warehouses.stock.application.exceptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,7 +18,7 @@ class InsufficientStockExceptionTest {
         UUID warehouseId = UUID.randomUUID();
 
         InsufficientStockException exception = new InsufficientStockException(
-                productId, warehouseId, 5, 10);
+                productId, warehouseId, new BigDecimal("5"), new BigDecimal("10"));
 
         String message = exception.getMessage();
         assertTrue(message.contains(productId.toString()));
@@ -30,7 +31,7 @@ class InsufficientStockExceptionTest {
     @DisplayName("should be runtime exception")
     void should_be_runtime_exception() {
         InsufficientStockException exception = new InsufficientStockException(
-                UUID.randomUUID(), UUID.randomUUID(), 0, 1);
+                UUID.randomUUID(), UUID.randomUUID(), BigDecimal.ZERO, BigDecimal.ONE);
 
         assertInstanceOf(RuntimeException.class, exception);
     }
@@ -39,7 +40,7 @@ class InsufficientStockExceptionTest {
     @DisplayName("should format message with available and requested quantities")
     void should_format_message_with_available_and_requested_quantities() {
         InsufficientStockException exception = new InsufficientStockException(
-                UUID.randomUUID(), UUID.randomUUID(), 3, 20);
+                UUID.randomUUID(), UUID.randomUUID(), new BigDecimal("3"), new BigDecimal("20"));
 
         assertTrue(exception.getMessage()
                 .startsWith("Insufficient stock for product "));

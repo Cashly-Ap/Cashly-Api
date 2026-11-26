@@ -66,8 +66,8 @@ public class V09WarehousesSeed implements SeedStep {
         entity.setId(id);
         entity.setWarehouseId(warehouseId);
         entity.setProductId(productId);
-        entity.setQuantity(quantity);
-        entity.setReserved(0);
+        entity.setQuantity(java.math.BigDecimal.valueOf(quantity));
+        entity.setReserved(java.math.BigDecimal.ZERO);
         entity.setLastMovementAt(CREATED_AT);
         entity.setUpdatedAt(CREATED_AT);
         entityManager.persist(entity);
@@ -83,9 +83,9 @@ public class V09WarehousesSeed implements SeedStep {
         entity.setWarehouseId(warehouseId);
         entity.setProductId(productId);
         entity.setMovementType(MovementType.ENTRY);
-        entity.setQuantity(quantity);
-        entity.setPreviousStock(0);
-        entity.setNewStock(quantity);
+        entity.setQuantity(java.math.BigDecimal.valueOf(quantity));
+        entity.setPreviousStock(java.math.BigDecimal.ZERO);
+        entity.setNewStock(java.math.BigDecimal.valueOf(quantity));
         entity.setReferenceType(ReferenceType.MANUAL);
         entity.setReferenceNumber("SEED");
         entity.setNotes("Opening stock");

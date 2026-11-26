@@ -12,6 +12,6 @@ public record ProductDetailResponse(String id, String code, String name,
         LocalDateTime updatedAt) {
     public record ComponentResponse(String id, String componentProductId,
             String componentProductCode, String componentProductName,
-            int quantity) {
+            BigDecimal quantity) {
     }
 }

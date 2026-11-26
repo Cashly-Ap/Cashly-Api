@@ -12,6 +12,7 @@ import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.W
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import com.cashly.cashly_api.inventory.warehouses.stock.infrastructure.config.ProductStockQueryConfig;
 import org.junit.jupiter.api.Test;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -76,9 +77,9 @@ class ProductStockGatewayIntegrationTest {
         UUID deletedWarehouseId = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
         WarehouseStock first = new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId, 10, 3, now, now);
+                warehouseId, productId, new BigDecimal("10"), new BigDecimal("3"), now, now);
         WarehouseStock second = new WarehouseStock(UUID.randomUUID(),
-                deletedWarehouseId, productId, 5, 1, now, now);
+                deletedWarehouseId, productId, new BigDecimal("5"), new BigDecimal("1"), now, now);
         when(stocks.findByProductId(productId))
                 .thenReturn(List.of(first, second));
         Warehouse warehouse = mock(Warehouse.class);
@@ -94,9 +95,9 @@ class ProductStockGatewayIntegrationTest {
         assertEquals("WH", result.getFirst().warehouseCode());
         assertEquals("Warehouse", result.getFirst().warehouseName());
         assertTrue(result.getFirst().warehouseExists());
-        assertEquals(10, result.getFirst().quantity());
-        assertEquals(3, result.getFirst().reserved());
-        assertEquals(7, result.getFirst().available());
+        assertEquals(0, new BigDecimal("10").compareTo(result.getFirst().quantity()));
+        assertEquals(0, new BigDecimal("3").compareTo(result.getFirst().reserved()));
+        assertEquals(0, new BigDecimal("7").compareTo(result.getFirst().available()));
         assertEquals(now, result.getFirst().lastMovementAt());
         assertEquals("Unknown", result.getLast().warehouseName());
         assertFalse(result.getLast().warehouseExists());

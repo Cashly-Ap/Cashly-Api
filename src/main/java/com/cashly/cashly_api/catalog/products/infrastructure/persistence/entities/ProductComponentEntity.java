@@ -7,6 +7,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "product_components")
@@ -30,8 +31,8 @@ public class ProductComponentEntity {
     @JdbcTypeCode(SqlTypes.BINARY)
     private UUID componentProductId;
 
-    @Column(name = "quantity", nullable = false)
-    private int quantity;
+    @Column(name = "quantity", nullable = false, precision = 15, scale = 4)
+    private BigDecimal quantity;
 
     public static ProductComponentEntity fromDomain(ProductComponent component,
             ProductEntity parent) {

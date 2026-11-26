@@ -11,6 +11,7 @@ import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockM
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class InvoiceInventoryService implements InvoiceInventoryApi {
@@ -29,7 +30,7 @@ public class InvoiceInventoryService implements InvoiceInventoryApi {
         for (InvoiceStockCommand.Allocation allocation : command
                 .allocations()) {
             WarehouseStock stock = lockedStock(allocation);
-            int previous = stock.getQuantity();
+            BigDecimal previous = stock.getQuantity();
             stock.deductReserved(allocation.quantity());
             stocks.save(stock);
             recordMovement(command, allocation, stock, previous,
@@ -43,7 +44,7 @@ public class InvoiceInventoryService implements InvoiceInventoryApi {
         for (InvoiceStockCommand.Allocation allocation : command
                 .allocations()) {
             WarehouseStock stock = lockedStock(allocation);
-            int previous = stock.getQuantity();
+            BigDecimal previous = stock.getQuantity();
             stock.addStock(allocation.quantity());
             stocks.save(stock);
             recordMovement(command, allocation, stock, previous,
@@ -84,7 +85,7 @@ public class InvoiceInventoryService implements InvoiceInventoryApi {
 
     private void recordMovement(InvoiceStockCommand command,
             InvoiceStockCommand.Allocation allocation, WarehouseStock stock,
-            int previous, MovementType movementType, String notes) {
+            BigDecimal previous, MovementType movementType, String notes) {
         movements.save(StockMovement.createWithReference(
                 allocation.warehouseId(), allocation.productId(), movementType,
                 allocation.quantity(), previous, stock.getQuantity(), null,

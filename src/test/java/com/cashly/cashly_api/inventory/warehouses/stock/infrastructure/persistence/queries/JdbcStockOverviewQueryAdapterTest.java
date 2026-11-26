@@ -63,14 +63,14 @@ class JdbcStockOverviewQueryAdapterTest {
         assertThat(response.stock().totalPages()).isEqualTo(4);
         assertThat(response.summary().productCount()).isEqualTo(3);
         assertThat(response.summary().warehouseCount()).isEqualTo(2);
-        assertThat(response.summary().totalQuantity()).isEqualTo(35);
-        assertThat(response.summary().reservedQuantity()).isEqualTo(9);
-        assertThat(response.summary().availableQuantity()).isEqualTo(26);
+        assertThat(response.summary().totalQuantity()).isEqualByComparingTo("35");
+        assertThat(response.summary().reservedQuantity()).isEqualByComparingTo("9");
+        assertThat(response.summary().availableQuantity()).isEqualByComparingTo("26");
         var row = response.stock().content().getFirst();
         assertThat(row.warehouseName()).isEqualTo("Alpha");
         assertThat(row.productName()).isEqualTo("Apple");
-        assertThat(row.reserved()).isEqualTo(3);
-        assertThat(row.available()).isEqualTo(7);
+        assertThat(row.reserved()).isEqualByComparingTo("3");
+        assertThat(row.available()).isEqualByComparingTo("7");
         assertThat(row.categoryId()).isEqualTo(fruit.toString());
         var second = adapter
                 .search(new StockOverviewFilter(null, null, null, 1, 1));
@@ -88,9 +88,9 @@ class JdbcStockOverviewQueryAdapterTest {
                 .isEqualTo(beta.toString());
         assertThat(response.summary().productCount()).isEqualTo(1);
         assertThat(response.summary().warehouseCount()).isEqualTo(1);
-        assertThat(response.summary().totalQuantity()).isEqualTo(20);
-        assertThat(response.summary().reservedQuantity()).isEqualTo(5);
-        assertThat(response.summary().availableQuantity()).isEqualTo(15);
+        assertThat(response.summary().totalQuantity()).isEqualByComparingTo("20");
+        assertThat(response.summary().reservedQuantity()).isEqualByComparingTo("5");
+        assertThat(response.summary().availableQuantity()).isEqualByComparingTo("15");
         assertThat(response.warehouses()).hasSize(2);
         assertThat(response.categories()).hasSize(2);
     }
@@ -102,7 +102,7 @@ class JdbcStockOverviewQueryAdapterTest {
                 .stock().totalElements()).isEqualTo(1);
         assertThat(adapter
                 .search(new StockOverviewFilter(null, null, "apple", 0, 10))
-                .summary().totalQuantity()).isEqualTo(30);
+                .summary().totalQuantity()).isEqualByComparingTo("30");
         assertThat(adapter
                 .search(new StockOverviewFilter(null, null, "  BETA  ", 0, 10))
                 .stock().totalElements()).isEqualTo(2);
@@ -135,7 +135,7 @@ class JdbcStockOverviewQueryAdapterTest {
                 .search(new StockOverviewFilter(null, null, null, 10, 10));
         assertThat(beyond.stock().content()).isEmpty();
         assertThat(beyond.stock().totalElements()).isEqualTo(4);
-        assertThat(beyond.summary().totalQuantity()).isEqualTo(35);
+        assertThat(beyond.summary().totalQuantity()).isEqualByComparingTo("35");
     }
 
     @Test
@@ -169,9 +169,9 @@ class JdbcStockOverviewQueryAdapterTest {
         assertThat(product.items()).hasSize(2);
         assertThat(product.items()).extracting(item -> item.warehouseId())
                 .containsExactly(alpha.toString(), beta.toString());
-        assertThat(product.quantity()).isEqualTo(30);
-        assertThat(product.reserved()).isEqualTo(8);
-        assertThat(product.available()).isEqualTo(22);
+        assertThat(product.quantity()).isEqualByComparingTo("30");
+        assertThat(product.reserved()).isEqualByComparingTo("8");
+        assertThat(product.available()).isEqualByComparingTo("22");
         assertThat(product.productCount()).isEqualTo(1);
         assertThat(product.warehouseCount()).isEqualTo(2);
         var second = adapter.search(new StockOverviewFilter(null, null, null, 1,
@@ -180,7 +180,7 @@ class JdbcStockOverviewQueryAdapterTest {
                 .containsExactly(bolt.toString());
         assertThat(second.groups().content().getFirst().items()).hasSize(1);
         assertThat(second.summary()).isEqualTo(first.summary());
-        assertThat(first.summary().totalQuantity()).isEqualTo(35);
+        assertThat(first.summary().totalQuantity()).isEqualByComparingTo("35");
     }
 
     @Test
@@ -194,9 +194,9 @@ class JdbcStockOverviewQueryAdapterTest {
         assertThat(warehouse.name()).isEqualTo("Alpha");
         assertThat(warehouse.items()).extracting(item -> item.productId())
                 .containsExactly(apple.toString(), bolt.toString());
-        assertThat(warehouse.quantity()).isEqualTo(15);
-        assertThat(warehouse.reserved()).isEqualTo(4);
-        assertThat(warehouse.available()).isEqualTo(11);
+        assertThat(warehouse.quantity()).isEqualByComparingTo("15");
+        assertThat(warehouse.reserved()).isEqualByComparingTo("4");
+        assertThat(warehouse.available()).isEqualByComparingTo("11");
         assertThat(warehouse.productCount()).isEqualTo(2);
         assertThat(warehouse.warehouseCount()).isEqualTo(1);
         var second = adapter.search(new StockOverviewFilter(null, null, null, 1,
@@ -217,13 +217,13 @@ class JdbcStockOverviewQueryAdapterTest {
         assertThat(product.items()).hasSize(1);
         assertThat(product.items().getFirst().warehouseId())
                 .isEqualTo(beta.toString());
-        assertThat(product.quantity()).isEqualTo(20);
-        assertThat(products.summary().totalQuantity()).isEqualTo(20);
+        assertThat(product.quantity()).isEqualByComparingTo("20");
+        assertThat(products.summary().totalQuantity()).isEqualByComparingTo("20");
         var warehouses = adapter.search(new StockOverviewFilter(null, fruit,
                 "apple", 0, 1, StockOverviewGroupBy.WAREHOUSE));
         assertThat(warehouses.groups().totalElements()).isEqualTo(2);
         assertThat(warehouses.groups().content().getFirst().items()).hasSize(1);
-        assertThat(warehouses.summary().totalQuantity()).isEqualTo(30);
+        assertThat(warehouses.summary().totalQuantity()).isEqualByComparingTo("30");
         assertThat(warehouses.summary().productCount()).isEqualTo(1);
         assertThat(warehouses.summary().warehouseCount()).isEqualTo(2);
     }
@@ -239,7 +239,7 @@ class JdbcStockOverviewQueryAdapterTest {
                 1, StockOverviewGroupBy.WAREHOUSE));
         assertThat(beyond.groups().content()).isEmpty();
         assertThat(beyond.groups().totalElements()).isEqualTo(2);
-        assertThat(beyond.summary().totalQuantity()).isEqualTo(35);
+        assertThat(beyond.summary().totalQuantity()).isEqualByComparingTo("35");
     }
 
     @Test
@@ -263,7 +263,7 @@ class JdbcStockOverviewQueryAdapterTest {
                 null, 0, 10, StockOverviewGroupBy.WAREHOUSE)).summary();
         assertThat(byProduct).isEqualTo(ungrouped);
         assertThat(byWarehouse).isEqualTo(ungrouped);
-        assertThat(ungrouped.totalQuantity()).isEqualTo(35);
+        assertThat(ungrouped.totalQuantity()).isEqualByComparingTo("35");
     }
 
     @Test
@@ -290,7 +290,7 @@ class JdbcStockOverviewQueryAdapterTest {
         var response = adapter
                 .search(new StockOverviewFilter(null, null, "   ", 0, 10));
         assertThat(response.stock().totalElements()).isEqualTo(4);
-        assertThat(response.summary().totalQuantity()).isEqualTo(35);
+        assertThat(response.summary().totalQuantity()).isEqualByComparingTo("35");
     }
 
     @Test

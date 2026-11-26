@@ -18,7 +18,7 @@ public class InvoiceMapper {
     }
 
     public record WarehouseEnrichment(String code, String name,
-            int availableStock) {
+            BigDecimal availableStock) {
     }
 
     private InvoiceMapper() {
@@ -27,7 +27,7 @@ public class InvoiceMapper {
     public static InvoiceDetailResponse toDetailResponse(Invoice invoice,
             Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
             Map<UUID, List<StockAvailabilityGateway.WarehouseStockInfo>> productStocks,
-            Map<WarehouseProductKey, Integer> thisInvoiceAllocations) {
+            Map<WarehouseProductKey, BigDecimal> thisInvoiceAllocations) {
         return toDetailResponse(invoice, enrichmentMap, productStocks,
                 thisInvoiceAllocations, BigDecimal.ZERO, BigDecimal.ZERO,
                 List.of(), List.of());
@@ -36,7 +36,7 @@ public class InvoiceMapper {
     public static InvoiceDetailResponse toDetailResponse(Invoice invoice,
             Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
             Map<UUID, List<StockAvailabilityGateway.WarehouseStockInfo>> productStocks,
-            Map<WarehouseProductKey, Integer> thisInvoiceAllocations,
+            Map<WarehouseProductKey, BigDecimal> thisInvoiceAllocations,
             BigDecimal creditApplied, BigDecimal debitApplied,
             List<InvoiceDetailResponse.NoteInfo> notes,
             List<InvoiceDetailResponse.ReturnDetail> returns) {
@@ -132,7 +132,7 @@ public class InvoiceMapper {
             InvoiceLine line,
             Map<WarehouseProductKey, WarehouseEnrichment> enrichmentMap,
             Map<UUID, List<StockAvailabilityGateway.WarehouseStockInfo>> productStocks,
-            Map<WarehouseProductKey, Integer> thisInvoiceAllocations) {
+            Map<WarehouseProductKey, BigDecimal> thisInvoiceAllocations) {
 
         List<InvoiceDetailResponse.WarehouseAllocationResponse> allocationDetails = line
                 .getAllocations().stream().map(a -> {
@@ -141,9 +141,9 @@ public class InvoiceMapper {
                     WarehouseEnrichment enrichment = enrichmentMap.get(key);
                     String code = enrichment != null ? enrichment.code() : null;
                     String name = enrichment != null ? enrichment.name() : null;
-                    int availableStock = enrichment != null
+                    BigDecimal availableStock = enrichment != null
                             ? enrichment.availableStock()
-                            : 0;
+                            : BigDecimal.ZERO;
                     return new InvoiceDetailResponse.WarehouseAllocationResponse(
                             a.getId(), a.getWarehouseId(), code, name,
                             availableStock, a.getAllocated());
@@ -154,13 +154,14 @@ public class InvoiceMapper {
                 .map(s -> {
                     WarehouseProductKey key = new WarehouseProductKey(
                             s.warehouseId(), line.getProductId());
-                    int thisAllocation = thisInvoiceAllocations
-                            .getOrDefault(key, 0);
+                    BigDecimal thisAllocation = thisInvoiceAllocations
+                            .getOrDefault(key, BigDecimal.ZERO);
                     return new InvoiceDetailResponse.WarehouseStockDetail(
                             s.warehouseId(), s.warehouseCode(),
                             s.warehouseName(), s.quantity(),
-                            Math.max(0, s.reserved() - thisAllocation),
-                            s.available() + thisAllocation);
+                            s.reserved().subtract(thisAllocation)
+                                    .max(BigDecimal.ZERO),
+                            s.available().add(thisAllocation));
                 }).toList();
 
         return new InvoiceDetailResponse.InvoiceLineDetailResponse(

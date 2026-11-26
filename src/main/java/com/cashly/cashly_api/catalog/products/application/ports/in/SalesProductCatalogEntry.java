@@ -6,13 +6,14 @@ import java.util.UUID;
 
 public record SalesProductCatalogEntry(UUID id, String code, String name,
         UUID categoryId, String categoryName, boolean composite, boolean active,
-        String photo, BigDecimal customerPrice, int totalStock,
+        String photo, BigDecimal customerPrice, BigDecimal totalStock,
         List<Stock> stock) {
     public SalesProductCatalogEntry {
         stock = List.copyOf(stock);
     }
 
     public record Stock(UUID warehouseId, String warehouseCode,
-            String warehouseName, int quantity, int reserved, int available) {
+            String warehouseName, BigDecimal quantity, BigDecimal reserved,
+            BigDecimal available) {
     }
 }

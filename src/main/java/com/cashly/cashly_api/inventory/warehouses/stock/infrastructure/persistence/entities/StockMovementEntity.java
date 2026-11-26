@@ -8,6 +8,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -42,14 +43,14 @@ public class StockMovementEntity {
     @Column(name = "movement_type", nullable = false, length = 30)
     private MovementType movementType;
 
-    @Column(name = "quantity", nullable = false)
-    private int quantity;
+    @Column(name = "quantity", nullable = false, precision = 15, scale = 4)
+    private BigDecimal quantity;
 
-    @Column(name = "previous_stock", nullable = false)
-    private int previousStock;
+    @Column(name = "previous_stock", nullable = false, precision = 15, scale = 4)
+    private BigDecimal previousStock;
 
-    @Column(name = "new_stock", nullable = false)
-    private int newStock;
+    @Column(name = "new_stock", nullable = false, precision = 15, scale = 4)
+    private BigDecimal newStock;
 
     @Column(name = "origin_movement_id", columnDefinition = "BINARY(16)")
     @JdbcTypeCode(SqlTypes.BINARY)

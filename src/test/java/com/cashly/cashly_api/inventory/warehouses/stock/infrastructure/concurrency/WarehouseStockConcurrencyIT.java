@@ -26,6 +26,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Callable;
@@ -121,10 +122,9 @@ class WarehouseStockConcurrencyIT {
         } finally {
             start.countDown();
         }
-        assertEquals(2,
-                persistedStocks
-                        .findByWarehouseIdAndProductId(warehouseId, productId)
-                        .orElseThrow().getQuantity());
+        assertEquals(0, persistedStocks
+                .findByWarehouseIdAndProductId(warehouseId, productId)
+                .orElseThrow().getQuantity().compareTo(new BigDecimal("2")));
     }
 
     @Test
@@ -170,12 +170,14 @@ class WarehouseStockConcurrencyIT {
         } finally {
             start.countDown();
         }
-        assertEquals(100, persistedStocks
+        assertEquals(0, persistedStocks
                 .findByWarehouseIdAndProductId(firstWarehouse, productId)
-                .orElseThrow().getQuantity());
-        assertEquals(100, persistedStocks
+                .orElseThrow().getQuantity()
+                .compareTo(new BigDecimal("100")));
+        assertEquals(0, persistedStocks
                 .findByWarehouseIdAndProductId(secondWarehouse, productId)
-                .orElseThrow().getQuantity());
+                .orElseThrow().getQuantity()
+                .compareTo(new BigDecimal("100")));
     }
 
     private void addStock(StockEntryUseCase entry, UUID warehouseId,
@@ -186,7 +188,7 @@ class WarehouseStockConcurrencyIT {
                 .executeWithoutResult(
                         status -> entry.execute(warehouseId,
                                 new StockEntryRequest(
-                                        List.of(new StockBatchItem(productId, 1,
+                                        List.of(new StockBatchItem(productId, java.math.BigDecimal.ONE,
                                                 "Concurrent entry")))));
     }
 
@@ -197,14 +199,16 @@ class WarehouseStockConcurrencyIT {
         assertTrue(start.await(TIMEOUT_SECONDS, TimeUnit.SECONDS));
         new TransactionTemplate(transactionManager).executeWithoutResult(
                 status -> transfer.execute(source, new TransferStockRequest(
-                        productId, destination, 1, "Opposite transfer")));
+                        productId, destination, java.math.BigDecimal.ONE,
+                        "Opposite transfer")));
     }
 
     private void persistStock(UUID warehouseId, int quantity) {
         var now = LocalDateTime.now();
         persistedStocks.saveAndFlush(WarehouseStockEntity
                 .fromDomain(new WarehouseStock(UUID.randomUUID(), warehouseId,
-                        productId, quantity, 0, now, now)));
+                        productId, java.math.BigDecimal.valueOf(quantity),
+                        java.math.BigDecimal.ZERO, now, now)));
     }
 
     private Warehouse activeWarehouse() {

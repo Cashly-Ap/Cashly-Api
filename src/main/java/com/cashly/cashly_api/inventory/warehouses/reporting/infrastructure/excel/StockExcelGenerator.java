@@ -69,7 +69,7 @@ public class StockExcelGenerator implements StockExcelPort {
                 createStringCell(row, 1, item.productName(), cellStyle);
                 createStringCell(row, 2, item.sku(), cellStyle);
                 createStringCell(row, 3, item.categoryName(), cellStyle);
-                createNumericCell(row, 4, item.quantity(), cellStyle);
+                createNumericCell(row, 4, item.quantity().doubleValue(), cellStyle);
                 createStringCell(row, 5, ReportMessages.code(item.status()),
                         cellStyle);
             }
@@ -145,7 +145,7 @@ public class StockExcelGenerator implements StockExcelPort {
         cell.setCellStyle(style);
     }
 
-    private void createNumericCell(Row row, int col, int value,
+    private void createNumericCell(Row row, int col, double value,
             CellStyle style) {
         Cell cell = row.createCell(col);
         cell.setCellValue(value);

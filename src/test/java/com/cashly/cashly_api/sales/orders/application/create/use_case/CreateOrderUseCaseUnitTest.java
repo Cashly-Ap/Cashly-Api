@@ -84,7 +84,7 @@ class CreateOrderUseCaseUnitTest {
         User user = buildUser(authenticatedUserId);
         Product product = buildProduct(productId);
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId, 50, 0, LocalDateTime.now(),
+                warehouseId, productId, new BigDecimal("50"), new BigDecimal("0"), LocalDateTime.now(),
                 LocalDateTime.now());
 
         CreateOrderRequest request = new CreateOrderRequest(customerId,
@@ -92,7 +92,7 @@ class CreateOrderUseCaseUnitTest {
                 List.of(new CreateOrderRequest.OrderLineRequest(productId,
                         BigDecimal.ONE, BigDecimal.TEN,
                         List.of(new CreateOrderRequest.WarehouseAllocationRequest(
-                                warehouseId, 5)))));
+                                warehouseId, BigDecimal.valueOf(5))))));
 
         when(customerRepository.findById(customerId))
                 .thenReturn(Optional.of(customerRef(customerId, customer)));
@@ -127,14 +127,14 @@ class CreateOrderUseCaseUnitTest {
         User user = buildUser(authenticatedUserId);
         Product product = buildProduct(productId);
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId, 50, 2, LocalDateTime.now(),
+                warehouseId, productId, new BigDecimal("50"), new BigDecimal("2"), LocalDateTime.now(),
                 LocalDateTime.now());
 
         CreateOrderRequest request = new CreateOrderRequest(customerId, null,
                 List.of(new CreateOrderRequest.OrderLineRequest(productId,
                         BigDecimal.ONE, BigDecimal.TEN,
                         List.of(new CreateOrderRequest.WarehouseAllocationRequest(
-                                warehouseId, 5)))));
+                                warehouseId, BigDecimal.valueOf(5))))));
 
         when(customerRepository.findById(customerId))
                 .thenReturn(Optional.of(customerRef(customerId, customer)));
@@ -151,7 +151,42 @@ class CreateOrderUseCaseUnitTest {
 
         verify(warehouseStockRepository).reserve(
                 List.of(new OrderInventoryGateway.Allocation(warehouseId,
-                        productId, 5)));
+                        productId, new BigDecimal("5"))));
+    }
+
+    @Test
+    void should_ReserveDecimalStock_When_AllocationHasFraction() {
+        UUID customerId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
+        UUID warehouseId = UUID.randomUUID();
+        UUID authenticatedUserId = UUID.randomUUID();
+
+        Customer customer = buildCustomer(customerId);
+        User user = buildUser(authenticatedUserId);
+        Product product = buildProduct(productId);
+
+        CreateOrderRequest request = new CreateOrderRequest(customerId, null,
+                List.of(new CreateOrderRequest.OrderLineRequest(productId,
+                        new BigDecimal("2.5"), BigDecimal.TEN,
+                        List.of(new CreateOrderRequest.WarehouseAllocationRequest(
+                                warehouseId, new BigDecimal("2.5"))))));
+
+        when(customerRepository.findById(customerId))
+                .thenReturn(Optional.of(customerRef(customerId, customer)));
+        when(userRepository.findById(authenticatedUserId))
+                .thenReturn(Optional.of(actorRef(authenticatedUserId, user)));
+        when(productRepository.findProduct(productId))
+                .thenReturn(Optional.of(productRef(product)));
+        when(orderRepository.getNextSequenceForYear(anyInt())).thenReturn(1);
+        when(orderRepository.save(any(
+                com.cashly.cashly_api.sales.orders.domain.entity.Order.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+
+        createOrderUseCase.execute(request, authenticatedUserId);
+
+        verify(warehouseStockRepository).reserve(
+                List.of(new OrderInventoryGateway.Allocation(warehouseId,
+                        productId, new BigDecimal("2.5"))));
     }
 
     @Test
@@ -236,7 +271,7 @@ class CreateOrderUseCaseUnitTest {
                 List.of(new CreateOrderRequest.OrderLineRequest(productId,
                         BigDecimal.ONE, BigDecimal.TEN,
                         List.of(new CreateOrderRequest.WarehouseAllocationRequest(
-                                warehouseId, 5)))));
+                                warehouseId, BigDecimal.valueOf(5))))));
 
         when(customerRepository.findById(customerId))
                 .thenReturn(Optional.of(customerRef(customerId, customer)));
@@ -264,14 +299,14 @@ class CreateOrderUseCaseUnitTest {
         User user = buildUser(authenticatedUserId);
         Product product = buildProduct(productId);
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId, 50, 0, LocalDateTime.now(),
+                warehouseId, productId, new BigDecimal("50"), new BigDecimal("0"), LocalDateTime.now(),
                 LocalDateTime.now());
 
         CreateOrderRequest request = new CreateOrderRequest(customerId, null,
                 List.of(new CreateOrderRequest.OrderLineRequest(productId,
                         BigDecimal.ONE, BigDecimal.TEN,
                         List.of(new CreateOrderRequest.WarehouseAllocationRequest(
-                                warehouseId, 5)))));
+                                warehouseId, BigDecimal.valueOf(5))))));
 
         when(customerRepository.findById(customerId))
                 .thenReturn(Optional.of(customerRef(customerId, customer)));

@@ -47,7 +47,7 @@ public class StockPdfGenerator implements StockPdfPort {
         List<String[]> rows = items.stream()
                 .map(item -> new String[]{item.warehouseName(),
                         item.productName(), item.sku(), item.categoryName(),
-                        String.valueOf(item.quantity()),
+                        formatQuantity(item.quantity()),
                         ReportMessages.code(item.status())})
                 .toList();
         String subtitle = ReportMessages
@@ -64,4 +64,7 @@ public class StockPdfGenerator implements StockPdfPort {
                 ReportMessages.text("inventory.warehouses.reports.of"));
     }
 
+    private static String formatQuantity(java.math.BigDecimal value) {
+        return value != null ? value.stripTrailingZeros().toPlainString() : "";
+    }
 }

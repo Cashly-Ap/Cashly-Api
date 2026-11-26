@@ -47,7 +47,7 @@ public class LocalOrderInventoryGateway implements OrderInventoryGateway {
         }
         for (Allocation allocation : allocations) {
             WarehouseStock stock = lockedStock(allocation);
-            int previous = stock.getQuantity();
+            java.math.BigDecimal previous = stock.getQuantity();
             stock.removeStock(allocation.quantity());
             stocks.save(stock);
             recordMovement(allocation, stock, previous, MovementType.EXIT, null,
@@ -84,7 +84,7 @@ public class LocalOrderInventoryGateway implements OrderInventoryGateway {
             Reference reference) {
         for (Allocation allocation : allocations) {
             WarehouseStock stock = lockedStock(allocation);
-            int previous = stock.getQuantity();
+            java.math.BigDecimal previous = stock.getQuantity();
             stock.deductReserved(allocation.quantity());
             stocks.save(stock);
             recordMovement(allocation, stock, previous, MovementType.SALE_EXIT,
@@ -97,7 +97,7 @@ public class LocalOrderInventoryGateway implements OrderInventoryGateway {
     public void restore(List<Allocation> allocations, Reference reference) {
         for (Allocation allocation : allocations) {
             WarehouseStock stock = lockedStock(allocation);
-            int previous = stock.getQuantity();
+            java.math.BigDecimal previous = stock.getQuantity();
             stock.addStock(allocation.quantity());
             stocks.save(stock);
             recordMovement(allocation, stock, previous,
@@ -115,8 +115,8 @@ public class LocalOrderInventoryGateway implements OrderInventoryGateway {
     }
 
     private void recordMovement(Allocation allocation, WarehouseStock stock,
-            int previous, MovementType type, Reference reference,
-            String description) {
+            java.math.BigDecimal previous, MovementType type,
+            Reference reference, String description) {
         movements.save(StockMovement.createWithReference(
                 allocation.warehouseId(), allocation.productId(), type,
                 allocation.quantity(), previous, stock.getQuantity(), null,

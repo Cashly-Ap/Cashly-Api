@@ -183,7 +183,8 @@ class ProductControllerTest {
     void should_get_product_stock_and_return_200() {
         UUID id = UUID.randomUUID();
         ProductStockByWarehouseResponse stock = new ProductStockByWarehouseResponse(
-                UUID.randomUUID().toString(), "Main Warehouse", 100,
+                UUID.randomUUID().toString(), "Main Warehouse",
+                new BigDecimal("100"),
                 LocalDateTime.now());
 
         when(getProductStockUseCase.execute(id)).thenReturn(List.of(stock));

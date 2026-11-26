@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -66,7 +67,7 @@ class JpaWarehouseStockRepositoryTest {
             assertNotNull(result);
             assertEquals(warehouseId, result.getWarehouseId());
             assertEquals(productId, result.getProductId());
-            assertEquals(0, result.getQuantity());
+            assertEquals(0, new BigDecimal("0").compareTo(result.getQuantity()));
 
             WarehouseStockEntity captured = entityCaptor.getValue();
             assertEquals(warehouseId, captured.getWarehouseId());
@@ -81,7 +82,8 @@ class JpaWarehouseStockRepositoryTest {
             UUID warehouseId = UUID.randomUUID();
             UUID productId = UUID.randomUUID();
             WarehouseStock stock = new WarehouseStock(id, warehouseId,
-                    productId, 10, 2, LocalDateTime.now(), LocalDateTime.now());
+                    productId, new BigDecimal("10"), new BigDecimal("2"), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             WarehouseStockEntity existingEntity = WarehouseStockEntity
                     .fromDomain(stock);
@@ -94,12 +96,12 @@ class JpaWarehouseStockRepositoryTest {
             WarehouseStock result = adapter.save(stock);
 
             assertNotNull(result);
-            assertEquals(10, result.getQuantity());
-            assertEquals(2, result.getReserved());
+            assertEquals(0, new BigDecimal("10").compareTo(result.getQuantity()));
+            assertEquals(0, new BigDecimal("2").compareTo(result.getReserved()));
 
             WarehouseStockEntity captured = entityCaptor.getValue();
             assertEquals(id, captured.getId());
-            assertEquals(10, captured.getQuantity());
+            assertEquals(0, new BigDecimal("10").compareTo(captured.getQuantity()));
 
             verify(springDataRepository).findById(id);
             verify(springDataRepository).save(any(WarehouseStockEntity.class));
@@ -111,7 +113,8 @@ class JpaWarehouseStockRepositoryTest {
             UUID warehouseId = UUID.randomUUID();
             UUID productId = UUID.randomUUID();
             WarehouseStock stock = new WarehouseStock(id, warehouseId,
-                    productId, 5, 1, LocalDateTime.now(), LocalDateTime.now());
+                    productId, new BigDecimal("5"), new BigDecimal("1"), LocalDateTime.now(),
+                    LocalDateTime.now());
 
             when(springDataRepository.findById(id))
                     .thenReturn(Optional.empty());
@@ -124,7 +127,7 @@ class JpaWarehouseStockRepositoryTest {
             WarehouseStock result = adapter.save(stock);
 
             assertNotNull(result);
-            assertEquals(5, result.getQuantity());
+            assertEquals(0, new BigDecimal("5").compareTo(result.getQuantity()));
             assertEquals(warehouseId, result.getWarehouseId());
             assertEquals(productId, result.getProductId());
 

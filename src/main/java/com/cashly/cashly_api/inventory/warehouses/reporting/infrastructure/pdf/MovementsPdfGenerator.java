@@ -62,9 +62,9 @@ public class MovementsPdfGenerator implements MovementsPdfPort {
                                 : "-",
                         item.warehouseName(), item.productName(), item.sku(),
                         ReportMessages.code(item.movementType()),
-                        String.valueOf(item.quantity()),
-                        String.valueOf(item.previousStock()),
-                        String.valueOf(item.newStock()),
+                        formatQuantity(item.quantity()),
+                        formatQuantity(item.previousStock()),
+                        formatQuantity(item.newStock()),
                         item.notes() != null ? item.notes() : "-"})
                 .toList();
         String subtitle = ReportMessages
@@ -78,4 +78,7 @@ public class MovementsPdfGenerator implements MovementsPdfPort {
                 ReportMessages.text("inventory.warehouses.reports.of"));
     }
 
+    private static String formatQuantity(java.math.BigDecimal value) {
+        return value != null ? value.stripTrailingZeros().toPlainString() : "";
+    }
 }

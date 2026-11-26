@@ -5,9 +5,10 @@ import java.util.List;
 
 public record ProductWithStockResponse(String id, String code, String name,
         String categoryId, String categoryName, boolean composite,
-        boolean active, String photo, BigDecimal customerPrice, int totalStock,
-        List<WarehouseStockItem> stock) {
+        boolean active, String photo, BigDecimal customerPrice,
+        BigDecimal totalStock, List<WarehouseStockItem> stock) {
     public record WarehouseStockItem(String warehouseId, String warehouseCode,
-            String warehouseName, int quantity, int reserved, int available) {
+            String warehouseName, BigDecimal quantity, BigDecimal reserved,
+            BigDecimal available) {
     }
 }

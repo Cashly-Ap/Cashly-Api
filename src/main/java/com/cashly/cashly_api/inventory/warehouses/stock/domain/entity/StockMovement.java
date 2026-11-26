@@ -3,6 +3,7 @@ package com.cashly.cashly_api.inventory.warehouses.stock.domain.entity;
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.valueobjects.MovementType;
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.valueobjects.ReferenceType;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -12,9 +13,9 @@ public class StockMovement {
     private final UUID warehouseId;
     private final UUID productId;
     private final MovementType movementType;
-    private final int quantity;
-    private final int previousStock;
-    private final int newStock;
+    private final BigDecimal quantity;
+    private final BigDecimal previousStock;
+    private final BigDecimal newStock;
     private final UUID originMovementId;
     private final String transferBatchId;
     private final ReferenceType referenceType;
@@ -24,8 +25,9 @@ public class StockMovement {
     private final LocalDateTime createdAt;
 
     public StockMovement(UUID id, UUID warehouseId, UUID productId,
-            MovementType movementType, int quantity, int previousStock,
-            int newStock, UUID originMovementId, String transferBatchId,
+            MovementType movementType, BigDecimal quantity,
+            BigDecimal previousStock, BigDecimal newStock,
+            UUID originMovementId, String transferBatchId,
             ReferenceType referenceType, UUID referenceId,
             String referenceNumber, String notes, LocalDateTime createdAt) {
         this.id = id;
@@ -45,19 +47,20 @@ public class StockMovement {
     }
 
     public static StockMovement create(UUID warehouseId, UUID productId,
-            MovementType movementType, int quantity, int previousStock,
-            int newStock, UUID originMovementId, String transferBatchId,
-            String notes) {
+            MovementType movementType, BigDecimal quantity,
+            BigDecimal previousStock, BigDecimal newStock,
+            UUID originMovementId, String transferBatchId, String notes) {
         return new StockMovement(null, warehouseId, productId, movementType,
                 quantity, previousStock, newStock, originMovementId,
                 transferBatchId, null, null, null, notes, LocalDateTime.now());
     }
 
     public static StockMovement createWithReference(UUID warehouseId,
-            UUID productId, MovementType movementType, int quantity,
-            int previousStock, int newStock, UUID originMovementId,
-            String transferBatchId, ReferenceType referenceType,
-            UUID referenceId, String referenceNumber, String notes) {
+            UUID productId, MovementType movementType, BigDecimal quantity,
+            BigDecimal previousStock, BigDecimal newStock,
+            UUID originMovementId, String transferBatchId,
+            ReferenceType referenceType, UUID referenceId,
+            String referenceNumber, String notes) {
         return new StockMovement(null, warehouseId, productId, movementType,
                 quantity, previousStock, newStock, originMovementId,
                 transferBatchId, referenceType, referenceId, referenceNumber,
@@ -76,13 +79,13 @@ public class StockMovement {
     public MovementType getMovementType() {
         return movementType;
     }
-    public int getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
-    public int getPreviousStock() {
+    public BigDecimal getPreviousStock() {
         return previousStock;
     }
-    public int getNewStock() {
+    public BigDecimal getNewStock() {
         return newStock;
     }
     public UUID getOriginMovementId() {

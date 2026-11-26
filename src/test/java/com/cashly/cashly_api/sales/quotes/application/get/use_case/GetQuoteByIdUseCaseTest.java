@@ -51,7 +51,8 @@ class GetQuoteByIdUseCaseTest {
                 Instant.now(), Instant.now());
         when(quotes.findById(quoteId)).thenReturn(Optional.of(quote));
         when(warehouses.findStockByProductId(productId)).thenReturn(List
-                .of(new QuoteWarehouseGateway.Stock(warehouseId, "Main", 7)));
+                .of(new QuoteWarehouseGateway.Stock(warehouseId, "Main",
+                        new BigDecimal("7"))));
 
         var response = useCase.execute(quoteId);
 
@@ -62,7 +63,7 @@ class GetQuoteByIdUseCaseTest {
                             assertThat(stock.warehouseId())
                                     .isEqualTo(warehouseId);
                             assertThat(stock.warehouseName()).isEqualTo("Main");
-                            assertThat(stock.available()).isEqualTo(7);
+                            assertThat(stock.available()).isEqualByComparingTo("7");
                         }));
     }
 

@@ -134,7 +134,7 @@ public class ConfirmPurchaseUseCase {
                         .map(allocation -> new InventoryGateway.Allocation(
                                 allocation.getWarehouseId(),
                                 line.getProductId(),
-                                allocation.getQuantity().intValue())))
+                                allocation.getQuantity())))
                         .toList());
     }
 }

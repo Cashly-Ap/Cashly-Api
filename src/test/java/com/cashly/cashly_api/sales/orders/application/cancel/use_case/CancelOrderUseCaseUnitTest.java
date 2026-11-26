@@ -93,7 +93,7 @@ class CancelOrderUseCaseUnitTest {
                 .stream()
                 .map(allocation -> new OrderInventoryGateway.Allocation(
                         allocation.getWarehouseId(), line.getProductId(),
-                        allocation.getAllocated().intValue())))
+                        allocation.getAllocated())))
                 .toList();
     }
 

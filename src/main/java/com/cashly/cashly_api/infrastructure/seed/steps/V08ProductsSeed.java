@@ -69,7 +69,7 @@ public class V08ProductsSeed implements SeedStep {
         component.setId(id("product-component." + key));
         component.setProduct(parent);
         component.setComponentProductId(componentId);
-        component.setQuantity(quantity);
+        component.setQuantity(BigDecimal.valueOf(quantity));
         parent.getComponents().add(component);
     }
 }

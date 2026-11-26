@@ -112,7 +112,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
         Quote quote = buildDraftQuote(quoteId, warehouseId, productId);
         User user = buildUser(authenticatedUserId);
         WarehouseStock stock = new WarehouseStock(null, warehouseId, productId,
-                50, 0, null, null);
+                new BigDecimal("50"), new BigDecimal("0"), null, null);
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
         when(userRepository.findById(new UserId(authenticatedUserId)))
@@ -136,7 +136,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
         assertNotNull(result.invoiceId());
         assertNotNull(result.invoiceNumber());
 
-        assertEquals(48, stock.getQuantity());
+        assertEquals(new BigDecimal("48"), stock.getQuantity());
 
         ArgumentCaptor<Invoice> invoiceCaptor = ArgumentCaptor
                 .forClass(Invoice.class);
@@ -158,7 +158,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
         Quote quote = buildDraftQuote(quoteId, warehouseId, productId);
         User user = buildUser(authenticatedUserId);
         WarehouseStock stock = new WarehouseStock(null, warehouseId, productId,
-                50, 0, null, null);
+                new BigDecimal("50"), new BigDecimal("0"), null, null);
 
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
         when(userRepository.findById(new UserId(authenticatedUserId)))
@@ -259,7 +259,7 @@ class ConvertQuoteToInvoiceUseCaseTest {
         when(warehouseStockRepository
                 .findByWarehouseIdAndProductIdForUpdate(warehouseId, productId))
                 .thenReturn(Optional.of(new WarehouseStock(null, warehouseId,
-                        productId, 50, 0, null, null)));
+                        productId, new BigDecimal("50"), new BigDecimal("0"), null, null)));
 
         useCase.execute(quoteId, new ConvertQuoteToInvoiceRequest("CREDIT",
                 null, null, null, null, issueDate), authenticatedUserId);

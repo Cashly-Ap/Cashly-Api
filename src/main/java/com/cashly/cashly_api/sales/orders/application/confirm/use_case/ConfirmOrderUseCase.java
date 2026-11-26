@@ -46,7 +46,7 @@ public class ConfirmOrderUseCase {
                         .map(allocation -> new OrderInventoryGateway.Allocation(
                                 allocation.getWarehouseId(),
                                 line.getProductId(),
-                                allocation.getAllocated().intValue())))
+                                allocation.getAllocated())))
                         .toList(),
                 new OrderInventoryGateway.Reference(order.getId().value(),
                         order.getOrderNumber().value(), "Order confirmed"));

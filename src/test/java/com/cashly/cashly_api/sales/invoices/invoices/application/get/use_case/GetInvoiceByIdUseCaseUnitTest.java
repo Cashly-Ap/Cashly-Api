@@ -74,7 +74,8 @@ class GetInvoiceByIdUseCaseUnitTest {
                 .thenReturn(Optional.of(invoice));
         when(stockEnrichmentService.enrich(any())).thenReturn(
                 List.of(new StockAvailabilityGateway.EnrichedStock(warehouseId,
-                        productId, "WH1", "Warehouse 1", 15)));
+                        productId, "WH1", "Warehouse 1",
+                        new java.math.BigDecimal("15"))));
 
         InvoiceDetailResponse response = getInvoiceByIdUseCase.execute(id);
 
@@ -83,7 +84,7 @@ class GetInvoiceByIdUseCaseUnitTest {
         assertThat(response.lines()).hasSize(1);
         assertThat(response.lines().get(0).warehouseAllocations()).hasSize(1);
         assertThat(response.lines().get(0).warehouseAllocations().get(0)
-                .available()).isEqualTo(15);
+                .available()).isEqualByComparingTo("15");
         verify(invoiceRepository).findById(InvoiceId.of(id));
         verify(stockEnrichmentService).enrich(any());
     }
@@ -131,7 +132,8 @@ class GetInvoiceByIdUseCaseUnitTest {
                 .thenReturn(Optional.of(invoice));
         when(stockEnrichmentService.enrich(any())).thenReturn(
                 List.of(new StockAvailabilityGateway.EnrichedStock(warehouseId,
-                        productId, "WH-MAIN", "Deposito Principal", 25)));
+                        productId, "WH-MAIN", "Deposito Principal",
+                        new java.math.BigDecimal("25"))));
 
         InvoiceDetailResponse response = getInvoiceByIdUseCase.execute(id);
 
@@ -142,7 +144,7 @@ class GetInvoiceByIdUseCaseUnitTest {
         assertThat(allocation.warehouseId()).isEqualTo(warehouseId);
         assertThat(allocation.warehouseCode()).isEqualTo("WH-MAIN");
         assertThat(allocation.warehouseName()).isEqualTo("Deposito Principal");
-        assertThat(allocation.available()).isEqualTo(25);
+        assertThat(allocation.available()).isEqualByComparingTo("25");
     }
 
     @Test

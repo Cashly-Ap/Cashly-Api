@@ -3,6 +3,7 @@ package com.cashly.cashly_api.catalog.products.domain.entity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,7 +23,7 @@ class ProductComponentUnitTest {
         assertEquals(id, component.getId());
         assertEquals(parentId, component.getParentProductId());
         assertEquals(componentId, component.getComponentProductId());
-        assertEquals(3, component.getQuantity());
+        assertEquals(BigDecimal.valueOf(3), component.getQuantity());
     }
 
     @Test
@@ -67,6 +68,6 @@ class ProductComponentUnitTest {
         ProductComponent component = new ProductComponent(id, parentId,
                 componentId, 1);
 
-        assertEquals(1, component.getQuantity());
+        assertEquals(BigDecimal.valueOf(1), component.getQuantity());
     }
 }

@@ -17,6 +17,7 @@ import com.cashly.cashly_api.inventory.warehouses.management.domain.repository.W
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.out.StockCatalogGateway;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.out.StockCatalogGateway.CatalogProduct;
@@ -61,8 +62,8 @@ public class StockAdjustmentUseCase {
                 .findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId,
                         product.id());
 
-        int prevQty = stock.getQuantity();
-        int delta = Math.abs(request.newQuantity() - prevQty);
+        BigDecimal prevQty = stock.getQuantity();
+        BigDecimal delta = request.newQuantity().subtract(prevQty).abs();
         stock.adjustStock(request.newQuantity());
         WarehouseStock savedStock = warehouseStockRepository.save(stock);
 
@@ -71,7 +72,7 @@ public class StockAdjustmentUseCase {
                 savedStock.getQuantity(), null, null, request.notes());
         StockMovement saved = stockMovementRepository.save(movement);
         activityNotifications.record(ActivityEvent.of("INVENTORY_WAREHOUSES",
-                savedStock.getQuantity() >= prevQty
+                savedStock.getQuantity().compareTo(prevQty) >= 0
                         ? "RECORD_ENTRY"
                         : "RECORD_EXIT",
                 "WAREHOUSE", warehouseId, warehouse.getName(), null));

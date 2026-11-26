@@ -3,6 +3,7 @@ package com.cashly.cashly_api.inventory.warehouses.reporting.application.dto.res
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -18,7 +19,8 @@ class MovementReportResponseTest {
         LocalDateTime now = LocalDateTime.now();
 
         var response = new MovementReportResponse(movementId, "Main Warehouse",
-                "Product A", "SKU001", "Entrada", 10, 5, 15, "Initial stock",
+                "Product A", "SKU001", "Entrada", new BigDecimal("10"), new BigDecimal("5"),
+                new BigDecimal("15"), "Initial stock",
                 now);
 
         assertEquals(movementId, response.movementId());
@@ -26,9 +28,9 @@ class MovementReportResponseTest {
         assertEquals("Product A", response.productName());
         assertEquals("SKU001", response.sku());
         assertEquals("Entrada", response.movementType());
-        assertEquals(10, response.quantity());
-        assertEquals(5, response.previousStock());
-        assertEquals(15, response.newStock());
+        assertEquals(0, new BigDecimal("10").compareTo(response.quantity()));
+        assertEquals(0, new BigDecimal("5").compareTo(response.previousStock()));
+        assertEquals(0, new BigDecimal("15").compareTo(response.newStock()));
         assertEquals("Initial stock", response.notes());
         assertEquals(now, response.createdAt());
     }
@@ -37,7 +39,8 @@ class MovementReportResponseTest {
     @DisplayName("should create movement report response with null notes")
     void should_create_movement_report_response_with_null_notes() {
         var response = new MovementReportResponse(UUID.randomUUID(),
-                "Warehouse", "Product", "SKU", "Salida", -5, 10, 5, null,
+                "Warehouse", "Product", "SKU", "Salida", new BigDecimal("-5"),
+                new BigDecimal("10"), new BigDecimal("5"), null,
                 LocalDateTime.now());
 
         assertNull(response.notes());

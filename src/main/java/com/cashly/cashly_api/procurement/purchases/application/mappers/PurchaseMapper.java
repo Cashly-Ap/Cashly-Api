@@ -112,9 +112,15 @@ public class PurchaseMapper {
         for (Map.Entry<UUID, Warehouse> entry : allWarehouses.entrySet()) {
             Warehouse warehouse = entry.getValue();
             Stock stock = stockByWarehouse.get(entry.getKey());
-            int quantity = stock != null ? stock.quantity() : 0;
-            int reserved = stock != null ? stock.reserved() : 0;
-            int available = stock != null ? stock.available() : 0;
+            java.math.BigDecimal quantity = stock != null
+                    ? stock.quantity()
+                    : java.math.BigDecimal.ZERO;
+            java.math.BigDecimal reserved = stock != null
+                    ? stock.reserved()
+                    : java.math.BigDecimal.ZERO;
+            java.math.BigDecimal available = stock != null
+                    ? stock.available()
+                    : java.math.BigDecimal.ZERO;
             result.add(
                     new PurchaseDetailResponse.LineDetailResponse.StockItemDetail(
                             warehouse.id(), warehouse.code(), warehouse.name(),

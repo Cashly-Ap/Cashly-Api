@@ -1,7 +1,7 @@
 package com.cashly.cashly_api.sales.orders.application.create.request;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -29,6 +29,6 @@ public record CreateOrderRequest(
     public record WarehouseAllocationRequest(
             @NotNull(message = "Warehouse is required") UUID warehouseId,
 
-            @NotNull(message = "Allocated quantity is required") @Min(value = 1, message = "Allocated quantity must be greater than zero") Integer allocated) {
+            @NotNull(message = "Allocated quantity is required") @DecimalMin(value = "0.0001", message = "Allocated quantity must be greater than zero") BigDecimal allocated) {
     }
 }

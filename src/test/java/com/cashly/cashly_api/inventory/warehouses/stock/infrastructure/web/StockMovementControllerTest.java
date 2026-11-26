@@ -30,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -373,14 +374,17 @@ class StockMovementControllerTest {
         UUID productId = UUID.randomUUID();
         StockMovementResponse movement = new StockMovementResponse("m-1",
                 warehouseId.toString(), "Central", productId.toString(), "M-01",
-                "Motor 10HP", "Motores", MovementType.ENTRY, 5, 0, 5, null,
-                null, null, null, null, null,
+                "Motor 10HP", "Motores", MovementType.ENTRY,
+                new BigDecimal("5"), BigDecimal.ZERO, new BigDecimal("5"),
+                null, null, null, null, null, null,
                 LocalDateTime.of(2026, 10, 31, 10, 0));
         StockMovementGroup group = new StockMovementGroup(productId.toString(),
-                "Motor 10HP", null, "M-01", "Motores", null, 1, 5, 0, 5,
+                "Motor 10HP", null, "M-01", "Motores", null, 1,
+                new BigDecimal("5"), BigDecimal.ZERO, new BigDecimal("5"),
                 List.of(movement));
         StockMovementsResponse response = StockMovementsResponse.grouped(
-                new Summary(1, 1, 1, 5, 0, 5),
+                new Summary(1, 1, 1, new BigDecimal("5"), BigDecimal.ZERO,
+                        new BigDecimal("5")),
                 List.of(new WarehouseOption(warehouseId.toString(), "Central")),
                 List.of(new ProductOption(productId.toString(), "Motor 10HP",
                         "M-01")),
@@ -464,8 +468,9 @@ class StockMovementControllerTest {
         UUID warehouseId = UUID.randomUUID();
         StockMovementResponse movement = new StockMovementResponse("m-1",
                 warehouseId.toString(), "Central", UUID.randomUUID().toString(),
-                "M-01", "Motor 10HP", "Motores", MovementType.ENTRY, 5, 0, 5,
-                null, null, null, null, null, null,
+                "M-01", "Motor 10HP", "Motores", MovementType.ENTRY,
+                new BigDecimal("5"), BigDecimal.ZERO, new BigDecimal("5"), null,
+                null, null, null, null, null,
                 LocalDateTime.of(2026, 10, 31, 10, 0));
         PageResponse<StockMovementResponse> page = new PageResponse<>(
                 List.of(movement), 1L, 1, 20, 0, true, true, false);

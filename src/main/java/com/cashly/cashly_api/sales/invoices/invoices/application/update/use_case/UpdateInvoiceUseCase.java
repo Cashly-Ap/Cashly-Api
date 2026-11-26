@@ -97,7 +97,7 @@ public class UpdateInvoiceUseCase {
                 .flatMap(line -> line.getAllocations().stream()
                         .map(a -> new StockAvailabilityGateway.AllocationData(
                                 a.getWarehouseId(), line.getProductId(),
-                                a.getAllocated().intValue())))
+                                a.getAllocated())))
                 .toList();
 
         List<StockAvailabilityGateway.EnrichedStock> enriched = stockEnrichmentService
@@ -130,7 +130,7 @@ public class UpdateInvoiceUseCase {
                 .reserveAllocations(lineRequest.warehouseAllocations().stream()
                         .map(a -> new InventoryGateway.Allocation(
                                 a.warehouseId(), productId,
-                                a.allocated().intValue()))
+                                a.allocated()))
                         .toList());
         return lineRequest.warehouseAllocations().stream()
                 .map(a -> InvoiceLineAllocation.create(a.warehouseId(),

@@ -10,6 +10,8 @@ import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockM
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 public class ReturnInventoryService implements ReturnInventoryApi {
     private final WarehouseStockRepository stocks;
     private final StockMovementRepository movements;
@@ -44,7 +46,7 @@ public class ReturnInventoryService implements ReturnInventoryApi {
                                             + allocation.productId()))
                     : stocks.findOrCreateByWarehouseIdAndProductIdForUpdate(
                             allocation.warehouseId(), allocation.productId());
-            int previousStock = stock.getQuantity();
+            BigDecimal previousStock = stock.getQuantity();
             if (reversing) {
                 stock.removeStock(allocation.quantity());
             } else {

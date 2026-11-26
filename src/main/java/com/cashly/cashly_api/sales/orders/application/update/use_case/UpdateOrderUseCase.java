@@ -82,7 +82,7 @@ public class UpdateOrderUseCase {
                 .getAllocations().stream()
                 .map(allocation -> new OrderInventoryGateway.Allocation(
                         allocation.getWarehouseId(), line.getProductId(),
-                        allocation.getAllocated().intValue())))
+                        allocation.getAllocated())))
                 .toList());
     }
 
@@ -94,7 +94,7 @@ public class UpdateOrderUseCase {
                 .warehouseAllocations()) {
             inventory.reserve(List.of(new OrderInventoryGateway.Allocation(
                     allocation.warehouseId(), productId,
-                    allocation.allocated().intValue())));
+                    allocation.allocated())));
 
             allocations.add(OrderLineAllocation.create(allocation.warehouseId(),
                     allocation.allocated()));

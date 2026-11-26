@@ -4,6 +4,7 @@ import com.cashly.cashly_api.sales.invoices.invoices.infrastructure.integration.
 import com.cashly.cashly_api.sales.orders.infrastructure.integration.OrderStockAvailabilityAdapter;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.ports.in.StockAvailabilityQuery;
 import org.junit.jupiter.api.Test;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -17,32 +18,35 @@ class StockAvailabilityConsumerAdaptersTest {
         UUID warehouseId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
         var allocations = List.of(new StockAvailabilityQuery.AllocationData(
-                warehouseId, productId, 7));
+                warehouseId, productId, new BigDecimal("7")));
         when(query.enrich(allocations)).thenReturn(
                 List.of(new StockAvailabilityQuery.EnrichedStock(warehouseId,
-                        productId, "WH-1", "Warehouse", 42)));
+                        productId, "WH-1", "Warehouse",
+                        new BigDecimal("42"))));
 
         var invoiceAdapter = new InvoiceStockAvailabilityAdapter(query);
         var orderAdapter = new OrderStockAvailabilityAdapter(query);
         var invoiceResult = invoiceAdapter.enrich(List.of(
                 new com.cashly.cashly_api.sales.invoices.invoices.application.ports.out.StockAvailabilityGateway.AllocationData(
-                        warehouseId, productId, 7)));
+                        warehouseId, productId, new BigDecimal("7"))));
         var orderResult = orderAdapter.enrich(List.of(
                 new com.cashly.cashly_api.sales.orders.application.ports.out.StockAvailabilityGateway.AllocationData(
-                        warehouseId, productId, 7)));
+                        warehouseId, productId, new BigDecimal("7"))));
         assertThat(invoiceResult).singleElement().satisfies(item -> {
             assertThat(item.warehouseId()).isEqualTo(warehouseId);
             assertThat(item.productId()).isEqualTo(productId);
             assertThat(item.warehouseCode()).isEqualTo("WH-1");
             assertThat(item.warehouseName()).isEqualTo("Warehouse");
-            assertThat(item.availableStock()).isEqualTo(42);
+            assertThat(item.availableStock())
+                    .isEqualByComparingTo("42");
         });
         assertThat(orderResult).singleElement().satisfies(item -> {
             assertThat(item.warehouseId()).isEqualTo(warehouseId);
             assertThat(item.productId()).isEqualTo(productId);
             assertThat(item.warehouseCode()).isEqualTo("WH-1");
             assertThat(item.warehouseName()).isEqualTo("Warehouse");
-            assertThat(item.availableStock()).isEqualTo(42);
+            assertThat(item.availableStock())
+                    .isEqualByComparingTo("42");
         });
         verify(query, times(2)).enrich(allocations);
     }
@@ -58,7 +62,8 @@ class StockAvailabilityConsumerAdaptersTest {
         when(query.getAllStockByProducts(customerId, products))
                 .thenReturn(Map.of(productId,
                         List.of(new StockAvailabilityQuery.WarehouseStockInfo(
-                                warehouseId, "WH", "Name", 10, 3, 7)),
+                                warehouseId, "WH", "Name", new BigDecimal("10"),
+                                new BigDecimal("3"), new BigDecimal("7"))),
                         missingProductId, List.of()));
         var invoiceResult = new InvoiceStockAvailabilityAdapter(query)
                 .getAllStockByProducts(customerId, products);
@@ -69,18 +74,18 @@ class StockAvailabilityConsumerAdaptersTest {
                     assertThat(item.warehouseId()).isEqualTo(warehouseId);
                     assertThat(item.warehouseCode()).isEqualTo("WH");
                     assertThat(item.warehouseName()).isEqualTo("Name");
-                    assertThat(item.quantity()).isEqualTo(10);
-                    assertThat(item.reserved()).isEqualTo(3);
-                    assertThat(item.available()).isEqualTo(7);
+                    assertThat(item.quantity()).isEqualByComparingTo("10");
+                    assertThat(item.reserved()).isEqualByComparingTo("3");
+                    assertThat(item.available()).isEqualByComparingTo("7");
                 });
         assertThat(orderResult.get(productId)).singleElement()
                 .satisfies(item -> {
                     assertThat(item.warehouseId()).isEqualTo(warehouseId);
                     assertThat(item.warehouseCode()).isEqualTo("WH");
                     assertThat(item.warehouseName()).isEqualTo("Name");
-                    assertThat(item.quantity()).isEqualTo(10);
-                    assertThat(item.reserved()).isEqualTo(3);
-                    assertThat(item.available()).isEqualTo(7);
+                    assertThat(item.quantity()).isEqualByComparingTo("10");
+                    assertThat(item.reserved()).isEqualByComparingTo("3");
+                    assertThat(item.available()).isEqualByComparingTo("7");
                 });
         assertThat(invoiceResult.get(missingProductId)).isEmpty();
         assertThat(orderResult.get(missingProductId)).isEmpty();

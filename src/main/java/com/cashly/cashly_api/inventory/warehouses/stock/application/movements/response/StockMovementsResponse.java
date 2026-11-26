@@ -3,6 +3,7 @@ package com.cashly.cashly_api.inventory.warehouses.stock.application.movements.r
 import com.cashly.cashly_api.inventory.warehouses.stock.application.movements.model.StockMovementGroupBy;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public record StockMovementsResponse(Summary summary,
@@ -32,10 +33,11 @@ public record StockMovementsResponse(Summary summary,
     }
 
     public record Summary(long movementCount, long productCount,
-            long warehouseCount, long entryQuantity, long exitQuantity,
-            long netQuantity) {
+            long warehouseCount, BigDecimal entryQuantity,
+            BigDecimal exitQuantity, BigDecimal netQuantity) {
         public static Summary empty() {
-            return new Summary(0, 0, 0, 0, 0, 0);
+            return new Summary(0, 0, 0, BigDecimal.ZERO, BigDecimal.ZERO,
+                    BigDecimal.ZERO);
         }
     }
 

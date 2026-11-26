@@ -68,7 +68,7 @@ class DeleteOrderUseCaseUnitTest {
 
         verify(warehouseStockRepository).release(
                 List.of(new OrderInventoryGateway.Allocation(warehouseId,
-                        productId, 5)));
+                        productId, new BigDecimal("5"))));
         verify(orderRepository).deleteById(OrderId.of(id));
     }
 
@@ -133,9 +133,9 @@ class DeleteOrderUseCaseUnitTest {
 
         verify(warehouseStockRepository).release(List.of(
                 new OrderInventoryGateway.Allocation(warehouseId1, productId,
-                        3),
+                        new BigDecimal("3")),
                 new OrderInventoryGateway.Allocation(warehouseId2, productId,
-                        7)));
+                        new BigDecimal("7"))));
         verify(orderRepository).deleteById(OrderId.of(id));
     }
 
@@ -161,7 +161,7 @@ class DeleteOrderUseCaseUnitTest {
 
         verify(warehouseStockRepository).release(
                 List.of(new OrderInventoryGateway.Allocation(warehouseId,
-                        productId, 5)));
+                        productId, new BigDecimal("5"))));
         verify(orderRepository).deleteById(OrderId.of(id));
     }
 }

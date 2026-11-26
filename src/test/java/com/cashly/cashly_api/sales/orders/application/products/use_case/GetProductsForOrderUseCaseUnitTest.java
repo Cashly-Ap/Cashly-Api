@@ -44,10 +44,11 @@ class GetProductsForOrderUseCaseUnitTest {
                 Optional.of(new OrderCustomerGateway.Customer(customerId,
                         "Customer", "RIF")));
         var stock = new OrderProductCatalogGateway.Stock(warehouseId, "WH-01",
-                "Main", 12, 2, 10);
+                "Main", new BigDecimal("12"), new BigDecimal("2"),
+                new BigDecimal("10"));
         var product = new OrderProductCatalogGateway.ProductEntry(productId,
                 "SKU-1", "Product", categoryId, "Category", false, true, null,
-                BigDecimal.TEN, 12, List.of(stock));
+                BigDecimal.TEN, new BigDecimal("12"), List.of(stock));
         when(products.findForCustomer(customerId, "prod", categoryId, false,
                 true, 1, 5))
                 .thenReturn(new PageResponse<>(List.of(product), 7, 2, 5, 1,
@@ -60,7 +61,7 @@ class GetProductsForOrderUseCaseUnitTest {
         assertEquals(2, result.totalPages());
         assertEquals(1, result.number());
         assertEquals("SKU-1", result.content().getFirst().code());
-        assertEquals(10,
+        assertEquals(new BigDecimal("10"),
                 result.content().getFirst().stock().getFirst().available());
         verify(products).findForCustomer(customerId, "prod", categoryId, false,
                 true, 1, 5);

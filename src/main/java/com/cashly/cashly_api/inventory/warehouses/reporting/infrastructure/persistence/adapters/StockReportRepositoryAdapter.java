@@ -32,7 +32,9 @@ public class StockReportRepositoryAdapter implements StockReportRepositoryPort {
     }
 
     private StockReportResponse toResponse(StockReportProjection p) {
-        String status = p.getQuantity() == 0 ? "OUT_OF_STOCK" : "IN_STOCK";
+        String status = p.getQuantity() == null || p.getQuantity().signum() == 0
+                ? "OUT_OF_STOCK"
+                : "IN_STOCK";
         return new StockReportResponse(p.getWarehouseName(), p.getProductName(),
                 p.getSku(), p.getCategoryName(), p.getQuantity(), status);
     }

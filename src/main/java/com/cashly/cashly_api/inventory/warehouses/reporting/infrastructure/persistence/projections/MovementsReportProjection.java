@@ -1,5 +1,6 @@
 package com.cashly.cashly_api.inventory.warehouses.reporting.infrastructure.persistence.projections;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public interface MovementsReportProjection {
@@ -8,9 +9,9 @@ public interface MovementsReportProjection {
     String getProductName();
     String getSku();
     String getMovementType();
-    int getQuantity();
-    int getPreviousStock();
-    int getNewStock();
+    BigDecimal getQuantity();
+    BigDecimal getPreviousStock();
+    BigDecimal getNewStock();
     String getNotes();
     LocalDateTime getCreatedAt();
 }

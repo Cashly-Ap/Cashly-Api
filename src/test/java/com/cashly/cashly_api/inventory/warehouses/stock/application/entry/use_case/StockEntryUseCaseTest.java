@@ -69,10 +69,10 @@ class StockEntryUseCaseTest {
         Product product = buildProduct(productId, "PROD-001", "Test Product",
                 false);
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
-        stock.addStock(10);
+        stock.addStock(BigDecimal.TEN);
 
         StockEntryRequest request = new StockEntryRequest(
-                List.of(new StockBatchItem(productId, 5, "Restock")));
+                List.of(new StockBatchItem(productId, new BigDecimal("5"), "Restock")));
 
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.of(warehouse));
@@ -103,7 +103,7 @@ class StockEntryUseCaseTest {
         assertNotNull(response);
         assertEquals(1, response.size());
         assertEquals(MovementType.ENTRY, response.get(0).movementType());
-        assertEquals(5, response.get(0).quantity());
+        assertEquals(0, new BigDecimal("5").compareTo(response.get(0).quantity()));
         assertEquals("PROD-001", response.get(0).productCode());
         assertEquals("Test Product", response.get(0).productName());
         verify(warehouseStockRepository).save(any(WarehouseStock.class));
@@ -119,7 +119,7 @@ class StockEntryUseCaseTest {
     @DisplayName("throws WarehouseNotFoundException when warehouse not found")
     void shouldThrowWhenWarehouseNotFound() {
         StockEntryRequest request = new StockEntryRequest(
-                List.of(new StockBatchItem(productId, 5, null)));
+                List.of(new StockBatchItem(productId, new BigDecimal("5"), null)));
 
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.empty());
@@ -133,7 +133,7 @@ class StockEntryUseCaseTest {
     void shouldThrowWhenWarehouseNotActive() {
         Warehouse warehouse = buildInactiveWarehouse(warehouseId);
         StockEntryRequest request = new StockEntryRequest(
-                List.of(new StockBatchItem(productId, 5, null)));
+                List.of(new StockBatchItem(productId, new BigDecimal("5"), null)));
 
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.of(warehouse));
@@ -147,7 +147,7 @@ class StockEntryUseCaseTest {
     void shouldThrowWhenProductNotFound() {
         Warehouse warehouse = buildActiveWarehouse(warehouseId);
         StockEntryRequest request = new StockEntryRequest(
-                List.of(new StockBatchItem(productId, 5, null)));
+                List.of(new StockBatchItem(productId, new BigDecimal("5"), null)));
 
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.of(warehouse));
@@ -174,10 +174,10 @@ class StockEntryUseCaseTest {
                 productId);
         WarehouseStock componentStock = WarehouseStock.create(warehouseId,
                 componentId);
-        componentStock.addStock(100);
+        componentStock.addStock(new BigDecimal("100"));
 
         StockEntryRequest request = new StockEntryRequest(
-                List.of(new StockBatchItem(productId, 3, "Composite entry")));
+                List.of(new StockBatchItem(productId, new BigDecimal("3"), "Composite entry")));
 
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.of(warehouse));
@@ -212,13 +212,13 @@ class StockEntryUseCaseTest {
 
         assertNotNull(response);
         assertEquals(2, response.size());
-        assertEquals(94, componentStock.getQuantity());
-        assertEquals(3, mainStock.getQuantity());
+        assertEquals(0, new BigDecimal("94").compareTo(componentStock.getQuantity()));
+        assertEquals(0, new BigDecimal("3").compareTo(mainStock.getQuantity()));
         assertEquals(MovementType.COMPONENT_EXIT,
                 response.get(0).movementType());
-        assertEquals(6, response.get(0).quantity());
+        assertEquals(0, new BigDecimal("6").compareTo(response.get(0).quantity()));
         assertEquals(MovementType.ENTRY, response.get(1).movementType());
-        assertEquals(3, response.get(1).quantity());
+        assertEquals(0, new BigDecimal("3").compareTo(response.get(1).quantity()));
         verify(stockMovementRepository, times(2))
                 .save(any(StockMovement.class));
     }
@@ -235,10 +235,10 @@ class StockEntryUseCaseTest {
 
         WarehouseStock componentStock = WarehouseStock.create(warehouseId,
                 componentId);
-        componentStock.addStock(1);
+        componentStock.addStock(BigDecimal.ONE);
 
         StockEntryRequest request = new StockEntryRequest(
-                List.of(new StockBatchItem(productId, 3, null)));
+                List.of(new StockBatchItem(productId, new BigDecimal("3"), null)));
 
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.of(warehouse));

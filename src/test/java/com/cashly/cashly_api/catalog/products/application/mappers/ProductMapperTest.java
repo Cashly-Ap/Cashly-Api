@@ -119,7 +119,7 @@ class ProductMapperTest {
         ComponentResponse component = response.components().get(0);
         assertEquals("", component.componentProductCode());
         assertEquals("", component.componentProductName());
-        assertEquals(2, component.quantity());
+        assertEquals(BigDecimal.valueOf(2), component.quantity());
     }
 
     @Test

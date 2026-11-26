@@ -6,6 +6,8 @@ import com.cashly.cashly_api.inventory.warehouses.reporting.application.ports.ou
 import com.cashly.cashly_api.inventory.warehouses.reporting.application.dto.query.model.StockPdfQuery;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -36,7 +38,8 @@ class GenerateStockExcelUseCaseImplTest {
         StockPdfQuery query = new StockPdfQuery(UUID.randomUUID(),
                 UUID.randomUUID(), true, false);
         List<StockReportResponse> items = List.of(new StockReportResponse(
-                "Warehouse", "Product", "SKU001", "Category", 10, "Con Stock"));
+                "Warehouse", "Product", "SKU001", "Category",
+                new BigDecimal("10"), "Con Stock"));
         byte[] expectedExcel = "Excel content".getBytes();
 
         when(repository.findAllForPdf(query)).thenReturn(items);

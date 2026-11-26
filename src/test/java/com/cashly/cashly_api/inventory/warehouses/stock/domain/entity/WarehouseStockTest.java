@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,88 +17,92 @@ class WarehouseStockTest {
 
     private WarehouseStock stock;
 
+    private static BigDecimal q(int value) {
+        return BigDecimal.valueOf(value);
+    }
+
     @BeforeEach
     void setUp() {
         stock = WarehouseStock.create(WAREHOUSE_ID, PRODUCT_ID);
-        stock.addStock(100);
+        stock.addStock(q(100));
     }
 
     @Test
     void should_ReserveStock_When_SufficientQuantity() {
-        stock.reserve(30);
+        stock.reserve(q(30));
 
-        assertEquals(100, stock.getQuantity());
-        assertEquals(30, stock.getReserved());
-        assertEquals(70, stock.getAvailableQuantity());
+        assertEquals(0, q(100).compareTo(stock.getQuantity()));
+        assertEquals(0, q(30).compareTo(stock.getReserved()));
+        assertEquals(0, q(70).compareTo(stock.getAvailableQuantity()));
     }
 
     @Test
     void should_ThrowException_When_ReservingMoreThanAvailable() {
-        stock.reserve(60);
-        assertEquals(40, stock.getAvailableQuantity());
+        stock.reserve(q(60));
+        assertEquals(0, q(40).compareTo(stock.getAvailableQuantity()));
 
         IllegalStateException exception = assertThrows(
-                IllegalStateException.class, () -> stock.reserve(50));
+                IllegalStateException.class, () -> stock.reserve(q(50)));
 
         assertTrue(exception.getMessage()
                 .contains("Insufficient available stock"));
-        assertEquals(60, stock.getReserved());
+        assertEquals(0, q(60).compareTo(stock.getReserved()));
     }
 
     @Test
     void should_ThrowException_When_ReservingZeroOrNegative() {
-        assertThrows(IllegalArgumentException.class, () -> stock.reserve(0));
-        assertThrows(IllegalArgumentException.class, () -> stock.reserve(-5));
+        assertThrows(IllegalArgumentException.class, () -> stock.reserve(q(0)));
+        assertThrows(IllegalArgumentException.class, () -> stock.reserve(q(-5)));
     }
 
     @Test
     void should_ReleaseReserved_When_CancellingReservation() {
-        stock.reserve(40);
-        assertEquals(40, stock.getReserved());
+        stock.reserve(q(40));
+        assertEquals(0, q(40).compareTo(stock.getReserved()));
 
-        stock.releaseReserved(40);
+        stock.releaseReserved(q(40));
 
-        assertEquals(0, stock.getReserved());
-        assertEquals(100, stock.getAvailableQuantity());
+        assertEquals(0, q(0).compareTo(stock.getReserved()));
+        assertEquals(0, q(100).compareTo(stock.getAvailableQuantity()));
     }
 
     @Test
     void should_ThrowException_When_ReleasingMoreThanReserved() {
-        stock.reserve(20);
+        stock.reserve(q(20));
 
         IllegalStateException exception = assertThrows(
-                IllegalStateException.class, () -> stock.releaseReserved(30));
+                IllegalStateException.class, () -> stock.releaseReserved(q(30)));
 
         assertTrue(exception.getMessage()
                 .contains("Cannot release more than reserved"));
-        assertEquals(20, stock.getReserved());
+        assertEquals(0, q(20).compareTo(stock.getReserved()));
     }
 
     @Test
     void should_ThrowException_When_ReleasingZeroOrNegative() {
         assertThrows(IllegalArgumentException.class,
-                () -> stock.releaseReserved(0));
+                () -> stock.releaseReserved(q(0)));
         assertThrows(IllegalArgumentException.class,
-                () -> stock.releaseReserved(-1));
+                () -> stock.releaseReserved(q(-1)));
     }
 
     @Test
     void should_DeductReserved_When_ConfirmingOrder() {
-        stock.reserve(50);
-        assertEquals(50, stock.getReserved());
+        stock.reserve(q(50));
+        assertEquals(0, q(50).compareTo(stock.getReserved()));
 
-        stock.deductReserved(50);
+        stock.deductReserved(q(50));
 
-        assertEquals(50, stock.getQuantity());
-        assertEquals(0, stock.getReserved());
+        assertEquals(0, q(50).compareTo(stock.getQuantity()));
+        assertEquals(0, q(0).compareTo(stock.getReserved()));
     }
 
     @Test
     void should_ThrowException_When_DeductingMoreThanReserved() {
-        stock.reserve(30);
+        stock.reserve(q(30));
 
         IllegalStateException exception = assertThrows(
-                IllegalStateException.class, () -> stock.deductReserved(40));
+                IllegalStateException.class, () -> stock.deductReserved(q(40)));
 
         assertTrue(exception.getMessage()
                 .contains("Cannot deduct more than reserved"));
@@ -106,23 +111,23 @@ class WarehouseStockTest {
     @Test
     void should_ThrowException_When_DeductingZeroOrNegative() {
         assertThrows(IllegalArgumentException.class,
-                () -> stock.deductReserved(0));
+                () -> stock.deductReserved(q(0)));
         assertThrows(IllegalArgumentException.class,
-                () -> stock.deductReserved(-1));
+                () -> stock.deductReserved(q(-1)));
     }
 
     @Test
     void should_ReturnCorrectAvailableQuantity() {
-        assertEquals(100, stock.getAvailableQuantity());
+        assertEquals(0, q(100).compareTo(stock.getAvailableQuantity()));
 
-        stock.reserve(30);
-        assertEquals(70, stock.getAvailableQuantity());
+        stock.reserve(q(30));
+        assertEquals(0, q(70).compareTo(stock.getAvailableQuantity()));
 
-        stock.reserve(20);
-        assertEquals(50, stock.getAvailableQuantity());
+        stock.reserve(q(20));
+        assertEquals(0, q(50).compareTo(stock.getAvailableQuantity()));
 
-        stock.deductReserved(50);
-        assertEquals(50, stock.getAvailableQuantity());
+        stock.deductReserved(q(50));
+        assertEquals(0, q(50).compareTo(stock.getAvailableQuantity()));
     }
 
     @Test
@@ -130,10 +135,10 @@ class WarehouseStockTest {
             throws InterruptedException {
         WarehouseStock freshStock = WarehouseStock.create(UUID.randomUUID(),
                 UUID.randomUUID());
-        freshStock.addStock(50);
+        freshStock.addStock(q(50));
         Thread.sleep(5);
 
-        freshStock.reserve(10);
+        freshStock.reserve(q(10));
 
         assertNotNull(freshStock.getUpdatedAt());
         assertTrue(freshStock.getUpdatedAt()

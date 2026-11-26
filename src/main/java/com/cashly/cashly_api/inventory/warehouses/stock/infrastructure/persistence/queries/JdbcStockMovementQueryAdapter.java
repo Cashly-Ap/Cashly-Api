@@ -124,10 +124,10 @@ public class JdbcStockMovementQueryAdapter
                         new Summary(row.getLong("movement_count"),
                                 row.getLong("product_count"),
                                 row.getLong("warehouse_count"),
-                                row.getLong("entry_quantity"),
-                                row.getLong("exit_quantity"),
-                                row.getLong("entry_quantity")
-                                        - row.getLong("exit_quantity")),
+                                row.getBigDecimal("entry_quantity"),
+                                row.getBigDecimal("exit_quantity"),
+                                row.getBigDecimal("entry_quantity").subtract(
+                                        row.getBigDecimal("exit_quantity"))),
                         row.getLong("movement_type_count")));
     }
 
@@ -167,8 +167,8 @@ public class JdbcStockMovementQueryAdapter
                         row.getString("warehouse_name"),
                         row.getString("movement_type"),
                         row.getLong("movement_count"),
-                        row.getLong("entry_quantity"),
-                        row.getLong("exit_quantity")));
+                        row.getBigDecimal("entry_quantity"),
+                        row.getBigDecimal("exit_quantity")));
         if (selectedGroups.isEmpty()) {
             return List.of();
         }
@@ -193,7 +193,7 @@ public class JdbcStockMovementQueryAdapter
                         group.productCode(), group.categoryName(),
                         group.warehouseName(), group.movementCount(),
                         group.entryQuantity(), group.exitQuantity(),
-                        group.entryQuantity() - group.exitQuantity(),
+                        group.entryQuantity().subtract(group.exitQuantity()),
                         List.copyOf(groupedItems.getOrDefault(group.id(),
                                 List.of()))))
                 .toList();
@@ -225,8 +225,9 @@ public class JdbcStockMovementQueryAdapter
                         row.getString("product_name"),
                         row.getString("category_name"),
                         MovementType.valueOf(row.getString("movement_type")),
-                        row.getInt("quantity"), row.getInt("previous_stock"),
-                        row.getInt("new_stock"),
+                        row.getBigDecimal("quantity"),
+                        row.getBigDecimal("previous_stock"),
+                        row.getBigDecimal("new_stock"),
                         uuid(row.getBytes("origin_movement_id")),
                         row.getString("transfer_batch_id"),
                         referenceType(row.getString("reference_type")),
@@ -317,7 +318,8 @@ public class JdbcStockMovementQueryAdapter
 
     private record GroupTotals(String id, String name, String productCode,
             String categoryName, String warehouseName, String movementType,
-            long movementCount, long entryQuantity, long exitQuantity) {
+            long movementCount, java.math.BigDecimal entryQuantity,
+            java.math.BigDecimal exitQuantity) {
     }
 
     private record GroupQuery(String columns, String groupColumns, String order,

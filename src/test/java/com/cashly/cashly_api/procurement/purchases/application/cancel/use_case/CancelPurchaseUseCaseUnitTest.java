@@ -99,7 +99,7 @@ class CancelPurchaseUseCaseUnitTest {
                 "Error en la compra");
 
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
-        stock.addStock(10);
+        stock.addStock(java.math.BigDecimal.valueOf(10));
 
         when(purchaseRepository.findById(PurchaseId.of(id)))
                 .thenReturn(Optional.of(purchase));
@@ -111,15 +111,15 @@ class CancelPurchaseUseCaseUnitTest {
 
         cancelPurchaseUseCase.execute(id, request);
 
-        assertEquals(0, stock.getQuantity());
+        assertEquals(0, java.math.BigDecimal.valueOf(0).compareTo(stock.getQuantity()));
         verify(warehouseStockRepository)
-                .save(argThat(savedStock -> savedStock.getQuantity() == 0));
+                .save(argThat(savedStock -> savedStock.getQuantity().compareTo(java.math.BigDecimal.valueOf(0)) == 0));
         verify(stockMovementRepository).save(argThat(movement -> movement
                 .getMovementType() == MovementType.CANCEL_ENTRY
                 && movement.getReferenceType() == ReferenceType.PURCHASE
-                && movement.getQuantity() == 10
-                && movement.getPreviousStock() == 10
-                && movement.getNewStock() == 0
+                && movement.getQuantity().compareTo(java.math.BigDecimal.valueOf(10)) == 0
+                && movement.getPreviousStock().compareTo(java.math.BigDecimal.valueOf(10)) == 0
+                && movement.getNewStock().compareTo(java.math.BigDecimal.valueOf(0)) == 0
                 && movement.getReferenceId().equals(id)
                 && movement.getReferenceNumber()
                         .equals(purchase.getPurchaseNumber().getValue())
@@ -221,7 +221,7 @@ class CancelPurchaseUseCaseUnitTest {
         Purchase purchase = buildPurchaseWithAllocation(id,
                 PurchaseStatus.CONFIRMED, warehouseId, productId);
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
-        stock.addStock(5);
+        stock.addStock(java.math.BigDecimal.valueOf(5));
         when(purchaseRepository.findById(PurchaseId.of(id)))
                 .thenReturn(Optional.of(purchase));
         when(warehouseStockRepository
@@ -229,7 +229,7 @@ class CancelPurchaseUseCaseUnitTest {
                 .thenReturn(Optional.of(stock));
         assertThrows(IllegalStateException.class, () -> cancelPurchaseUseCase
                 .execute(id, new CancelPurchaseRequest("Consumed stock")));
-        assertEquals(5, stock.getQuantity());
+        assertEquals(0, java.math.BigDecimal.valueOf(5).compareTo(stock.getQuantity()));
         verify(purchaseRepository, never()).save(any());
         verify(warehouseStockRepository, never()).save(any());
         verify(stockMovementRepository, never()).save(any());

@@ -155,7 +155,7 @@ class DuplicateInvoiceUseCaseTest {
 
         Product product = buildProduct(productId);
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId, 50, 0, LocalDateTime.now(),
+                warehouseId, productId, new BigDecimal("50"), new BigDecimal("0"), LocalDateTime.now(),
                 LocalDateTime.now());
 
         when(invoiceRepository.findById(InvoiceId.of(id)))
@@ -171,7 +171,7 @@ class DuplicateInvoiceUseCaseTest {
 
         duplicateInvoiceUseCase.execute(id, null);
 
-        assertEquals(5, stock.getReserved());
+        assertEquals(new BigDecimal("5"), stock.getReserved());
         verify(warehouseStockRepository).save(stock);
     }
 

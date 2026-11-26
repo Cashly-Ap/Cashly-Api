@@ -30,9 +30,12 @@ class GetProductsForPurchaseUseCaseTest {
                 new PurchaseWarehouseGateway.Warehouse(second, "W-2",
                         "Second")));
         when(warehouses.findByProductId(productId)).thenReturn(
-                List.of(new PurchaseWarehouseGateway.Stock(first, 10, 3, 7),
+                List.of(new PurchaseWarehouseGateway.Stock(first,
+                                new BigDecimal("10"), new BigDecimal("3"),
+                                new BigDecimal("7")),
                         new PurchaseWarehouseGateway.Stock(UUID.randomUUID(),
-                                99, 0, 99)));
+                                new BigDecimal("99"), BigDecimal.ZERO,
+                                new BigDecimal("99"))));
         var result = new GetProductsForPurchaseUseCase(products, warehouses)
                 .execute("Tea", categoryId, 2, 5);
         var product = result.content().getFirst();
@@ -43,11 +46,11 @@ class GetProductsForPurchaseUseCaseTest {
         assertTrue(result.last());
         assertEquals("Drinks", product.categoryName());
         assertEquals(new BigDecimal("7.50"), product.purchasePrice());
-        assertEquals(10, product.stock());
+        assertEquals(new BigDecimal("10"), product.stock());
         assertEquals(2, product.stockItems().size());
-        assertEquals(3, product.stockItems().getFirst().reserved());
-        assertEquals(7, product.stockItems().getFirst().available());
-        assertEquals(0, product.stockItems().getLast().quantity());
+        assertEquals(new BigDecimal("3"), product.stockItems().getFirst().reserved());
+        assertEquals(new BigDecimal("7"), product.stockItems().getFirst().available());
+        assertEquals(new BigDecimal("0"), product.stockItems().getLast().quantity());
         assertEquals("W-2", product.stockItems().getLast().warehouseCode());
     }
 

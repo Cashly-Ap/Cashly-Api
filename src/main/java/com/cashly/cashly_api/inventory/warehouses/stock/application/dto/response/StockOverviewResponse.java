@@ -2,6 +2,7 @@ package com.cashly.cashly_api.inventory.warehouses.stock.application.dto.respons
 
 import com.cashly.cashly_api.shared.dto.PageResponse;
 import com.cashly.cashly_api.inventory.warehouses.stock.application.queries.model.StockOverviewGroupBy;
+import java.math.BigDecimal;
 import java.util.List;
 
 public record StockOverviewResponse(PageResponse<StockOverviewItem> stock,
@@ -14,7 +15,8 @@ public record StockOverviewResponse(PageResponse<StockOverviewItem> stock,
     }
 
     public record Summary(long productCount, long warehouseCount,
-            long totalQuantity, long reservedQuantity, long availableQuantity) {
+            BigDecimal totalQuantity, BigDecimal reservedQuantity,
+            BigDecimal availableQuantity) {
     }
     public record Option(String id, String name) {
     }

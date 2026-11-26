@@ -71,7 +71,7 @@ class UpdateOrderUseCaseUnitTest {
 
         Product product = buildProduct(productId);
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId, 50, 5, LocalDateTime.now(),
+                warehouseId, productId, new BigDecimal("50"), new BigDecimal("5"), LocalDateTime.now(),
                 LocalDateTime.now());
 
         UpdateOrderRequest request = new UpdateOrderRequest("New notes",
@@ -153,10 +153,10 @@ class UpdateOrderUseCaseUnitTest {
 
         Product product = buildProduct(productId);
         WarehouseStock oldStock = new WarehouseStock(UUID.randomUUID(),
-                oldWarehouseId, productId, 50, 5, LocalDateTime.now(),
+                oldWarehouseId, productId, new BigDecimal("50"), new BigDecimal("5"), LocalDateTime.now(),
                 LocalDateTime.now());
         WarehouseStock newStock = new WarehouseStock(UUID.randomUUID(),
-                newWarehouseId, productId, 30, 0, LocalDateTime.now(),
+                newWarehouseId, productId, new BigDecimal("30"), new BigDecimal("0"), LocalDateTime.now(),
                 LocalDateTime.now());
 
         UpdateOrderRequest request = new UpdateOrderRequest(null,
@@ -176,10 +176,10 @@ class UpdateOrderUseCaseUnitTest {
 
         verify(warehouseStockRepository).release(
                 List.of(new OrderInventoryGateway.Allocation(oldWarehouseId,
-                        productId, 3)));
+                        productId, new BigDecimal("3"))));
         verify(warehouseStockRepository).reserve(
                 List.of(new OrderInventoryGateway.Allocation(newWarehouseId,
-                        productId, 2)));
+                        productId, new BigDecimal("2"))));
     }
 
     @Test

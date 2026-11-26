@@ -30,8 +30,8 @@ class SeedStockReservationsTest {
         stock.setId(UUID.randomUUID());
         stock.setWarehouseId(UUID.randomUUID());
         stock.setProductId(UUID.randomUUID());
-        stock.setQuantity(100);
-        stock.setReserved(1);
+        stock.setQuantity(new BigDecimal("100"));
+        stock.setReserved(new BigDecimal("1"));
         when(entityManager.createQuery(anyString(),
                 eq(WarehouseStockEntity.class))).thenReturn(stocks);
         when(stocks.getResultList()).thenReturn(List.of(stock));
@@ -48,8 +48,8 @@ class SeedStockReservationsTest {
 
         SeedStockReservations.reconcile(entityManager);
 
-        assertThat(stock.getReserved()).isEqualTo(5);
-        assertThat(stock.getQuantity()).isEqualTo(100);
+        assertThat(stock.getReserved()).isEqualByComparingTo("5");
+        assertThat(stock.getQuantity()).isEqualByComparingTo("100");
         verify(orders).setParameter("status", "DRAFT");
         verify(invoices).setParameter("status", "DRAFT");
     }
@@ -67,16 +67,16 @@ class SeedStockReservationsTest {
 
         assertThatIllegalStateException().isThrownBy(
                 () -> SeedStockReservations.reconcile(entityManager));
-        assertThat(stock.getReserved()).isEqualTo(1);
+        assertThat(stock.getReserved()).isEqualByComparingTo("1");
     }
 
     @Test
-    void refusesFractionalReservationsInsteadOfTruncating() {
+    void allowsFractionalReservations() {
         when(orders.getSingleResult()).thenReturn(new BigDecimal("1.5"));
 
-        assertThatExceptionOfType(ArithmeticException.class).isThrownBy(
-                () -> SeedStockReservations.reconcile(entityManager));
-        assertThat(stock.getReserved()).isEqualTo(1);
+        SeedStockReservations.reconcile(entityManager);
+
+        assertThat(stock.getReserved()).isEqualByComparingTo("1.5");
     }
 
     @Test
@@ -86,6 +86,6 @@ class SeedStockReservationsTest {
         SeedStockReservations.reconcile(entityManager);
         SeedStockReservations.reconcile(entityManager);
 
-        assertThat(stock.getReserved()).isEqualTo(10);
+        assertThat(stock.getReserved()).isEqualByComparingTo("10");
     }
 }

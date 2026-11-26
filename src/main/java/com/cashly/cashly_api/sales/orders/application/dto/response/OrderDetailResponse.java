@@ -19,11 +19,12 @@ public record OrderDetailResponse(UUID id, String orderNumber, UUID customerId,
             List<WarehouseStockDetail> warehouseStocks) {
         public record AllocationDetail(UUID warehouseId, String warehouseCode,
                 String warehouseName, BigDecimal allocated,
-                int availableStock) {
+                BigDecimal availableStock) {
         }
     }
 
     public record WarehouseStockDetail(UUID warehouseId, String warehouseCode,
-            String warehouseName, int quantity, int reserved, int available) {
+            String warehouseName, BigDecimal quantity, BigDecimal reserved,
+            BigDecimal available) {
     }
 }

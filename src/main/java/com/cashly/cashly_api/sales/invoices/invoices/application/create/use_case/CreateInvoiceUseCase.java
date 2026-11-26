@@ -215,7 +215,7 @@ public class CreateInvoiceUseCase {
         return lineRequest.warehouseAllocations().stream()
                 .map(allocation -> InvoiceLineAllocation.create(
                         allocation.warehouseId(),
-                        BigDecimal.valueOf(allocation.allocated())))
+                        allocation.allocated()))
                 .toList();
     }
 }

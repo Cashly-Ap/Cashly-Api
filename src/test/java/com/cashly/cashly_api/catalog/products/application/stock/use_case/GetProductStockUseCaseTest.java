@@ -61,7 +61,7 @@ class GetProductStockUseCaseTest {
                 null, new BigDecimal("5.00"), List.of(), List.of(), now, now);
 
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId, 100, 0, now, now);
+                warehouseId, productId, new BigDecimal("100"), new BigDecimal("0"), now, now);
 
         Warehouse warehouse = mock(Warehouse.class);
         when(warehouse.getName()).thenReturn("Main Warehouse");
@@ -79,7 +79,7 @@ class GetProductStockUseCaseTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("Main Warehouse", result.get(0).warehouseName());
-        assertEquals(100, result.get(0).quantity());
+        assertEquals(0, new BigDecimal("100").compareTo(result.get(0).quantity()));
     }
 
     @Test
@@ -105,7 +105,7 @@ class GetProductStockUseCaseTest {
                 null, new BigDecimal("5.00"), List.of(), List.of(), now, now);
 
         WarehouseStock stock = new WarehouseStock(UUID.randomUUID(),
-                warehouseId, productId, 50, 0, now, now);
+                warehouseId, productId, new BigDecimal("50"), new BigDecimal("0"), now, now);
 
         when(productRepository.findById(productId))
                 .thenReturn(Optional.of(product));

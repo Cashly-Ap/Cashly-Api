@@ -10,6 +10,7 @@ import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.StockM
 import com.cashly.cashly_api.inventory.warehouses.stock.domain.repository.WarehouseStockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import java.math.BigDecimal;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -29,19 +30,19 @@ class InvoiceInventoryServiceTest {
     void setUp() {
         useCase = new InvoiceInventoryService(stocks, movements);
         command = new InvoiceStockCommand(invoice, "INV-2026-00001",
-                List.of(new Allocation(warehouse, product, 10)));
+                List.of(new Allocation(warehouse, product, new BigDecimal("10"))));
     }
     @Test
     void should_deduct_reserved_stock_and_preserve_invoice_movement_metadata() {
         WarehouseStock stock = givenStock();
         useCase.deductReservations(command);
-        assertEquals(90, stock.getQuantity());
-        assertEquals(0, stock.getReserved());
+        assertEquals(0, new BigDecimal("90").compareTo(stock.getQuantity()));
+        assertEquals(0, new BigDecimal("0").compareTo(stock.getReserved()));
         verify(stocks).save(stock);
         verify(movements)
                 .save(argThat(m -> m.getMovementType() == MovementType.SALE_EXIT
-                        && m.getQuantity() == 10 && m.getPreviousStock() == 100
-                        && m.getNewStock() == 90
+                        && new BigDecimal("10").compareTo(m.getQuantity()) == 0 && new BigDecimal("100").compareTo(m.getPreviousStock()) == 0
+                        && new BigDecimal("90").compareTo(m.getNewStock()) == 0
                         && m.getReferenceType() == ReferenceType.INVOICE
                         && invoice.equals(m.getReferenceId())
                         && "INV-2026-00001".equals(m.getReferenceNumber())
@@ -54,12 +55,12 @@ class InvoiceInventoryServiceTest {
     void should_restore_confirmed_stock_and_preserve_cancellation_metadata() {
         WarehouseStock stock = givenStock();
         useCase.restoreStock(command);
-        assertEquals(110, stock.getQuantity());
-        assertEquals(10, stock.getReserved());
+        assertEquals(0, new BigDecimal("110").compareTo(stock.getQuantity()));
+        assertEquals(0, new BigDecimal("10").compareTo(stock.getReserved()));
         verify(movements).save(
                 argThat(m -> m.getMovementType() == MovementType.CANCEL_ENTRY
-                        && m.getQuantity() == 10 && m.getPreviousStock() == 100
-                        && m.getNewStock() == 110
+                        && new BigDecimal("10").compareTo(m.getQuantity()) == 0 && new BigDecimal("100").compareTo(m.getPreviousStock()) == 0
+                        && new BigDecimal("110").compareTo(m.getNewStock()) == 0
                         && invoice.equals(m.getReferenceId())
                         && m.getReferenceType() == ReferenceType.INVOICE
                         && "INV-2026-00001".equals(m.getReferenceNumber())
@@ -69,8 +70,8 @@ class InvoiceInventoryServiceTest {
     void should_release_draft_reservations_without_creating_movement() {
         WarehouseStock stock = givenStock();
         useCase.releaseReservations(command);
-        assertEquals(100, stock.getQuantity());
-        assertEquals(0, stock.getReserved());
+        assertEquals(0, new BigDecimal("100").compareTo(stock.getQuantity()));
+        assertEquals(0, new BigDecimal("0").compareTo(stock.getReserved()));
         verify(stocks).save(stock);
         verifyNoInteractions(movements);
     }
@@ -99,7 +100,7 @@ class InvoiceInventoryServiceTest {
         givenStock();
         InvoiceStockCommand invalid = new InvoiceStockCommand(invoice,
                 "INV-2026-00001",
-                List.of(new Allocation(warehouse, product, 11)));
+                List.of(new Allocation(warehouse, product, new BigDecimal("11"))));
         assertThrows(IllegalStateException.class,
                 () -> useCase.deductReservations(invalid));
         verify(stocks, never()).save(any());
@@ -109,8 +110,8 @@ class InvoiceInventoryServiceTest {
     void should_reserve_allocations_using_locked_stock_without_movement() {
         WarehouseStock stock = givenStock();
         useCase.reserveAllocations(command.allocations());
-        assertEquals(100, stock.getQuantity());
-        assertEquals(20, stock.getReserved());
+        assertEquals(0, new BigDecimal("100").compareTo(stock.getQuantity()));
+        assertEquals(0, new BigDecimal("20").compareTo(stock.getReserved()));
         verify(stocks).save(stock);
         verifyNoInteractions(movements);
     }
@@ -126,13 +127,13 @@ class InvoiceInventoryServiceTest {
         givenStock();
         assertThrows(IllegalStateException.class,
                 () -> useCase.reserveAllocations(
-                        List.of(new Allocation(warehouse, product, 91))));
+                        List.of(new Allocation(warehouse, product, new BigDecimal("91")))));
         verify(stocks, never()).save(any());
     }
     private WarehouseStock givenStock() {
         WarehouseStock stock = WarehouseStock.create(warehouse, product);
-        stock.addStock(100);
-        stock.reserve(10);
+        stock.addStock(new BigDecimal("100"));
+        stock.reserve(new BigDecimal("10"));
         when(stocks.findByWarehouseIdAndProductIdForUpdate(warehouse, product))
                 .thenReturn(Optional.of(stock));
         return stock;

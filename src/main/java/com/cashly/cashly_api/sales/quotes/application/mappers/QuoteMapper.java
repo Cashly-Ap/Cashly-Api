@@ -9,6 +9,7 @@ import com.cashly.cashly_api.sales.quotes.domain.entity.Quote;
 import com.cashly.cashly_api.sales.quotes.domain.entity.QuoteAllocation;
 import com.cashly.cashly_api.sales.quotes.domain.entity.QuoteLine;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -77,6 +78,6 @@ public class QuoteMapper {
     }
 
     public record WarehouseStockInfo(UUID warehouseId, String warehouseName,
-            int available) {
+            BigDecimal available) {
     }
 }

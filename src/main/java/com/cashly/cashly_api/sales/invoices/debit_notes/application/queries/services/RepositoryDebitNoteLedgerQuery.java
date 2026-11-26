@@ -3,6 +3,7 @@ import com.cashly.cashly_api.sales.invoices.debit_notes.application.ports.in.Deb
 import com.cashly.cashly_api.sales.invoices.debit_notes.domain.repository.DebitNoteRepository;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 public class RepositoryDebitNoteLedgerQuery implements DebitNoteLedgerQuery {
     private final DebitNoteRepository notes;
@@ -12,5 +13,10 @@ public class RepositoryDebitNoteLedgerQuery implements DebitNoteLedgerQuery {
     public List<BigDecimal> amountsByInvoiceId(UUID invoiceId) {
         return notes.findByInvoiceId(invoiceId).stream()
                 .map(note -> note.getAmount()).toList();
+    }
+
+    @Override
+    public Map<UUID, BigDecimal> totalsByInvoiceIds(List<UUID> invoiceIds) {
+        return notes.sumByInvoiceIds(invoiceIds);
     }
 }

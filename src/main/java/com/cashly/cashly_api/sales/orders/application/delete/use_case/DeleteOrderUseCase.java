@@ -51,7 +51,7 @@ public class DeleteOrderUseCase {
                 .getAllocations().stream()
                 .map(allocation -> new OrderInventoryGateway.Allocation(
                         allocation.getWarehouseId(), line.getProductId(),
-                        allocation.getAllocated().intValue())))
+                        allocation.getAllocated())))
                 .toList());
     }
 }

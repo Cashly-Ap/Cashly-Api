@@ -65,10 +65,10 @@ class StockAdjustmentUseCaseTest {
         Warehouse warehouse = buildActiveWarehouse(warehouseId);
         Product product = buildProduct(productId, "PROD-001", "Test Product");
         WarehouseStock stock = WarehouseStock.create(warehouseId, productId);
-        stock.addStock(50);
+        stock.addStock(new BigDecimal("50"));
 
         StockAdjustmentRequest request = new StockAdjustmentRequest(productId,
-                75, "Inventory count");
+                new BigDecimal("75"), "Inventory count");
 
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.of(warehouse));
@@ -97,7 +97,7 @@ class StockAdjustmentUseCaseTest {
 
         assertNotNull(response);
         assertEquals(MovementType.ADJUSTMENT, response.movementType());
-        assertEquals(75, response.newStock());
+        assertEquals(0, new BigDecimal("75").compareTo(response.newStock()));
         assertEquals("PROD-001", response.productCode());
         verify(warehouseStockRepository).save(any(WarehouseStock.class));
         verify(warehouseStockRepository)
@@ -112,7 +112,7 @@ class StockAdjustmentUseCaseTest {
     @DisplayName("throws WarehouseNotFoundException when warehouse not found")
     void shouldThrowWhenWarehouseNotFound() {
         StockAdjustmentRequest request = new StockAdjustmentRequest(productId,
-                50, null);
+                new BigDecimal("50"), null);
 
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.empty());
@@ -126,7 +126,7 @@ class StockAdjustmentUseCaseTest {
     void shouldThrowWhenWarehouseNotActive() {
         Warehouse warehouse = buildInactiveWarehouse(warehouseId);
         StockAdjustmentRequest request = new StockAdjustmentRequest(productId,
-                50, null);
+                new BigDecimal("50"), null);
 
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.of(warehouse));
@@ -140,7 +140,7 @@ class StockAdjustmentUseCaseTest {
     void shouldThrowWhenProductNotFound() {
         Warehouse warehouse = buildActiveWarehouse(warehouseId);
         StockAdjustmentRequest request = new StockAdjustmentRequest(productId,
-                50, null);
+                new BigDecimal("50"), null);
 
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.of(warehouse));
@@ -158,7 +158,7 @@ class StockAdjustmentUseCaseTest {
         Product product = buildProduct(productId, "PROD-001", "Test Product");
 
         StockAdjustmentRequest request = new StockAdjustmentRequest(productId,
-                30, "Initial stock");
+                new BigDecimal("30"), "Initial stock");
 
         when(warehouseRepository.findById(warehouseId))
                 .thenReturn(Optional.of(warehouse));
@@ -187,7 +187,7 @@ class StockAdjustmentUseCaseTest {
 
         assertNotNull(response);
         assertEquals(MovementType.ADJUSTMENT, response.movementType());
-        assertEquals(30, response.newStock());
+        assertEquals(new BigDecimal("30"), response.newStock());
         verify(warehouseStockRepository).save(any(WarehouseStock.class));
         verify(warehouseStockRepository)
                 .findOrCreateByWarehouseIdAndProductIdForUpdate(warehouseId,
