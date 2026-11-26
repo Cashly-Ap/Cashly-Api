@@ -11,6 +11,7 @@ import com.cashly.cashly_api.shared.dto.PageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -23,9 +24,19 @@ import java.util.UUID;
 public class PaymentRepositoryAdapter implements PaymentRepository {
 
     private final PaymentJpaRepository jpaRepository;
+    private final EntityManager entityManager;
 
-    public PaymentRepositoryAdapter(PaymentJpaRepository jpaRepository) {
+    public PaymentRepositoryAdapter(PaymentJpaRepository jpaRepository,
+            EntityManager entityManager) {
         this.jpaRepository = jpaRepository;
+        this.entityManager = entityManager;
+    }
+
+    @Override
+    public Payment insert(Payment payment) {
+        PaymentEntity entity = PaymentJpaMapper.toEntity(payment);
+        entityManager.persist(entity);
+        return PaymentJpaMapper.toDomain(entity);
     }
 
     @Override
@@ -96,10 +107,7 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
 
     @Override
     public int getNextSequenceForYear(int year) {
-
-        List<PaymentEntity> yearPayments = jpaRepository.findAllWithFilters(
-                LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31), null,
-                null);
-        return yearPayments.size() + 1;
+        return (int) jpaRepository.countByPaymentDateBetween(
+                LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31)) + 1;
     }
 }

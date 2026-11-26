@@ -6,10 +6,14 @@ import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valu
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.CashMovementType;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.domain.valueobjects.RegisterId;
 import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.ports.out.CashRegisterPaymentMethodGateway;
+import com.cashly.cashly_api.finance.treasury.cash_register.sessions.application.ports.in.CashRegisterOperations;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CashMovementService {
 
@@ -41,6 +45,34 @@ public class CashMovementService {
                     movement.cancel(reason, actorId, actorName);
                     registerRepository.saveMovement(movement);
                 });
+    }
+
+    public void recordAll(Collection<CashRegisterOperations.Entry> entries) {
+        if (entries == null || entries.isEmpty()) {
+            return;
+        }
+        RegisterId registerId = activeRegisterId();
+        Map<UUID, String> methodNames = new HashMap<>();
+        java.util.List<CashMovement> movements = new java.util.ArrayList<>(
+                entries.size());
+        for (CashRegisterOperations.Entry entry : entries) {
+            CashMovementDirection direction = CashMovementDirection
+                    .valueOf(entry.direction().name());
+            CashMovementType type = CashMovementType
+                    .valueOf(entry.type().name());
+            String methodName = entry.paymentMethodId() == null
+                    ? ""
+                    : methodNames.computeIfAbsent(entry.paymentMethodId(),
+                            id -> paymentMethods.findById(id)
+                                    .map(CashRegisterPaymentMethodGateway.PaymentMethod::name)
+                                    .orElseThrow(() -> new IllegalArgumentException(
+                                            "Payment method not found: " + id)));
+            movements.add(CashMovement.create(registerId, direction, type,
+                    entry.amount(), entry.paymentMethodId(), methodName,
+                    normalizeDescription(entry.description(), type),
+                    entry.sourceType(), entry.sourceId(), entry.actorId(),
+                    entry.actorName(), null));
+        }
     }
 
     public CashMovement record(CashMovementDirection direction,
@@ -87,6 +119,6 @@ public class CashMovementService {
         return registerRepository.findActiveClosure()
                 .map(register -> register.getId())
                 .orElseThrow(() -> new IllegalStateException(
-                        "Debe abrir una caja antes de registrar una operación monetaria"));
+                        "A cash register must be open before registering a monetary operation"));
     }
 }

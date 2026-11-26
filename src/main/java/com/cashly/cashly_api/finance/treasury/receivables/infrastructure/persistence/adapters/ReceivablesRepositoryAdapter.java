@@ -602,7 +602,18 @@ public class ReceivablesRepositoryAdapter implements ReceivablesQueryGateway {
 
     @Override
     public List<AccountsReceivableRow> findAccountsReceivableForReport(
-            UUID customerId, boolean overdueOnly) {
+            UUID customerId, boolean overdueOnly, LocalDate dateFrom,
+            LocalDate dateTo) {
+        String dateColumn = overdueOnly ? "i.due_date" : "i.issue_date";
+        StringBuilder periodFilters = new StringBuilder();
+        if (dateFrom != null) {
+            periodFilters.append(" AND ").append(dateColumn)
+                    .append(" >= :dateFrom");
+        }
+        if (dateTo != null) {
+            periodFilters.append(" AND ").append(dateColumn)
+                    .append(" <= :dateTo");
+        }
         String sql = """
                 SELECT c.id, c.legal_name, c.rif, c.credit_limit,
                        COALESCE(sub.pending_balance, 0) AS pending_balance,
@@ -649,9 +660,10 @@ public class ReceivablesRepositoryAdapter implements ReceivablesQueryGateway {
                     ) dn ON i.id = dn.invoice_id
                     WHERE i.status NOT IN ('CANCELLED', 'DRAFT', 'PAID')
                       AND i.status <> 'FULLY_RETURNED'
+                      %s
                     GROUP BY i.customer_id
                 ) sub ON sub.customer_id = c.id
-                """;
+                """.formatted(periodFilters);
 
         StringBuilder finalSql = new StringBuilder(sql);
 
@@ -667,6 +679,12 @@ public class ReceivablesRepositoryAdapter implements ReceivablesQueryGateway {
 
         if (customerId != null) {
             query.setParameter("customerId", customerId);
+        }
+        if (dateFrom != null) {
+            query.setParameter("dateFrom", dateFrom);
+        }
+        if (dateTo != null) {
+            query.setParameter("dateTo", dateTo);
         }
 
         @SuppressWarnings("unchecked")

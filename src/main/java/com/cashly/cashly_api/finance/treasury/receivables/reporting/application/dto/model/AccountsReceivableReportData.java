@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.UUID;
 
 public record AccountsReceivableReportData(LocalDate reportDate,
-        boolean overdueOnly, List<AccountReceivableRow> rows, Summary summary) {
+        boolean overdueOnly, LocalDate dateFrom, LocalDate dateTo,
+        List<AccountReceivableRow> rows, Summary summary) {
     public AccountsReceivableReportData {
         rows = List.copyOf(rows);
     }

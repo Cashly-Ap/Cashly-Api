@@ -63,4 +63,11 @@ public interface PaymentJpaRepository
             @Param("customerId") UUID customerId);
 
     long countByPaymentMethodId(UUID paymentMethodId);
+
+    @Query("""
+            SELECT COUNT(p) FROM PaymentEntity p
+            WHERE p.paymentDate BETWEEN :from AND :to
+            """)
+    long countByPaymentDateBetween(@Param("from") LocalDate from,
+            @Param("to") LocalDate to);
 }

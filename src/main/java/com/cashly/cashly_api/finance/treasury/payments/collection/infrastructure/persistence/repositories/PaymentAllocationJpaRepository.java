@@ -17,7 +17,14 @@ public interface PaymentAllocationJpaRepository
     List<PaymentAllocationEntity> findByInvoiceId(UUID invoiceId);
     void deleteByPaymentId(UUID paymentId);
 
-    @Query("SELECT a.invoiceId, SUM(a.allocatedAmount) FROM PaymentAllocationEntity a WHERE a.invoiceId IN :invoiceIds GROUP BY a.invoiceId")
+    @Query("""
+            SELECT a.invoiceId, SUM(a.allocatedAmount)
+            FROM PaymentAllocationEntity a, PaymentEntity p
+            WHERE a.paymentId = p.id
+            AND a.invoiceId IN :invoiceIds
+            AND p.status <> 'CANCELLED'
+            GROUP BY a.invoiceId
+            """)
     List<Object[]> sumByInvoiceIds(@Param("invoiceIds") List<UUID> invoiceIds);
 
     @Query("SELECT COALESCE(SUM(a.allocatedAmount), 0) FROM PaymentAllocationEntity a WHERE a.invoiceId = :invoiceId")

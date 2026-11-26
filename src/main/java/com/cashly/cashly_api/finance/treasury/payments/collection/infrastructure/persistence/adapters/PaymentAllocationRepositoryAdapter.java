@@ -5,6 +5,7 @@ import com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure
 import com.cashly.cashly_api.finance.treasury.payments.collection.domain.entity.PaymentAllocation;
 import com.cashly.cashly_api.finance.treasury.payments.collection.domain.repository.PaymentAllocationRepository;
 import com.cashly.cashly_api.finance.treasury.payments.collection.infrastructure.persistence.mappers.PaymentAllocationJpaMapper;
+import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -20,10 +21,24 @@ public class PaymentAllocationRepositoryAdapter
             PaymentAllocationRepository {
 
     private final PaymentAllocationJpaRepository jpaRepository;
+    private final EntityManager entityManager;
 
     public PaymentAllocationRepositoryAdapter(
-            PaymentAllocationJpaRepository jpaRepository) {
+            PaymentAllocationJpaRepository jpaRepository,
+            EntityManager entityManager) {
         this.jpaRepository = jpaRepository;
+        this.entityManager = entityManager;
+    }
+
+    @Override
+    public void insertAll(Collection<PaymentAllocation> allocations) {
+        if (allocations == null) {
+            return;
+        }
+        for (PaymentAllocation allocation : allocations) {
+            entityManager.persist(
+                    PaymentAllocationJpaMapper.toEntity(allocation));
+        }
     }
 
     @Override

@@ -14,6 +14,7 @@ public interface CashRegisterRepository {
     Optional<CashRegister> findByClosureDate(LocalDate date);
     Optional<CashRegister> findActiveClosure();
     CashMovement saveMovement(CashMovement movement);
+    void saveMovements(java.util.Collection<CashMovement> movements);
     List<CashMovement> findMovements(RegisterId registerId);
     Optional<CashMovement> findMovementById(UUID id);
     Optional<CashMovement> findMovementBySource(String sourceType, UUID sourceId);

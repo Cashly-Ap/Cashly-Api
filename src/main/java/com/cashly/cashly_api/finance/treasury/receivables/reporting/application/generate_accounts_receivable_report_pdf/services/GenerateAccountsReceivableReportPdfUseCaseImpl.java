@@ -8,6 +8,7 @@ import com.cashly.cashly_api.finance.treasury.receivables.reporting.application.
 import com.cashly.cashly_api.finance.treasury.receivables.reporting.application.ports.out.AccountsReceivableReportPdfPort;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,16 +27,18 @@ public class GenerateAccountsReceivableReportPdfUseCaseImpl
     }
 
     @Override
-    public byte[] execute(UUID customerId, boolean overdueOnly) {
+    public byte[] execute(UUID customerId, boolean overdueOnly,
+            LocalDate dateFrom, LocalDate dateTo) {
         AccountsReceivableReportData data = buildReportData(customerId,
-                overdueOnly);
+                overdueOnly, dateFrom, dateTo);
         return pdfPort.generateReport(data);
     }
 
     private AccountsReceivableReportData buildReportData(UUID customerId,
-            boolean overdueOnly) {
+            boolean overdueOnly, LocalDate dateFrom, LocalDate dateTo) {
         List<AccountReceivableRow> reportRows = receivablesRepository
-                .findAccountsReceivableForReport(customerId, overdueOnly);
+                .findAccountsReceivableForReport(customerId, overdueOnly,
+                        dateFrom, dateTo);
 
         BigDecimal totalReceivable = BigDecimal.ZERO;
         BigDecimal notYetDue = BigDecimal.ZERO;
@@ -58,8 +61,8 @@ public class GenerateAccountsReceivableReportPdfUseCaseImpl
             }
         }
 
-        return new AccountsReceivableReportData(java.time.LocalDate.now(),
-                overdueOnly, reportRows,
+        return new AccountsReceivableReportData(LocalDate.now(),
+                overdueOnly, dateFrom, dateTo, reportRows,
                 new AccountsReceivableReportData.Summary(totalReceivable,
                         notYetDue, overdue, customersExceededCredit));
     }

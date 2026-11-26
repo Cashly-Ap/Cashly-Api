@@ -48,6 +48,30 @@ public class LocalPaymentCashRegisterGateway implements CashRegisterGateway {
                     entry.paymentId(), entry.actorId(), entry.actorName()));
         }
     }
+    @Override
+    public void recordMovements(java.util.List<Movement> list) {
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+        java.util.List<CashRegisterOperations.Entry> entries = new java.util.ArrayList<>(
+                list.size());
+        for (Movement movement : list) {
+            PaymentEntry entry = movement.payment();
+            entries.add(new CashRegisterOperations.Entry(
+                    movement.direction() == Direction.IN
+                            ? CashRegisterOperations.Direction.IN
+                            : CashRegisterOperations.Direction.OUT,
+                    CashRegisterOperations.EntryType.PAYMENT, entry.amount(),
+                    entry.paymentMethodId(), entry.notes(), "PAYMENT",
+                    entry.paymentId(), entry.actorId(), entry.actorName()));
+        }
+        if (movements != null) {
+            movements.recordAll(entries);
+        } else {
+            operations.recordAll(entries);
+        }
+    }
+
     public void recordPayment(PaymentEntry entry) {
         recordMovement(new Movement(Direction.IN, Type.PAYMENT, entry));
     }

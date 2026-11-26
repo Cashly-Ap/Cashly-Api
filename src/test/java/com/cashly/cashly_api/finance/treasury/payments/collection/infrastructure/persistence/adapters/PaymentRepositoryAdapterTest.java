@@ -43,7 +43,8 @@ class PaymentRepositoryAdapterTest {
 
     @BeforeEach
     void setUp() {
-        adapter = new PaymentRepositoryAdapter(jpaRepository);
+        adapter = new PaymentRepositoryAdapter(jpaRepository,
+                org.mockito.Mockito.mock(jakarta.persistence.EntityManager.class));
     }
 
     @Nested
@@ -229,30 +230,30 @@ class PaymentRepositoryAdapterTest {
                             UUID.randomUUID(), "John Doe", LocalDateTime.now(),
                             LocalDateTime.now()));
 
-            when(jpaRepository.findAllWithFilters(LocalDate.of(year, 1, 1),
-                    LocalDate.of(year, 12, 31), null, null))
-                    .thenReturn(List.of(entity));
+            when(jpaRepository.countByPaymentDateBetween(
+                    LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31)))
+                    .thenReturn(1L);
 
             int next = adapter.getNextSequenceForYear(year);
 
             assertEquals(2, next);
-            verify(jpaRepository).findAllWithFilters(LocalDate.of(year, 1, 1),
-                    LocalDate.of(year, 12, 31), null, null);
+            verify(jpaRepository).countByPaymentDateBetween(
+                    LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31));
         }
 
         @Test
         void should_ReturnOne_When_NoYearPayments() {
             int year = LocalDate.now().getYear();
 
-            when(jpaRepository.findAllWithFilters(LocalDate.of(year, 1, 1),
-                    LocalDate.of(year, 12, 31), null, null))
-                    .thenReturn(List.of());
+            when(jpaRepository.countByPaymentDateBetween(
+                    LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31)))
+                    .thenReturn(0L);
 
             int next = adapter.getNextSequenceForYear(year);
 
             assertEquals(1, next);
-            verify(jpaRepository).findAllWithFilters(LocalDate.of(year, 1, 1),
-                    LocalDate.of(year, 12, 31), null, null);
+            verify(jpaRepository).countByPaymentDateBetween(
+                    LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31));
         }
     }
 }

@@ -4,7 +4,10 @@ import com.cashly.cashly_api.shared.infrastructure.i18n.MessageTranslator;
 import java.util.Map;
 
 final class BusinessErrorMessages {
-    private static final Map<String, String> EXACT = Map.ofEntries(Map.entry(
+    private static final Map<String, String> EXACT = Map.ofEntries(
+            Map.entry(
+                    "A cash register must be open before registering a monetary operation",
+                    "finance.treasury.cash_register.sessions.errors.aCashRegisterMustBeOpenBeforeRegisteringAMonetaryOperation"),Map.entry(
             "A cash register is already open",
             "finance.treasury.cash_register.sessions.errors.aCashRegisterIsAlreadyOpen"),
             Map.entry("Account is not active",
@@ -243,8 +246,6 @@ final class BusinessErrorMessages {
                     "sales.invoices.errors.returnQuantityMustBePositive"),
             Map.entry("Opened by name must not be blank",
                     "finance.treasury.cash_register.sessions.errors.openedByNameMustNotBeBlank"),
-            Map.entry("Opening balance must not be negative",
-                    "finance.treasury.cash_register.sessions.errors.openingBalanceMustNotBeNegative"),
             Map.entry("Amounts must not be negative",
                     "finance.treasury.cash_register.sessions.errors.amountsMustNotBeNegative"),
             Map.entry("Movement totals must not be negative",
@@ -293,6 +294,7 @@ final class BusinessErrorMessages {
                     "inventory.warehouses.stock.errors.allocationQuantityMustBePositive"),
             Map.entry("Stock quantity must be positive",
                     "inventory.warehouses.stock.errors.stockQuantityMustBePositive"),
+            Map.entry("Warehouse ", "inventory.warehouses.management.errors.theWarehouseCannotBeDeletedBecauseItHasAssociatedRecords"),
             Map.entry("Warehouse code cannot be blank",
                     "inventory.warehouses.management.errors.warehouseCodeCannotBeBlank"),
             Map.entry("Warehouse code cannot exceed 50 characters",

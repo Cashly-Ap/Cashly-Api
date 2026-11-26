@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public interface PaymentAllocationRepository {
     PaymentAllocation save(PaymentAllocation allocation);
+    void insertAll(Collection<PaymentAllocation> allocations);
     List<PaymentAllocation> findByPaymentId(UUID paymentId);
     List<PaymentAllocation> findByInvoiceId(UUID invoiceId);
     void deleteByPaymentId(UUID paymentId);

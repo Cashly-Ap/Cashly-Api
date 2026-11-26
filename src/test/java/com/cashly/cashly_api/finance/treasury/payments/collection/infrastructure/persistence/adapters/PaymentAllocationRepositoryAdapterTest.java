@@ -37,7 +37,8 @@ class PaymentAllocationRepositoryAdapterTest {
 
     @BeforeEach
     void setUp() {
-        adapter = new PaymentAllocationRepositoryAdapter(jpaRepository);
+        adapter = new PaymentAllocationRepositoryAdapter(jpaRepository,
+                org.mockito.Mockito.mock(jakarta.persistence.EntityManager.class));
     }
 
     @Nested

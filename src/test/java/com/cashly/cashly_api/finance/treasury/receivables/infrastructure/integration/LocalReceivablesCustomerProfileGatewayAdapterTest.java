@@ -2,11 +2,11 @@ package com.cashly.cashly_api.finance.treasury.receivables.infrastructure.integr
 
 import com.cashly.cashly_api.partners.customers.profile.application.ports.in.CustomerProfileQuery;
 import com.cashly.cashly_api.partners.customers.profile.application.ports.in.CustomerProfileSnapshot;
-import com.cashly.cashly_api.partners.customers.profile.application.exceptions.CustomerNotFoundException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,12 +23,12 @@ class LocalReceivablesCustomerProfileGatewayAdapterTest {
     @Test
     void shouldReturnReceivablesOwnedSnapshotFromCustomerProfile() {
         UUID customerId = UUID.randomUUID();
-        when(customerProfiles.find(customerId))
-                .thenReturn(new CustomerProfileSnapshot(customerId, 7L,
-                        "Customer", "COMPANY", "J-1", null, null, 30,
+        when(customerProfiles.findOptional(customerId))
+                .thenReturn(Optional.of(new CustomerProfileSnapshot(customerId,
+                        7L, "Customer", "COMPANY", "J-1", null, null, 30,
                         BigDecimal.valueOf(500), BigDecimal.valueOf(25), true,
                         null, null, List.of("a@cashly.test"), List.of("555"),
-                        List.of()));
+                        List.of())));
 
         var profile = adapter.findById(customerId).orElseThrow();
 
@@ -43,8 +43,8 @@ class LocalReceivablesCustomerProfileGatewayAdapterTest {
     @Test
     void shouldRepresentMissingCustomerAsEmpty() {
         UUID customerId = UUID.randomUUID();
-        when(customerProfiles.find(customerId))
-                .thenThrow(new CustomerNotFoundException("missing"));
+        when(customerProfiles.findOptional(customerId))
+                .thenReturn(Optional.empty());
 
         assertThat(adapter.findById(customerId)).isEmpty();
     }
@@ -54,7 +54,7 @@ class LocalReceivablesCustomerProfileGatewayAdapterTest {
         UUID customerId = UUID.randomUUID();
         IllegalStateException failure = new IllegalStateException(
                 "database unavailable");
-        when(customerProfiles.find(customerId)).thenThrow(failure);
+        when(customerProfiles.findOptional(customerId)).thenThrow(failure);
 
         assertThatThrownBy(() -> adapter.findById(customerId))
                 .isSameAs(failure);

@@ -89,7 +89,7 @@ public class RecordCashMovementUseCase {
     private void requireActiveRegister(CashRegister target) {
         var active = registerRepository.findActiveClosure()
                 .orElseThrow(() -> new IllegalStateException(
-                        "Debe abrir una caja antes de registrar una operación monetaria"));
+                        "A cash register must be open before registering a monetary operation"));
         if (!active.getId().equals(target.getId())) {
             throw new IllegalStateException(
                     "Movements can only be added to the active register");

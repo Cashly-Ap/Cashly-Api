@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,10 +40,36 @@ public class LocalPaymentInvoiceGateway implements PaymentInvoiceGateway {
 
     @Override
     public List<InvoiceSnapshot> findUnpaidByCustomerId(UUID customerId) {
-        return invoices
-                .findAllWithFilters(null, null, customerId, UNPAID_STATUSES,
-                        null, null, null, null, null)
-                .stream().map(this::snapshot).toList();
+        var found = invoices.findHeaders(customerId, UNPAID_STATUSES);
+        if (found.isEmpty()) {
+            return List.of();
+        }
+        List<UUID> invoiceIds = found.stream()
+                .map(InvoiceRepository.InvoiceHeader::id).toList();
+        Map<UUID, BigDecimal> creditTotals = credits
+                .totalsByInvoiceIds(invoiceIds);
+        Map<UUID, BigDecimal> debitTotals = debits
+                .totalsByInvoiceIds(invoiceIds);
+        return found.stream()
+                .map(header -> new InvoiceSnapshot(header.id(),
+                        header.customerId(), header.number(),
+                        total(header, creditTotals.getOrDefault(header.id(),
+                                BigDecimal.ZERO),
+                                debitTotals.getOrDefault(header.id(),
+                                        BigDecimal.ZERO))))
+                .toList();
+    }
+
+    private static BigDecimal total(InvoiceRepository.InvoiceHeader header,
+            BigDecimal creditTotal, BigDecimal debitTotal) {
+        BigDecimal subtotal = header.subtotal() == null
+                ? BigDecimal.ZERO
+                : header.subtotal();
+        BigDecimal returned = header.returnedTotal() == null
+                ? BigDecimal.ZERO
+                : header.returnedTotal();
+        return subtotal.subtract(returned).subtract(creditTotal)
+                .add(debitTotal);
     }
 
     @Override
@@ -50,17 +77,33 @@ public class LocalPaymentInvoiceGateway implements PaymentInvoiceGateway {
         statuses.recalculate(invoiceId);
     }
 
+    @Override
+    public void updateStatuses(java.util.Collection<UUID> invoiceIds,
+            String status) {
+        invoices.updateStatuses(invoiceIds, status);
+    }
+
     private InvoiceSnapshot snapshot(
             com.cashly.cashly_api.sales.invoices.invoices.domain.entity.Invoice invoice) {
         UUID id = invoice.getId().value();
-        BigDecimal creditTotal = credits.amountsByInvoiceId(id).stream()
+        return snapshot(invoice,
+                Map.of(id, sum(credits.amountsByInvoiceId(id))),
+                Map.of(id, sum(debits.amountsByInvoiceId(id))));
+    }
+
+    private static BigDecimal sum(List<BigDecimal> amounts) {
+        return amounts.stream()
                 .map(amount -> amount == null ? BigDecimal.ZERO : amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal debitTotal = debits.amountsByInvoiceId(id).stream()
-                .map(amount -> amount == null ? BigDecimal.ZERO : amount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private InvoiceSnapshot snapshot(
+            com.cashly.cashly_api.sales.invoices.invoices.domain.entity.Invoice invoice,
+            Map<UUID, BigDecimal> credits, Map<UUID, BigDecimal> debits) {
+        UUID id = invoice.getId().value();
         return new InvoiceSnapshot(id, invoice.getCustomerId(),
                 invoice.getInvoiceNumber().value(),
-                invoice.calculateTotal(creditTotal, debitTotal));
+                invoice.calculateTotal(credits.getOrDefault(id, BigDecimal.ZERO),
+                        debits.getOrDefault(id, BigDecimal.ZERO)));
     }
 }

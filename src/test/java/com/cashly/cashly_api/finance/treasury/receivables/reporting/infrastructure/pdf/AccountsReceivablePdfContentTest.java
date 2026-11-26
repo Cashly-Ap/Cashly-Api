@@ -31,7 +31,7 @@ class AccountsReceivablePdfContentTest {
                 amount(120), amount(-20), amount(30), amount(20), amount(10),
                 amount(40), amount(20));
         var data = new AccountsReceivableReportData(LocalDate.of(2026, 1, 2),
-                true, List.of(row), new AccountsReceivableReportData.Summary(
+                true, null, null, List.of(row), new AccountsReceivableReportData.Summary(
                         amount(120), amount(30), amount(90), 1));
         var content = text(new AccountsReceivableReportPdfGenerator()
                 .generateReport(data));
@@ -43,7 +43,7 @@ class AccountsReceivablePdfContentTest {
     @Test
     void emptyReportPreservesZeroSummary() throws Exception {
         var data = new AccountsReceivableReportData(LocalDate.of(2026, 1, 2),
-                false, List.of(), new AccountsReceivableReportData.Summary(
+                false, null, null, List.of(), new AccountsReceivableReportData.Summary(
                         amount(0), amount(0), amount(0), 0));
         var content = text(new AccountsReceivableReportPdfGenerator()
                 .generateReport(data));

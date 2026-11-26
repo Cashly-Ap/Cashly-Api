@@ -80,9 +80,22 @@ public class AccountsReceivableReportPdfGenerator
                 ReportMessages.text(
                         "finance.treasury.receivables.reports.customersOverCreditLimit")
                         + ": " + summary.customersExceededCredit());
+        String period = "";
+        if (data.dateFrom() != null || data.dateTo() != null) {
+            String from = data.dateFrom() != null
+                    ? data.dateFrom().format(ReportMessages.dateFormatter())
+                    : "-";
+            String to = data.dateTo() != null
+                    ? data.dateTo().format(ReportMessages.dateFormatter())
+                    : "-";
+            period = " | " + ReportMessages
+                    .text("finance.treasury.receivables.reports.period")
+                    + from + " - " + to;
+        }
         String subtitle = ReportMessages
                 .text("finance.treasury.receivables.reports.date")
-                + data.reportDate().format(ReportMessages.dateFormatter());
+                + data.reportDate().format(ReportMessages.dateFormatter())
+                + period;
         return FastTablePdfRenderer.render(branding, PageSize.A4.rotate(),
                 ReportMessages.text(
                         "finance.treasury.receivables.reports.accountsReceivable"),

@@ -58,10 +58,15 @@ class GetActiveRegisterUseCaseTest {
     private CashRegister openRegister() {
         return CashRegister.reconstitute(RegisterId.generate(), LocalDate.now(),
                 RegisterStatus.OPEN, userId, "Test User", LocalDateTime.now(),
-                null, null, null, BigDecimal.ZERO, BigDecimal.ZERO,
+                null, null, null,
+                BigDecimal.ZERO,
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO, 0, 0, 0, 0, BigDecimal.ZERO, null, null, null,
-                0, LocalDateTime.now(), LocalDateTime.now(), List.of());
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                0, 0, 0, 0,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO,
+                null, 0,
+                LocalDateTime.now(), LocalDateTime.now(), List.of());
     }
 
     @Test
@@ -70,24 +75,25 @@ class GetActiveRegisterUseCaseTest {
                 RegisterId.generate(), LocalDate.now().minusDays(2),
                 RegisterStatus.OPEN, userId, "Test User",
                 LocalDateTime.now().minusDays(2), null, null, null,
+                BigDecimal.ZERO,
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, 0, 0, 0, 0,
-                BigDecimal.ZERO, null, null, null, 0,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                0, 0, 0, 0,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO,
+                null, 0,
                 LocalDateTime.now().minusDays(2), LocalDateTime.now(),
                 List.of());
         when(closureRepository.findActiveClosure())
                 .thenReturn(Optional.of(activeClosure));
         when(queries.findSessionTotals(activeClosure.getId()))
                 .thenReturn(emptyDailyTotals());
-        when(closureRepository.save(any(CashRegister.class)))
-                .thenReturn(activeClosure);
-
         Optional<CashRegisterResponse> response = useCase.execute();
 
         assertTrue(response.isPresent());
         assertEquals(activeClosure.getId().value(),
                 response.orElseThrow().id());
-        verify(closureRepository).save(any(CashRegister.class));
+        verify(closureRepository, never()).save(any(CashRegister.class));
     }
 
     @Test

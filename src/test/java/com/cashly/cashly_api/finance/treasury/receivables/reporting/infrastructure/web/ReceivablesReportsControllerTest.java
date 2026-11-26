@@ -34,19 +34,17 @@ class ReceivablesReportsControllerTest {
         UUID customerId = UUID.randomUUID();
         byte[] pdfContent = "AR PDF".getBytes();
 
-        when(generateAccountsReceivableReportPdfUseCase.execute(customerId,
-                false)).thenReturn(pdfContent);
+        when(generateAccountsReceivableReportPdfUseCase.execute(customerId, false, null, null)).thenReturn(pdfContent);
 
         ResponseEntity<byte[]> result = controller
-                .getAccountsReceivablePdf(customerId, false);
+                .getAccountsReceivablePdf(customerId, false, null, null);
 
         assertEquals(MediaType.APPLICATION_PDF,
                 result.getHeaders().getContentType());
         assertTrue(result.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION)
                 .get(0).contains("cuentas-por-cobrar-"));
         assertArrayEquals(pdfContent, result.getBody());
-        verify(generateAccountsReceivableReportPdfUseCase).execute(customerId,
-                false);
+        verify(generateAccountsReceivableReportPdfUseCase).execute(customerId, false, null, null);
     }
 
     @Test
@@ -54,14 +52,14 @@ class ReceivablesReportsControllerTest {
     void shouldGetAccountsReceivablePdfWithOverdueFilter() {
         byte[] pdfContent = "Overdue AR PDF".getBytes();
 
-        when(generateAccountsReceivableReportPdfUseCase.execute(null, true))
+        when(generateAccountsReceivableReportPdfUseCase.execute(null, true, null, null))
                 .thenReturn(pdfContent);
 
         ResponseEntity<byte[]> result = controller
-                .getAccountsReceivablePdf(null, true);
+                .getAccountsReceivablePdf(null, true, null, null);
 
         assertArrayEquals(pdfContent, result.getBody());
-        verify(generateAccountsReceivableReportPdfUseCase).execute(null, true);
+        verify(generateAccountsReceivableReportPdfUseCase).execute(null, true, null, null);
     }
 
     @Test

@@ -10,6 +10,8 @@ public interface PaymentInvoiceGateway {
     List<InvoiceSnapshot> findUnpaidByCustomerId(UUID customerId);
     void recalculateStatus(UUID invoiceId);
 
+    void updateStatuses(java.util.Collection<UUID> invoiceIds, String status);
+
     record InvoiceSnapshot(UUID id, UUID customerId, String number,
             BigDecimal total) {
     }

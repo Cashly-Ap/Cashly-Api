@@ -2,8 +2,10 @@ package com.cashly.cashly_api.finance.treasury.receivables.reporting.application
 
 import com.cashly.cashly_api.finance.treasury.receivables.reporting.application.dto.model.AccountsReceivableReportData;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 public interface GenerateAccountsReceivableReportPdfUseCase {
-    byte[] execute(UUID customerId, boolean overdueOnly);
+    byte[] execute(UUID customerId, boolean overdueOnly, LocalDate dateFrom,
+            LocalDate dateTo);
 }

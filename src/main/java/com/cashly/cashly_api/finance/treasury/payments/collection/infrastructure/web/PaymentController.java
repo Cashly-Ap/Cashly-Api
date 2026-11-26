@@ -33,9 +33,15 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/api/payments")
 public class PaymentController {
+
+    private static final Logger log = LoggerFactory
+            .getLogger(PaymentController.class);
 
     private final CreatePaymentUseCase createPaymentUseCase;
     private final GetAllPaymentsUseCase getAllPaymentsUseCase;
@@ -163,8 +169,11 @@ public class PaymentController {
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
         String userName = authentication.getName();
+        long started = System.nanoTime();
         PaymentResultResponse response = payAllCustomerDebtUseCase
                 .execute(customerId, request, userId, userName);
+        log.info("pay-all customer={} took {} ms", customerId,
+                (System.nanoTime() - started) / 1_000_000);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -176,8 +185,11 @@ public class PaymentController {
             Authentication authentication) {
         UUID userId = UUID.fromString((String) authentication.getPrincipal());
         String userName = authentication.getName();
+        long started = System.nanoTime();
         PaymentResultResponse response = payPartialDebtUseCase
                 .execute(customerId, request, userId, userName);
+        log.info("pay-partial customer={} took {} ms", customerId,
+                (System.nanoTime() - started) / 1_000_000);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

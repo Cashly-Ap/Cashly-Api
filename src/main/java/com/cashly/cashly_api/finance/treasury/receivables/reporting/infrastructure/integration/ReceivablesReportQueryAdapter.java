@@ -3,6 +3,7 @@ import com.cashly.cashly_api.finance.treasury.receivables.application.ports.in.A
 import com.cashly.cashly_api.finance.treasury.receivables.reporting.application.ports.out.AccountsReceivableQueryGateway;
 import com.cashly.cashly_api.finance.treasury.receivables.reporting.application.dto.model.AccountsReceivableReportData.AccountReceivableRow;
 import org.springframework.stereotype.Component;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 @Component
@@ -14,8 +15,9 @@ public class ReceivablesReportQueryAdapter
         this.query = query;
     }
     public List<AccountReceivableRow> findAccountsReceivableForReport(
-            UUID customerId, boolean overdueOnly) {
-        return query.find(customerId, overdueOnly).stream()
+            UUID customerId, boolean overdueOnly, LocalDate dateFrom,
+            LocalDate dateTo) {
+        return query.find(customerId, overdueOnly, dateFrom, dateTo).stream()
                 .map(row -> new AccountReceivableRow(row.customerId(),
                         row.customerName(), row.rif(), row.creditLimit(),
                         row.pendingBalance(), row.availableCredit(),

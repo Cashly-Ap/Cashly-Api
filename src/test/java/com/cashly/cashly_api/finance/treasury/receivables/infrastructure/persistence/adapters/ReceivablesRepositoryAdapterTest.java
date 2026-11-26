@@ -1139,7 +1139,7 @@ class ReceivablesRepositoryAdapterTest {
                 new Object[]{customerId, "Customer", "J-123", BigDecimal.TEN,
                         null, BigDecimal.ONE, null, null, null, null, null}));
 
-        var rows = adapter.findAccountsReceivableForReport(customerId, false);
+        var rows = adapter.findAccountsReceivableForReport(customerId, false, null, null);
 
         assertThat(rows).containsExactly(
                 new com.cashly.cashly_api.finance.treasury.receivables.application.ports.out.model.AccountsReceivableRow(
@@ -1165,7 +1165,7 @@ class ReceivablesRepositoryAdapterTest {
                         BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                         BigDecimal.ZERO, BigDecimal.ZERO}));
 
-        assertThat(adapter.findAccountsReceivableForReport(null, false)
+        assertThat(adapter.findAccountsReceivableForReport(null, false, null, null)
                 .getFirst().customerId()).isEqualTo(customerId);
     }
     @Test

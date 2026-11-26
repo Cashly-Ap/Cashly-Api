@@ -4,6 +4,8 @@ import java.util.UUID;
 public interface CashRegisterGateway {
     void requireOpenRegister();
     void recordMovement(Movement movement);
+
+    void recordMovements(java.util.List<Movement> movements);
     void recordPayment(PaymentEntry entry);
     record Movement(Direction direction, Type type, PaymentEntry payment) {
     }

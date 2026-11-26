@@ -28,7 +28,7 @@ class AccountsReceivableReportDataTest {
                 BigDecimal.valueOf(2000), 1);
 
         var data = new AccountsReceivableReportData(LocalDate.of(2026, 6, 15),
-                true, List.of(row), summary);
+                true, null, null, List.of(row), summary);
 
         assertEquals(LocalDate.of(2026, 6, 15), data.reportDate());
         assertTrue(data.overdueOnly());
@@ -45,7 +45,7 @@ class AccountsReceivableReportDataTest {
         var summary = new AccountsReceivableReportData.Summary(BigDecimal.ZERO,
                 BigDecimal.ZERO, BigDecimal.ZERO, 0);
 
-        var data = new AccountsReceivableReportData(LocalDate.now(), false,
+        var data = new AccountsReceivableReportData(LocalDate.now(), false, null, null,
                 List.of(), summary);
 
         assertFalse(data.overdueOnly());

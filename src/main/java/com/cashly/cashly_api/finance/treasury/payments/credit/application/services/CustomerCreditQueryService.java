@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class CustomerCreditQueryService implements CustomerCreditQuery {
@@ -41,20 +42,25 @@ public class CustomerCreditQueryService implements CustomerCreditQuery {
         this.debits = debits;
     }
 
+    private record LedgerTotals(Map<UUID, BigDecimal> credits,
+            Map<UUID, BigDecimal> debits) {
+    }
+
     @Override
     public CreditStatusSnapshot getCreditStatus(UUID customerId) {
         var customer = customers.findById(customerId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Customer not found: " + customerId));
-        var activeInvoices = invoices.findByCustomerId(customerId).stream()
+        var entries = invoices.findByCustomerId(customerId);
+        var activeInvoices = entries.stream()
                 .filter(InvoiceCreditEntry::pendingPayment).toList();
+        var ledger = ledgerFor(activeInvoices);
         BigDecimal invoiceTotal = activeInvoices.stream()
-                .map(this::calculateInvoiceTotal)
+                .map(invoice -> calculateInvoiceTotal(invoice, ledger))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal pendingBalance = invoiceTotal
                 .subtract(calculateAppliedPayments(activeInvoices));
-        var overdueInvoices = overdueInvoices(
-                invoices.findByCustomerId(customerId));
+        var overdueInvoices = overdueInvoices(entries, ledger);
         boolean hasOverdue = !overdueInvoices.isEmpty();
         var decision = new CustomerCreditPolicy().evaluate(
                 customer.creditLimit(), customer.balance(), pendingBalance,
@@ -67,48 +73,56 @@ public class CustomerCreditQueryService implements CustomerCreditQuery {
 
     @Override
     public List<OverdueInvoiceSnapshot> findAllOverdueInvoices() {
-        return overdueInvoices(invoices.findAll());
+        var entries = invoices.findAll();
+        return overdueInvoices(entries, ledgerFor(entries));
+    }
+
+    private LedgerTotals ledgerFor(List<InvoiceCreditEntry> entries) {
+        if (entries.isEmpty()) {
+            return new LedgerTotals(Map.of(), Map.of());
+        }
+        List<UUID> invoiceIds = entries.stream()
+                .map(InvoiceCreditEntry::id).toList();
+        return new LedgerTotals(credits.totalsByInvoiceIds(invoiceIds),
+                debits.totalsByInvoiceIds(invoiceIds));
     }
 
     private List<OverdueInvoiceSnapshot> overdueInvoices(
-            List<InvoiceCreditEntry> entries) {
+            List<InvoiceCreditEntry> entries, LedgerTotals ledger) {
         LocalDate now = LocalDate.now(ZoneId.systemDefault());
         return entries.stream().filter(InvoiceCreditEntry::pendingPayment)
                 .filter(invoice -> invoice.dueDate().isBefore(now))
                 .map(invoice -> new OverdueInvoiceSnapshot(invoice.number(),
-                        calculateInvoiceTotal(invoice), invoice.dueDate(),
+                        calculateInvoiceTotal(invoice, ledger),
+                        invoice.dueDate(),
                         (int) ChronoUnit.DAYS.between(invoice.dueDate(), now)))
                 .toList();
     }
 
-    private BigDecimal calculateInvoiceTotal(InvoiceCreditEntry invoice) {
+    private BigDecimal calculateInvoiceTotal(InvoiceCreditEntry invoice,
+            LedgerTotals ledger) {
         if (invoice.subtotal() == null) {
             return BigDecimal.ZERO;
         }
-        BigDecimal totalCredit = credits.amountsByInvoiceId(invoice.id())
-                .stream().reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal totalDebit = debits.amountsByInvoiceId(invoice.id()).stream()
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        return invoice.subtotal().subtract(invoice.returnedTotal())
-                .subtract(totalCredit).add(totalDebit);
+        BigDecimal totalCredit = ledger.credits()
+                .getOrDefault(invoice.id(), BigDecimal.ZERO);
+        BigDecimal totalDebit = ledger.debits()
+                .getOrDefault(invoice.id(), BigDecimal.ZERO);
+        BigDecimal returned = invoice.returnedTotal() == null
+                ? BigDecimal.ZERO
+                : invoice.returnedTotal();
+        return invoice.subtotal().subtract(returned).subtract(totalCredit)
+                .add(totalDebit);
     }
 
     private BigDecimal calculateAppliedPayments(
             List<InvoiceCreditEntry> entries) {
-        BigDecimal totalApplied = BigDecimal.ZERO;
-        for (InvoiceCreditEntry invoice : entries) {
-            for (PaymentAllocation allocation : allocations
-                    .findByInvoiceId(invoice.id())) {
-                var payment = payments
-                        .findById(PaymentId.of(allocation.getPaymentId()))
-                        .orElse(null);
-                if (payment != null
-                        && payment.getStatus() != PaymentStatus.CANCELLED) {
-                    totalApplied = totalApplied
-                            .add(allocation.getAllocatedAmount());
-                }
-            }
+        if (entries.isEmpty()) {
+            return BigDecimal.ZERO;
         }
-        return totalApplied;
+        List<UUID> invoiceIds = entries.stream()
+                .map(InvoiceCreditEntry::id).toList();
+        return allocations.sumByInvoiceIds(invoiceIds).values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

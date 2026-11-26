@@ -154,7 +154,7 @@ public class GlobalExceptionHandler {
         if (message.startsWith("Invalid email format:"))
             return translator.text("validation.email_format");
         var stock = java.util.regex.Pattern
-                .compile("(?:available|reserved)=(-?\\d+), requested=(\\d+)")
+                .compile("(?:available|reserved)=(-?\\d+(?:\\.\\d+)?), requested=(\\d+(?:\\.\\d+)?)")
                 .matcher(message);
         if (stock.find())
             return translator.text(
@@ -603,6 +603,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(createErrorResponse(HttpStatus.CONFLICT,
                         "Credit limit exceeded", ex.getMessage()));
+    }
+
+    @ExceptionHandler(org.springframework.web.bind.MissingServletRequestParameterException.class)
+    public ResponseEntity<Map<String, Object>> handleMissingParameter(
+            org.springframework.web.bind.MissingServletRequestParameterException ex) {
+        return ResponseEntity.badRequest().body(createErrorResponse(
+                HttpStatus.BAD_REQUEST, "Invalid request", ex.getMessage()));
+    }
+
+    @ExceptionHandler({
+            com.cashly.cashly_api.procurement.purchases.domain.exceptions.PurchaseNotFoundException.class,
+            com.cashly.cashly_api.partners.suppliers.application.exceptions.SupplierNotFoundException.class,
+            com.cashly.cashly_api.sales.invoices.returns.application.get.use_case.GetReturnByIdUseCase.ReturnNotFoundException.class})
+    public ResponseEntity<Map<String, Object>> handleResourceNotFound(
+            RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(createErrorResponse(HttpStatus.NOT_FOUND, "Not found",
+                        ex.getMessage()));
     }
 
     @ExceptionHandler(IllegalStateException.class)

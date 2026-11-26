@@ -47,13 +47,12 @@ class GenerateAccountsReceivableReportPdfUseCaseImplTest {
         UUID customerId = UUID.randomUUID();
         byte[] expectedPdf = "AR PDF".getBytes();
 
-        when(receivablesRepository.findAccountsReceivableForReport(customerId,
-                false))
+        when(receivablesRepository.findAccountsReceivableForReport(customerId, false, null, null))
                 .thenReturn(List.<AccountReceivableRow>of(mockRow(null,
                         "Test Customer", "J-123", 10000, 5000, 5000)));
         when(pdfPort.generateReport(any())).thenReturn(expectedPdf);
 
-        byte[] result = useCase.execute(customerId, false);
+        byte[] result = useCase.execute(customerId, false, null, null);
 
         assertArrayEquals(expectedPdf, result);
         verify(pdfPort).generateReport(any());
@@ -64,12 +63,12 @@ class GenerateAccountsReceivableReportPdfUseCaseImplTest {
     void should_generate_overdue_accounts_receivable_pdf() {
         byte[] expectedPdf = "Overdue PDF".getBytes();
 
-        when(receivablesRepository.findAccountsReceivableForReport(null, true))
+        when(receivablesRepository.findAccountsReceivableForReport(null, true, null, null))
                 .thenReturn(List.<AccountReceivableRow>of(mockRow(null,
                         "Overdue Customer", "J-456", 5000, 6000, 0)));
         when(pdfPort.generateReport(any())).thenReturn(expectedPdf);
 
-        byte[] result = useCase.execute(null, true);
+        byte[] result = useCase.execute(null, true, null, null);
 
         assertArrayEquals(expectedPdf, result);
         verify(pdfPort).generateReport(any());
@@ -80,13 +79,13 @@ class GenerateAccountsReceivableReportPdfUseCaseImplTest {
     void should_generate_accounts_receivable_pdf_without_filters() {
         byte[] expectedPdf = "All AR PDF".getBytes();
 
-        when(receivablesRepository.findAccountsReceivableForReport(null, false))
+        when(receivablesRepository.findAccountsReceivableForReport(null, false, null, null))
                 .thenReturn(List.<AccountReceivableRow>of(
                         mockRow(null, "Customer A", "J-111", 10000, 3000, 7000),
                         mockRow(null, "Customer B", "J-222", 8000, 9000, 0)));
         when(pdfPort.generateReport(any())).thenReturn(expectedPdf);
 
-        byte[] result = useCase.execute(null, false);
+        byte[] result = useCase.execute(null, false, null, null);
 
         assertArrayEquals(expectedPdf, result);
         verify(pdfPort).generateReport(any());

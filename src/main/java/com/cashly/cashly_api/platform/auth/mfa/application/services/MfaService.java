@@ -53,8 +53,11 @@ public class MfaService {
     }
 
     public Status status(String subjectId) {
-        MfaAccount account = store.lock(subjectId);
-        return new Status(account.enabled(), account.recoveryHashes().size());
+        MfaAccount account = store.find(subjectId);
+        return account == null
+                ? new Status(false, 0)
+                : new Status(account.enabled(),
+                        account.recoveryHashes().size());
     }
 
     public Setup setup(String subjectId, String password) {

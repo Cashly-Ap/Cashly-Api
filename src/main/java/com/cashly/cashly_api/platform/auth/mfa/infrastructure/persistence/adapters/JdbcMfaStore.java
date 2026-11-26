@@ -38,6 +38,11 @@ public class JdbcMfaStore implements MfaStore {
                 "select * from auth_mfa where subject_id = ? for update",
                 mapper, subjectId);
     }
+    public MfaAccount find(String subjectId) {
+        return jdbc.query(
+                "select * from auth_mfa where subject_id = ?", mapper,
+                subjectId).stream().findFirst().orElse(null);
+    }
     public MfaAccount lockByChallenge(String hash) {
         return jdbc.query(
                 "select * from auth_mfa where challenge_hash = ? for update",

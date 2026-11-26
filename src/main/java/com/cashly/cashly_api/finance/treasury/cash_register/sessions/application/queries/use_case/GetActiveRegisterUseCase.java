@@ -33,8 +33,7 @@ public class GetActiveRegisterUseCase {
             closure.applyMovementTotals(sessionTotals.totalRevenue(),
                     sessionTotals.totalExpenses());
 
-            var saved = closureRepository.save(closure);
-            return CashRegisterMapper.toResponse(saved, sessionTotals,
+            return CashRegisterMapper.toResponse(closure, sessionTotals,
                     closureRepository.findMovements(closure.getId()));
         });
     }

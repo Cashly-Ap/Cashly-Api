@@ -117,7 +117,7 @@ class PayAllCustomerDebtUseCaseTest {
         when(paymentRepository
                 .getNextSequenceForYear(LocalDate.now().getYear()))
                 .thenReturn(1);
-        when(paymentRepository.save(any(Payment.class)))
+        when(paymentRepository.insert(any(Payment.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         PaymentResultResponse response = useCase.execute(customerId, request,
@@ -127,18 +127,17 @@ class PayAllCustomerDebtUseCaseTest {
         assertNotNull(response.message());
         assertEquals(PaymentStatus.APPLIED.name(), response.status());
         verify(paymentRepository, org.mockito.Mockito.atLeast(1))
-                .save(paymentCaptor.capture());
-        Payment saved = paymentCaptor.getValue();
-        assertEquals(new BigDecimal("800.00"), saved.getAmount());
-        verify(cashRegisterGateway)
-                .recordMovement(new CashRegisterGateway.Movement(
-                        CashRegisterGateway.Direction.IN,
-                        CashRegisterGateway.Type.PAYMENT,
-                        new CashRegisterGateway.PaymentEntry(
-                                new BigDecimal("800.00"), paymentMethodId,
-                                "Pago total de deuda del cliente",
-                                saved.getId().value(), authenticatedUserId,
-                                authenticatedUserName)));
+                .insert(paymentCaptor.capture());
+        List<Payment> savedPayments = paymentCaptor.getAllValues();
+        assertEquals(2, savedPayments.size());
+        assertEquals(new BigDecimal("500.00"), savedPayments.get(0).getAmount());
+        assertEquals(new BigDecimal("300.00"), savedPayments.get(1).getAmount());
+        verify(cashRegisterGateway).recordMovements(
+                org.mockito.ArgumentMatchers.argThat(list -> list.size() == 2));
+        verify(invoiceGateway).updateStatuses(
+                org.mockito.ArgumentMatchers.argThat(ids -> ids.contains(invoice1Id)
+                        && ids.contains(invoice2Id)),
+                org.mockito.ArgumentMatchers.eq("PAID"));
     }
 
     @Test
@@ -192,12 +191,15 @@ class PayAllCustomerDebtUseCaseTest {
         when(paymentRepository
                 .getNextSequenceForYear(LocalDate.now().getYear()))
                 .thenReturn(1);
-        when(paymentRepository.save(any(Payment.class)))
+        when(paymentRepository.insert(any(Payment.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         useCase.execute(customerId, request, authenticatedUserId,
                 authenticatedUserName);
 
-        verify(invoiceGateway).recalculateStatus(invoice1.getId().value());
+        verify(invoiceGateway).updateStatuses(
+                org.mockito.ArgumentMatchers.argThat(
+                        ids -> ids.contains(invoice1.getId().value())),
+                org.mockito.ArgumentMatchers.eq("PAID"));
     }
 }

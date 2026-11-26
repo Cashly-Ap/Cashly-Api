@@ -29,9 +29,11 @@ public class ReceivablesReportsController {
     @PreAuthorize("hasAuthority('FINANCE_TREASURY_RECEIVABLES_REPORT_PDF')")
     public ResponseEntity<byte[]> getAccountsReceivablePdf(
             @RequestParam(required = false) UUID customerId,
-            @RequestParam(defaultValue = "false") boolean overdueOnly) {
+            @RequestParam(defaultValue = "false") boolean overdueOnly,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo) {
         byte[] pdf = generateAccountsReceivableReportPdfUseCase
-                .execute(customerId, overdueOnly);
+                .execute(customerId, overdueOnly, dateFrom, dateTo);
         String filename = "cuentas-por-cobrar-" + LocalDate.now().toString()
                 + ".pdf";
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)

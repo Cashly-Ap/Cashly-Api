@@ -35,8 +35,9 @@ class LocalizedErrorsTest {
     void preservesAvailableAndRequestedStockInBothLanguages() {
         var handler = new GlobalExceptionHandler();
         var error = new com.cashly.cashly_api.inventory.warehouses.stock.application.exceptions.InsufficientStockException(
-                java.util.UUID.randomUUID(), java.util.UUID.randomUUID(), 7,
-                12);
+                java.util.UUID.randomUUID(), java.util.UUID.randomUUID(),
+                new java.math.BigDecimal("7"),
+                new java.math.BigDecimal("12"));
         LocaleContextHolder.setLocale(Locale.ENGLISH);
         assertThat(
                 handler.handleInsufficientStock(error).getBody().get("message"))

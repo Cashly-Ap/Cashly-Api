@@ -4,6 +4,7 @@ import com.cashly.cashly_api.sales.invoices.debit_notes.application.ports.in.Deb
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 @Component
 public class LocalDebitNoteLedgerGateway implements DebitNoteLedgerGateway {
@@ -13,5 +14,10 @@ public class LocalDebitNoteLedgerGateway implements DebitNoteLedgerGateway {
     }
     public List<BigDecimal> amountsByInvoiceId(UUID id) {
         return query.amountsByInvoiceId(id);
+    }
+
+    @Override
+    public Map<UUID, BigDecimal> totalsByInvoiceIds(List<UUID> invoiceIds) {
+        return query.totalsByInvoiceIds(invoiceIds);
     }
 }

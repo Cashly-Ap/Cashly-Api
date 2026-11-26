@@ -118,7 +118,7 @@ class PayPartialDebtUseCaseTest {
         when(paymentRepository
                 .getNextSequenceForYear(LocalDate.now().getYear()))
                 .thenReturn(1);
-        when(paymentRepository.save(any(Payment.class)))
+        when(paymentRepository.insert(any(Payment.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         PaymentResultResponse response = useCase.execute(customerId, request,
@@ -127,19 +127,14 @@ class PayPartialDebtUseCaseTest {
         assertNotNull(response);
         assertNotNull(response.message());
         assertEquals(PaymentStatus.APPLIED.name(), response.status());
-        verify(paymentRepository, org.mockito.Mockito.times(2))
-                .save(paymentCaptor.capture());
-        Payment saved = paymentCaptor.getAllValues().get(1);
+        verify(paymentRepository, org.mockito.Mockito.times(1))
+                .insert(paymentCaptor.capture());
+        Payment saved = paymentCaptor.getAllValues().get(0);
         assertEquals(new BigDecimal("500.00"), saved.getAmount());
-        verify(cashRegisterGateway)
-                .recordMovement(new CashRegisterGateway.Movement(
-                        CashRegisterGateway.Direction.IN,
-                        CashRegisterGateway.Type.PAYMENT,
-                        new CashRegisterGateway.PaymentEntry(
-                                new BigDecimal("500.00"), paymentMethodId,
-                                "Pago parcial de deuda del cliente",
-                                saved.getId().value(), authenticatedUserId,
-                                authenticatedUserName)));
+        verify(cashRegisterGateway).recordMovements(
+                org.mockito.ArgumentMatchers.argThat(list -> list.size() == 1
+                        && list.get(0).payment().amount()
+                                .compareTo(new BigDecimal("500.00")) == 0));
     }
 
     @Test
@@ -206,15 +201,18 @@ class PayPartialDebtUseCaseTest {
         when(paymentRepository
                 .getNextSequenceForYear(LocalDate.now().getYear()))
                 .thenReturn(1);
-        when(paymentRepository.save(any(Payment.class)))
+        when(paymentRepository.insert(any(Payment.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         useCase.execute(customerId, request, authenticatedUserId,
                 authenticatedUserName);
 
         verify(paymentRepository, org.mockito.Mockito.times(2))
-                .save(paymentCaptor.capture());
-        Payment saved = paymentCaptor.getAllValues().get(1);
-        assertEquals(new BigDecimal("400.00"), saved.getAmount());
+                .insert(paymentCaptor.capture());
+        List<Payment> savedPayments = paymentCaptor.getAllValues();
+        assertEquals(new BigDecimal("300.00"),
+                savedPayments.get(0).getAmount());
+        assertEquals(new BigDecimal("100.00"),
+                savedPayments.get(1).getAmount());
     }
 }

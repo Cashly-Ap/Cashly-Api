@@ -105,7 +105,16 @@ public class PaymentAllocationService {
     public List<PaymentAllocation> allocateOldestFirst(UUID paymentId,
             List<InvoiceRemainingBalance> invoicesOldestFirst,
             BigDecimal amountToAllocate) {
-        List<PaymentAllocation> allocations = new ArrayList<>();
+        return planOldestFirst(invoicesOldestFirst, amountToAllocate).stream()
+                .map(plan -> PaymentAllocation.create(paymentId,
+                        plan.invoiceId(), plan.amount()))
+                .toList();
+    }
+
+    public List<AllocationPlan> planOldestFirst(
+            List<InvoiceRemainingBalance> invoicesOldestFirst,
+            BigDecimal amountToAllocate) {
+        List<AllocationPlan> plans = new ArrayList<>();
         BigDecimal remaining = amountToAllocate;
 
         for (InvoiceRemainingBalance invoice : invoicesOldestFirst) {
@@ -118,14 +127,16 @@ public class PaymentAllocationService {
 
             BigDecimal allocatedAmount = remaining
                     .min(invoice.remainingAmount());
-            allocations.add(PaymentAllocation.create(paymentId,
-                    invoice.invoiceId(), allocatedAmount));
+            plans.add(new AllocationPlan(invoice.invoiceId(), allocatedAmount));
             remaining = remaining.subtract(allocatedAmount);
         }
 
-        return allocations;
+        return plans;
     }
 
     public record AllocationRequest(UUID invoiceId, BigDecimal amount) {
+    }
+
+    public record AllocationPlan(UUID invoiceId, BigDecimal amount) {
     }
 }

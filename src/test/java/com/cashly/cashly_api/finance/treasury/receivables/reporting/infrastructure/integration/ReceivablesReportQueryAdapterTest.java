@@ -22,9 +22,9 @@ class ReceivablesReportQueryAdapterTest {
         var row = new AccountsReceivableRow(id, "Customer", "RIF-123",
                 amount(100), amount(120), amount(-20), amount(30), amount(20),
                 amount(10), amount(40), amount(20));
-        when(query.findAccountsReceivableForReport(id, true))
+        when(query.findAccountsReceivableForReport(id, true, null, null))
                 .thenReturn(List.of(row));
-        var rows = adapter.findAccountsReceivableForReport(id, true);
+        var rows = adapter.findAccountsReceivableForReport(id, true, null, null);
         var result = rows.getFirst();
         assertEquals(id, result.customerId());
         assertEquals("Customer", result.customerName());
@@ -38,22 +38,22 @@ class ReceivablesReportQueryAdapterTest {
         assertEquals(amount(40), result.age91_120());
         assertEquals(amount(20), result.age120Plus());
         assertThrows(UnsupportedOperationException.class, rows::clear);
-        verify(query).findAccountsReceivableForReport(id, true);
+        verify(query).findAccountsReceivableForReport(id, true, null, null);
     }
     @Test
     void unfilteredEmptyResultPreservesQueryArguments() {
-        when(query.findAccountsReceivableForReport(null, false))
+        when(query.findAccountsReceivableForReport(null, false, null, null))
                 .thenReturn(List.of());
         assertTrue(
-                adapter.findAccountsReceivableForReport(null, false).isEmpty());
-        verify(query).findAccountsReceivableForReport(null, false);
+                adapter.findAccountsReceivableForReport(null, false, null, null).isEmpty());
+        verify(query).findAccountsReceivableForReport(null, false, null, null);
     }
     @Test
     void queryFailurePreservesOriginalError() {
         var failure = new IllegalStateException("Query failed");
-        when(query.findAccountsReceivableForReport(null, true))
+        when(query.findAccountsReceivableForReport(null, true, null, null))
                 .thenThrow(failure);
         assertSame(failure, assertThrows(IllegalStateException.class,
-                () -> adapter.findAccountsReceivableForReport(null, true)));
+                () -> adapter.findAccountsReceivableForReport(null, true, null, null)));
     }
 }

@@ -322,6 +322,17 @@ public class CashRegisterRepositoryAdapter
     }
 
     @Override
+    @Transactional
+    public void saveMovements(java.util.Collection<CashMovement> movements) {
+        if (movements == null) {
+            return;
+        }
+        for (CashMovement movement : movements) {
+            entityManager.persist(toMovementEntity(movement));
+        }
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<CashMovement> findMovements(RegisterId registerId) {
         if (movementJpaRepository == null)
@@ -928,7 +939,6 @@ public class CashRegisterRepositoryAdapter
         entity.setOpenedBy(closure.getOpenedBy());
         entity.setOpenedByName(closure.getOpenedByName());
         entity.setOpenedAt(closure.getOpenedAt());
-        entity.setOpeningBalance(closure.getOpeningBalance());
         if (closure.getClosedBy() != null)
             entity.setClosedBy(closure.getClosedBy());
         if (closure.getClosedByName() != null)
@@ -945,7 +955,6 @@ public class CashRegisterRepositoryAdapter
         entity.setAdvanceCount(closure.getAdvanceCount());
         entity.setReturnCount(closure.getReturnCount());
         entity.setInvoiceCount(closure.getInvoiceCount());
-        entity.setExpectedClosingBalance(closure.getExpectedClosingBalance());
         entity.setActualClosingBalance(closure.getActualClosingBalance());
         entity.setDifference(closure.getDifference());
         entity.setTotalIncome(closure.getTotalIncome());
@@ -992,7 +1001,8 @@ public class CashRegisterRepositoryAdapter
                 entity.getTotalCreditNotes(), entity.getTotalDebitNotes(),
                 entity.getTotalInvoices(), entity.getPaymentCount(),
                 entity.getAdvanceCount(), entity.getReturnCount(),
-                entity.getInvoiceCount(), entity.getExpectedClosingBalance(),
+                entity.getInvoiceCount(),
+                entity.getExpectedClosingBalance(),
                 entity.getActualClosingBalance(), entity.getDifference(),
                 entity.getTotalIncome(), entity.getTotalExpense(),
                 entity.getClosingNotes(), entity.getVersion(),

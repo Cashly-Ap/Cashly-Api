@@ -26,6 +26,10 @@ public class CashRegisterOperationsService implements CashRegisterOperations {
                 actorName);
     }
     @Transactional
+    public void recordAll(java.util.Collection<Entry> entries) {
+        movements.recordAll(entries);
+    }
+    @Transactional
     public void record(Entry entry) {
         movements.record(
                 CashMovementDirection.valueOf(entry.direction().name()),

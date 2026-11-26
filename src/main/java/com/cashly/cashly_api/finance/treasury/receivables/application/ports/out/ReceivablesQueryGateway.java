@@ -9,6 +9,7 @@ import com.cashly.cashly_api.finance.treasury.receivables.application.dto.respon
 import com.cashly.cashly_api.finance.treasury.receivables.application.dto.response.ReceivablesSummaryResponse;
 import com.cashly.cashly_api.shared.dto.PageResponse;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import java.util.UUID;
@@ -35,5 +36,5 @@ public interface ReceivablesQueryGateway {
             UUID customerId, UUID invoiceId, int page, int size);
 
     List<AccountsReceivableRow> findAccountsReceivableForReport(UUID customerId,
-            boolean overdueOnly);
+            boolean overdueOnly, LocalDate dateFrom, LocalDate dateTo);
 }

@@ -25,6 +25,17 @@ public class RepositoryCustomerProfileQuery implements CustomerProfileQuery {
         this.customerBalanceRepository = customerBalanceRepository;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public java.util.Optional<CustomerProfileSnapshot> findOptional(
+            UUID customerId) {
+        try {
+            return java.util.Optional.of(find(customerId));
+        } catch (CustomerNotFoundException exception) {
+            return java.util.Optional.empty();
+        }
+    }
+
     @Transactional(readOnly = true)
     public CustomerProfileSnapshot find(UUID customerId) {
         Customer customer = customerRepository
